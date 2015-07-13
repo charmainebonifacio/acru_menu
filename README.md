@@ -1,4 +1,4 @@
-# Menu Generator Scripts
+# The ACRU Model Menu Generator Scripts
 
 ## Context
 [Dr. Stefan Kienzle](http://people.uleth.ca/~stefan.kienzle/) created many fortran scripts to automate calibration on the [ACRU - Agricultural Catchments Research Unit](http://unfccc.int/adaptation/nairobi_work_programme/knowledge_resources_and_publications/items/5299.php) model using Fortran 77 language and compiled with Compaq Visual Fortran Version 6.6 compiler.
@@ -13,7 +13,7 @@ The purpose of revising the fortran scripts is to upgrade the scripts to Fortran
 
 # License
 
-The original and revised scripts are licensed under a GNU General Public License v2.0
+The revised scripts are licensed under a GNU General Public License v2.0
 
 Copyright (C) 2013-2015 Charmaine Michelle T. Bonifacio
 
