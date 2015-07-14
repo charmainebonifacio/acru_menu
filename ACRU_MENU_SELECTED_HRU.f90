@@ -1,7 +1,7 @@
 !###################################################################
 ! TITLE        : ACRU_MENU_SELECTED_HRU
 !-------------------------------------------------------------------
-! EDITED BY    : Dr. Stefan W. Kienzle
+! CREATED BY    : Dr. Stefan W. Kienzle
 ! DATE EDITED  : Otober 9, 2009
 ! REVISED BY   : Charmaine Bonifacio
 ! DATE REVISED : May 11, 2015

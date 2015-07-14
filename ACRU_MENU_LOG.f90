@@ -1,9 +1,7 @@
 !###################################################################
 ! TITLE        : ACRU_MENU
 !-------------------------------------------------------------------
-! EDITED BY    : Dr. Stefan W. Kienzle
-! DATE EDITED  : May 19, 2008
-! REVISED BY   : Charmaine Bonifacio
+! CREATED BY   : Charmaine Bonifacio
 ! DATE REVISED : November 25, 2014
 !-------------------------------------------------------------------
 ! DESCRIPTION  : This is a test run for implementing the logfile
