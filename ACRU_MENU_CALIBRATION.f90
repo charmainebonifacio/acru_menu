@@ -1,10 +1,10 @@
 !###################################################################
-! TITLE        : ACRU_MENU_CALIBRATION                    
+! TITLE        : ACRU_MENU_CALIBRATION
 !-------------------------------------------------------------------
-! EDITED BY    : Dr. Stefan W. Kienzle                     
-! DATE EDITED  : May 19, 2008                   
-! REVISED BY   : Charmaine Bonifacio                       
-! DATE REVISED : July 14, 2015                             
+! CREATED BY   : Dr. Stefan W. Kienzle
+! DATE EDITED  : May 19, 2008
+! REVISED BY   : Charmaine Bonifacio
+! DATE REVISED : July 14, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The program will copy values from a tab delimited
 !                file that contains COIAM, CAY, ELAIM, ROOTA, ICC,
@@ -14,7 +14,7 @@
 !                2) VARIABLE FILE = menu_variable.txt
 ! OUTPUT       : 1) Updated MENU File
 !                2) LOG file
-!################################################################### 
+!###################################################################
 PROGRAM ACRU_MENU_CALIBRATION
 IMPLICIT NONE
 CHARACTER(LEN=11), PARAMETER :: debugSTAT = '[ STATUS ] '
@@ -25,7 +25,7 @@ INTEGER :: LINE,I,L,P,OK,TOTALLINE
 INTEGER :: LINECOIAM,LINECAY,LINEELAIM,LINEROOTA,LINEEOF
 INTEGER :: LINEICC,LINEALBEDO,ICONS,ISWAVE
 REAL :: D1, D2
-REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ICC, ALBEDO 
+REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ICC, ALBEDO
 CHARACTER(LEN=4), PARAMETER :: MENU = 'MENU'
 CHARACTER(LEN=50), PARAMETER :: MENUVARS = 'menu_variable.txt'
 CHARACTER(LEN=200) :: OUTFILE, INFILE, LOGRUN, VARFILE
@@ -34,12 +34,11 @@ CHARACTER(LEN=8) :: DATEINFO
 CHARACTER(LEN=4) :: YEAR, MONTH*2, DAY*2
 CHARACTER(LEN=2) :: HRS, MIN, SEC*6
 CHARACTER(LEN=10) :: DATE, TIMEINFO, TIMENOW*12, DATENOW, TIMEEND*12, DATEEND
-CHARACTER(LEN=*), PARAMETER:: FORMFILE = '(A129)'
 LOGICAL :: EX
 !***********************************************************************
 ! Setup new MENU file
-!*******************************************************gi****************
-      CALL DATE_AND_TIME(DATEINFO, TIMEINFO) 
+!***********************************************************************
+      CALL DATE_AND_TIME(DATEINFO, TIMEINFO)
       CALL SYSTEM_CLOCK(COUNT_0, COUNT_RATE, COUNT_MAX)
       YEAR = DATEINFO(1:4)
       MONTH = DATEINFO(5:6)
@@ -59,11 +58,11 @@ LOGICAL :: EX
       WRITE(*,*) ' The ACRU_MENU program will COPY values from a tab-delimited file. '
       WRITE(*,*) ' '
       WRITE(*,*) "###################################################################"
-      WRITE(*,*)    
+      WRITE(*,*)
 !***********************************************************************
 ! DATE
 !***********************************************************************
-    WRITE(*,*) debugSTAT, ' Start Date of log  -> ', DATENOW
+	    WRITE(*,*) debugSTAT, ' Start Date of log  -> ', DATENOW
       WRITE(*,*) debugSTAT, ' Start Time of log  -> ', TIMENOW
       WRITE(*,*)
       LOGRUN = 'LOGRUN_MENU_'//DATE//'.txt'
@@ -78,8 +77,8 @@ LOGICAL :: EX
         WRITE(*,*) debugRES, 'COULD NOT OPEN FILE.'
         STOP
       ENDIF
-    WRITE(*,*) debugRES, ' File opened: ', LOGRUN
-    WRITE(*,*) debugRES, ' File status ok = ', OK
+	    WRITE(*,*) debugRES, ' File opened: ', LOGRUN
+	    WRITE(*,*) debugRES, ' File status ok = ', OK
       WRITE(12,*)
 !***********************************************************************
 ! START LOG
@@ -92,7 +91,7 @@ LOGICAL :: EX
       WRITE(12,*) ' '
       WRITE(12,*) "###################################################################"
       WRITE(12,*)
-    WRITE(12,*) debugSTAT, ' DATE -> ', DATENOW
+	    WRITE(12,*) debugSTAT, ' DATE -> ', DATENOW
       WRITE(12,*) debugSTAT, ' TIME -> ', TIMENOW
       WRITE(12,*)
       WRITE(12,*) debugSTAT, ' LOGFILE -> ', LOGRUN
@@ -108,24 +107,24 @@ LOGICAL :: EX
         CLOSE(30, STATUS='DELETE')
       ENDIF
       WRITE(12,*) debugRES, ' Deleted old MENU file.'
-      WRITE(12,*)     
+      WRITE(12,*)
       WRITE(12,*) debugSTAT, ' Process files..... '
       VARFILE = MENUVARS
-    OPEN(UNIT=11,FILE=VARFILE,IOSTAT=OK)
-    WRITE(*,*) debugRES, ' File opened: ', VARFILE
-    WRITE(*,*) debugSTAT, ' File status ok = ', OK
+	    OPEN(UNIT=11,FILE=VARFILE,IOSTAT=OK)
+	    WRITE(*,*) debugRES, ' File opened: ', VARFILE
+	    WRITE(*,*) debugSTAT, ' File status ok = ', OK
       WRITE(12,*) debugRES, ' VARIABLE FILE -> ', VARFILE
       WRITE(12,*) debugSTAT, ' STATUS -> ', OK
       OPEN(UNIT=20,FILE=OUTFILE,IOSTAT=OK)
       WRITE(*,*) debugRES, ' File opened: ', OUTFILE
-    WRITE(*,*) debugSTAT, ' File status ok = ', OK
+	    WRITE(*,*) debugSTAT, ' File status ok = ', OK
       WRITE(12,*) debugRES, ' MENUFILE COPY -> ', OUTFILE
       WRITE(12,*) debugSTAT, ' STATUS -> ', OK
       OPEN(UNIT=30,FILE=INFILE,IOSTAT=OK)
       WRITE(*,*) debugRES, ' File opened: ', INFILE
-    WRITE(*,*) debugSTAT, ' File status ok = ', OK
+	    WRITE(*,*) debugSTAT, ' File status ok = ', OK
       WRITE(12,*) debugRES, ' MENUFILE -> ', INFILE
-      WRITE(12,*) debugSTAT, ' STATUS -> ', OK   
+      WRITE(12,*) debugSTAT, ' STATUS -> ', OK
 !***********************************************************************
 ! START PROCESSING MENU FILE - How many HRUs in this menu file?
 !***********************************************************************
@@ -142,7 +141,7 @@ LOGICAL :: EX
       CLOSE(20)
       WRITE(*,*) debugRES, 'Number of HRUs = ',ISUBNO
       WRITE(12,*) debugRES, 'Number of HRUs = ',ISUBNO
-      WRITE(12,*) 
+      WRITE(12,*)
 !***********************************************************************
 ! EOF MENU FILE - How many lines in total?
 !***********************************************************************
@@ -156,78 +155,80 @@ LOGICAL :: EX
       CLOSE(20)
       WRITE(*,*) 'Number of lines read? ',TOTALLINE
       WRITE(*,*) 'Number of lines as per HRU calculation? ',LINEEOF
-      WRITE(*,*) 
+      WRITE(*,*)
       WRITE(12,*) 'Number of lines read? ',TOTALLINE
       WRITE(12,*) 'Number of lines as per HRU calculation? ',LINEEOF
-      WRITE(12,*) 
+      WRITE(12,*)
 !***********************************************************************
-! START PROCESSING MENU FILE - Calculate line number for each variable!
+! Calculate line number for each variable!
 ! Then overwrite values once line is found. Continue for X HRUs.
 !***********************************************************************
-    LINEALBEDO=23+((ISUBNO+5)*28)
+	    LINEALBEDO=23+((ISUBNO+5)*28)
       LINECAY   =23+((ISUBNO+5)*53)
       LINEELAIM =23+((ISUBNO+5)*54)
-    LINEROOTA =23+((ISUBNO+5)*56)
+	    LINEROOTA =23+((ISUBNO+5)*56)
       LINECOIAM =23+((ISUBNO+5)*67)
-    LINEICC   =23+((ISUBNO+5)*141)
+	    LINEICC   =23+((ISUBNO+5)*141)
       WRITE(*,*) 'ALBEDO Line = ',LINEALBEDO
       WRITE(*,*) '   CAY Line = ',LINECAY
       WRITE(*,*) ' ELAIM Line = ',LINEELAIM
-      WRITE(*,*) ' ROOTA Line = ',LINEROOTA      
+      WRITE(*,*) ' ROOTA Line = ',LINEROOTA
       WRITE(*,*) ' COIAM Line = ',LINECOIAM
       WRITE(*,*) '   ICC Line = ',LINEICC
-      WRITE(*,*) 
+      WRITE(*,*)
       WRITE(12,*) 'ALBEDO Line = ',LINEALBEDO
       WRITE(12,*) '   CAY Line = ',LINECAY
       WRITE(12,*) ' ELAIM Line = ',LINEELAIM
-      WRITE(12,*) ' ROOTA Line = ',LINEROOTA      
+      WRITE(12,*) ' ROOTA Line = ',LINEROOTA
       WRITE(12,*) ' COIAM Line = ',LINECOIAM
       WRITE(12,*) '   ICC Line = ',LINEICC
-      WRITE(12,*) 
+      WRITE(12,*)
       OPEN(UNIT=20,FILE=OUTFILE)
       LINE=1
       DO 900 WHILE (LINE.LT.LINEEOF)
         L=1
-      READ(20,111) DUM
-!     CHECK WHERE ALBEDO SHOULD BE OVERWRITTEN  =================================
+	      READ(20,111) DUM
+!=================================================
+! CHECK WHERE ALBEDO SHOULD BE OVERWRITTEN
         IF(LINE.EQ.LINEALBEDO) THEN
           OPEN(UNIT=11,FILE=VARFILE)
           WRITE(12,*) debugRES, ' File opened: ', VARFILE
-        WRITE(12,*) debugSTAT, ' File status ok = ', OK
+	        WRITE(12,*) debugSTAT, ' File status ok = ', OK
           READ(11,111) DUM2  ! Header
-        READ(11,111) DUM2  ! Header
+	        READ(11,111) DUM2  ! Header
           DO 901 WHILE (L.LE.ISUBNO)
             READ(11,*)D1,D2, &
               (COIAM(I),I=1,12),(CAY(I),I=1,12), &
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
-              (ICC(I),I=1,12),(ALBEDO(I),I=1,12) 
-!      read original MENU ICONS and ISWAVE variables
+              (ICC(I),I=1,12),(ALBEDO(I),I=1,12)
+! Read original MENU ICONS and ISWAVE variables
             READ(20,113)ICONS,ISWAVE
   113       FORMAT(66X,I1,5X,I1)
-          WRITE(12,222)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
-          WRITE(30,222)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
+	          WRITE(12,222)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
+ 	          WRITE(30,222)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
   222       FORMAT(1X,11(F4.2,' '),F4.2,6X,I1,5X,I1,3X,I4)
             L=L+1
-          LINE=LINE+1
-            WRITE(*,*) debugSTAT, ' Processing Line ',LINE, ' --- Overwriting ALBEDO'
-            WRITE(12,*) debugSTAT, ' Processing Line ',LINE, ' --- Overwriting ALBEDO'
+	          LINE=LINE+1
+            WRITE(*,*) debugSTAT, ' Processing Variable Line ',LINE, ' --- Overwriting ALBEDO'
+            WRITE(12,*) debugSTAT, ' Processing Variable Line ',LINE, ' --- Overwriting ALBEDO'
   901     CONTINUE
           CLOSE(11)
         ENDIF
-!     END CHECK WHERE ALBEDO SHOULD BE OVERWRITTEN   ===========================
-!     COPY MENU LINES *************************************************
+! END CHECK WHERE ALBEDO SHOULD BE OVERWRITTEN
+!=================================================
+! COPY MENU LINES
         WRITE(30,111) DUM
-      WRITE(*,*) debugSTAT, ' PROCESSING LINE ',LINE
+	      WRITE(*,*) debugSTAT, ' PROCESSING LINE ',LINE
         WRITE(12,*) debugSTAT, ' PROCESSING LINE ',LINE
         LINE=LINE+1
   900 CONTINUE
-  999 CLOSE(20)
-      DUM2 = ' MENU SCRIPT VERSION JULY 2015 --- MENU CALIBRATED & CREATED BY CHARMAINE BONIFACIO '  
+      CLOSE(20)
+      DUM2 = ' MENU SCRIPT VERSION JULY 2015 --- MENU CALIBRATED & CREATED BY CHARMAINE BONIFACIO '
       WRITE(30,111) DUM2
       ENDFILE(30)
       CLOSE(30)
 !***********************************************************************
-! Time Elapsed
+! Elapsed Time
 !***********************************************************************
       CALL DATE_AND_TIME(DATEINFO, TIMEINFO)
       CALL SYSTEM_CLOCK(COUNT_1, COUNT_RATE, COUNT_MAX)
@@ -268,5 +269,5 @@ LOGICAL :: EX
       WRITE(12,*)
       WRITE(12,*) 'END OF PROGRAM. '
       CLOSE(12)
-      STOP                                              
+   	  STOP
 END PROGRAM ACRU_MENU_CALIBRATION
