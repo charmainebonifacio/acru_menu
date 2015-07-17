@@ -75,12 +75,12 @@ LOGICAL :: EX
       ELSE
         OPEN(UNIT=12,FILE=LOGRUN,STATUS='NEW',IOSTAT=OK)
       ENDIF
-!      IF (OK/=0) THEN
-!        WRITE(*,*) debugRES, 'COULD NOT OPEN FILE.'
-!        STOP
-!      ENDIF
-	  WRITE(*,*) debugRES, ' File opened: ', LOGRUN
-	  WRITE(*,*) debugRES, ' File status ok = ', OK
+!     IF (OK/=0) THEN
+!       WRITE(*,*) debugRES, 'COULD NOT OPEN FILE.'
+!       STOP
+!     ENDIF
+	    WRITE(*,*) debugRES, ' File opened: ', LOGRUN
+	    WRITE(*,*) debugRES, ' File status ok = ', OK
       WRITE(12,*)
 !***********************************************************************
 ! START LOG
@@ -93,28 +93,28 @@ LOGICAL :: EX
       WRITE(12,*) ' '
       WRITE(12,*) "###################################################################"
       WRITE(12,*)
-	  WRITE(12,*) debugSTAT, ' DATE -> ', DATENOW
+	    WRITE(12,*) debugSTAT, ' DATE -> ', DATENOW
       WRITE(12,*) debugSTAT, ' TIME -> ', TIMENOW
       WRITE(12,*)
       WRITE(12,*) debugSTAT, ' LOGFILE -> ', LOGRUN
       WRITE(12,*) debugSTAT, ' STATUS -> ', OK
       VARFILE = MENUVARS
-	  OPEN(UNIT=10,FILE=VARFILE,IOSTAT=OK)
-	  WRITE(*,*) debugRES, ' File opened: ', VARFILE
-	  WRITE(*,*) debugRES, ' File status ok = ', OK
+	    OPEN(UNIT=10,FILE=VARFILE,IOSTAT=OK)
+	    WRITE(*,*) debugRES, ' File opened: ', VARFILE
+	    WRITE(*,*) debugRES, ' File status ok = ', OK
       WRITE(12,*) debugSTAT, ' VARIABLE FILE -> ', VARFILE
       WRITE(12,*) debugSTAT, ' STATUS -> ', OK
       OUTFILE = MENU
-	  OPEN(UNIT=20,FILE=OUTFILE,IOSTAT=OK)
+	    OPEN(UNIT=20,FILE=OUTFILE,IOSTAT=OK)
       WRITE(*,*) debugRES, ' File opened: ', OUTFILE
-	  WRITE(*,*) debugRES, ' File status ok = ', OK
+	    WRITE(*,*) debugRES, ' File status ok = ', OK
       WRITE(12,*) debugSTAT, ' MENUFILE -> ', OUTFILE
       WRITE(12,*) debugSTAT, ' STATUS -> ', OK
       MENUCOPY = MENU//'_OLD'
       CALL SYSTEM( "copy " // OUTFILE // " " // MENUCOPY)
       OPEN(UNIT=30,FILE=MENUCOPY,IOSTAT=OK)
       WRITE(*,*) debugRES, ' File opened: ', MENUCOPY
-	  WRITE(*,*) debugRES, ' File status ok = ', OK
+	    WRITE(*,*) debugRES, ' File status ok = ', OK
       WRITE(12,*) debugSTAT, ' MENUFILE COPY -> ', MENUCOPY
       WRITE(12,*) debugSTAT, ' STATUS -> ', OK
       CLOSE(10)

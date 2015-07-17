@@ -57,7 +57,7 @@ LOGICAL :: EX
 !***********************************************************************
 ! DATE
 !***********************************************************************
-	  WRITE(*,*) debugSTAT, ' Start Date of log  -> ', DATENOW
+	    WRITE(*,*) debugSTAT, ' Start Date of log  -> ', DATENOW
       WRITE(*,*) debugSTAT, ' Start Time of log  -> ', TIMENOW
       WRITE(*,*)
       LOGRUN = 'LOGRUN_MENU_'//DATE//'.txt'
@@ -72,8 +72,8 @@ LOGICAL :: EX
         WRITE(*,*) debugRES, 'COULD NOT OPEN FILE.'
         STOP
       ENDIF
-	  WRITE(*,*) debugRES, ' File opened: ', LOGRUN
-	  WRITE(*,*) debugRES, ' File status ok = ', OK
+	    WRITE(*,*) debugRES, ' File opened: ', LOGRUN
+	    WRITE(*,*) debugRES, ' File status ok = ', OK
       WRITE(12,*)
 !***********************************************************************
 ! START LOG
@@ -87,21 +87,21 @@ LOGICAL :: EX
       WRITE(12,*) ' '
       WRITE(12,*) "###################################################################"
       WRITE(12,*)
-	  WRITE(12,*) debugSTAT, ' DATE -> ', DATENOW
+	    WRITE(12,*) debugSTAT, ' DATE -> ', DATENOW
       WRITE(12,*) debugSTAT, ' TIME -> ', TIMENOW
       WRITE(12,*)
       WRITE(12,*) debugSTAT, ' LOGFILE -> ', LOGRUN
       WRITE(12,*) debugSTAT, ' STATUS -> ', OK
       INFILE = MENU
-	  OPEN(UNIT=20,FILE=INFILE,IOSTAT=OK)
+	    OPEN(UNIT=20,FILE=INFILE,IOSTAT=OK)
       WRITE(*,*) debugRES, ' File opened: ', INFILE
-	  WRITE(*,*) debugRES, ' File status ok = ', OK
+	    WRITE(*,*) debugRES, ' File status ok = ', OK
       WRITE(12,*) debugSTAT, ' MENUFILE -> ', INFILE
       WRITE(12,*) debugSTAT, ' STATUS -> ', OK
       OUTFILE = MENU//'_SELECTED_HRU'
       OPEN(UNIT=30,FILE=OUTFILE,IOSTAT=OK)
       WRITE(*,*) debugRES, ' File opened: ', OUTFILE
-	  WRITE(*,*) debugRES, ' File status ok = ', OK
+	    WRITE(*,*) debugRES, ' File status ok = ', OK
       WRITE(12,*) debugSTAT, ' MENUFILE COPY -> ', OUTFILE
       WRITE(12,*) debugSTAT, ' STATUS -> ', OK
       WRITE(*,*)
@@ -145,13 +145,13 @@ LOGICAL :: EX
 ! START PROCESSING FILE
 !***********************************************************************
       COUNT2 = 1
-	  COUNTER = 0
+	    COUNTER = 0
   100 FORMAT(A80)
 !     Copy first 18 lines
       DO 700 WHILE (COUNTER.LT.17)
-	     COUNTER = COUNTER + 1
-         READ(20,100,END=999)LINE
-         WRITE(30,100)LINE
+	      COUNTER = COUNTER + 1
+        READ(20,100,END=999)LINE
+        WRITE(30,100)LINE
   700 CONTINUE
 !     Proceed with the rest of the MENU file but write only selected HRUs
       DO 800 WHILE (COUNT2.LT.147)
@@ -180,7 +180,7 @@ LOGICAL :: EX
       CLOSE(30)
       CLOSE(20)
 !***********************************************************************
-! Time Elapsed
+! ELAPSED TIME
 !***********************************************************************
       CALL DATE_AND_TIME(DATEINFO, TIMEINFO)
       CALL SYSTEM_CLOCK(COUNT_1, COUNT_RATE, COUNT_MAX)

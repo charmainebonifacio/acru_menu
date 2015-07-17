@@ -101,7 +101,7 @@ LOGICAL :: EX
       INFILE = MENU
       OUTFILE = MENU//'_OLD'
       CALL SYSTEM( "copy " // INFILE // " " // OUTFILE)
-      CALL SYSTEM( "copy " // INFILE // " " // MENU//'_2')
+      CALL SYSTEM( "copy " // INFILE // " " // MENU//'2')
       OPEN(UNIT=30,FILE=INFILE,IOSTAT=OK)
       IF (OK.EQ.0) THEN
         CLOSE(30, STATUS='DELETE')
@@ -201,20 +201,43 @@ LOGICAL :: EX
               (COIAM(I),I=1,12),(CAY(I),I=1,12), &
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
               (ICC(I),I=1,12),(ALBEDO(I),I=1,12)
-! Read original MENU ICONS and ISWAVE variables
-            READ(20,113)ICONS,ISWAVE
-  113       FORMAT(66X,I1,5X,I1)
-	          WRITE(12,222)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
- 	          WRITE(30,222)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
-  222       FORMAT(1X,11(F4.2,' '),F4.2,6X,I1,5X,I1,3X,I4)
-            L=L+1
-	          LINE=LINE+1
-            WRITE(*,*) debugSTAT, ' Processing Variable Line ',LINE, ' --- Overwriting ALBEDO'
-            WRITE(12,*) debugSTAT, ' Processing Variable Line ',LINE, ' --- Overwriting ALBEDO'
+            READ(20,220)ICONS,ISWAVE ! Read original MENU ICONS and ISWAVE variables
+  220       FORMAT(66X,I1,5X,I1)
+	        WRITE(12,222)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
+ 	        WRITE(30,222)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
+  222     FORMAT(1X,11(F4.2,' '),F4.2,6X,I1,5X,I1,3X,I4)
+          L=L+1
+	        LINE=LINE+1
+          WRITE(*,*) debugSTAT, ' Processing Variable Line ',LINE, ' --- Overwriting ALBEDO'
+          WRITE(12,*) debugSTAT, ' Processing Variable Line ',LINE, ' --- Overwriting ALBEDO'
   901     CONTINUE
           CLOSE(11)
         ENDIF
 ! END CHECK WHERE ALBEDO SHOULD BE OVERWRITTEN
+!=================================================
+! CHECK WHERE CAY SHOULD BE OVERWRITTEN
+        IF(LINE.EQ.LINECAY) THEN
+          OPEN(UNIT=11,FILE=VARFILE)
+          WRITE(12,*) debugRES, ' File opened: ', VARFILE
+	        WRITE(12,*) debugRES, ' File status ok = ', OK
+          READ(11,111) DUM2  ! Header
+	        READ(11,111) DUM2  ! Header
+          DO 902 WHILE (L.LE.ISUBNO)
+            READ(11,*)D1,D2, &
+              (COIAM(I),I=1,12),(CAY(I),I=1,12), &
+              (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
+              (ICC(I),I=1,12),(ALBEDO(I),I=1,12)
+	          WRITE(12,221)(CAY(I),I=1,12),(L)
+	          WRITE(30,221)(CAY(I),I=1,12),(L)
+  221       FORMAT(1X,12(F4.2,','),15X,I4)
+            L=L+1
+	        LINE=LINE+1
+          WRITE(*,*) 'Processing Variable Line ',LINE, ' --- Overwriting CAY'
+          WRITE(12,*) 'Processing Variable Line ',LINE, ' --- Overwriting CAY'
+  902     CONTINUE
+          CLOSE(11)
+        ENDIF
+! END CHECK WHERE CAY SHOULD BE OVERWRITTEN
 !=================================================
 ! COPY MENU LINES
         WRITE(30,111) DUM
@@ -228,7 +251,7 @@ LOGICAL :: EX
       ENDFILE(30)
       CLOSE(30)
 !***********************************************************************
-! Elapsed Time
+! ELAPSED TIME
 !***********************************************************************
       CALL DATE_AND_TIME(DATEINFO, TIMEINFO)
       CALL SYSTEM_CLOCK(COUNT_1, COUNT_RATE, COUNT_MAX)
