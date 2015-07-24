@@ -4,7 +4,7 @@
 ! CREATED BY   : Dr. Stefan W. Kienzle
 ! DATE EDITED  : May 19, 2008
 ! REVISED BY   : Charmaine Bonifacio
-! DATE REVISED : July 22, 2015
+! DATE REVISED : July 24, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The program will copy values from a tab delimited
 !                file that contains ALBEDO, CAY, ELAIM, ROOTA
@@ -76,7 +76,13 @@ LOGICAL :: EX
   111 FORMAT(A80)
   112 FORMAT(3X,I4)
   113 FORMAT(1X, A11, A30, I7)
-  115 FORMAT(1X, A15, I7)
+!  114 FORMAT(1X, A11, A15, I7)
+  115 FORMAT(1X, A11, A20, I7)
+  116 FORMAT(1X, A11, A50, I7)
+!  117 FORMAT(10X, A11, A20, I7)
+  118 FORMAT(10X, A11, ' CALIBRATED LINE ', I7, ' --- HRU # ', I4, ' OUT OF ', I4)
+  119 FORMAT(10X,A11,A17,I7,A9,I4,A8,I4)
+  120 FORMAT(1X, A11, ' PROCESSED ', I7, ' NUMBER OF LINES.')
 !***********************************************************************
 ! START LOG
 !***********************************************************************
@@ -141,7 +147,6 @@ LOGICAL :: EX
       WRITE(12,*) '[ O B T A I N   N U M B E R   O F   H R U  ] '
       WRITE(12,*)
       WRITE(12,113) debugRES, '       NUMBER OF HRU IN MENU : ', ISUBNO
-      WRITE(12,*)
 !***********************************************************************
 ! EOF MENU FILE - How many lines in total?
 !***********************************************************************
@@ -171,12 +176,12 @@ LOGICAL :: EX
       WRITE(12,*)
       WRITE(12,*) '[ S U M M A R Y   O F   V A R I A B L E S ] '
       WRITE(12,*)
-      WRITE(12,115) ' ALBEDO Line = ',LINEALBEDO
-      WRITE(12,115) '    CAY Line = ',LINECAY
-      WRITE(12,115) '  ELAIM Line = ',LINEELAIM
-      WRITE(12,115) '  ROOTA Line = ',LINEROOTA
-      WRITE(12,115) '  COIAM Line = ',LINECOIAM
-      WRITE(12,115) '    ICC Line = ',LINEICC
+      WRITE(12,115) debugSTAT,' ALBEDO Line = ',LINEALBEDO
+      WRITE(12,115) debugSTAT,'    CAY Line = ',LINECAY
+      WRITE(12,115) debugSTAT,'  ELAIM Line = ',LINEELAIM
+      WRITE(12,115) debugSTAT,'  ROOTA Line = ',LINEROOTA
+      WRITE(12,115) debugSTAT,'  COIAM Line = ',LINECOIAM
+      WRITE(12,115) debugSTAT,'    ICC Line = ',LINEICC
       OPEN(UNIT=20,FILE=OUTFILE)
       LINE=1
       WRITE(12,*)
@@ -192,10 +197,8 @@ LOGICAL :: EX
           READ(11,*) DUM2  ! Header
           WRITE(12,*) '================================================================================='
           WRITE(12,116) debugSTAT, ' .... ALBEDO CALIBRATION STARTING FROM LINE >> ', LINE
-  116     FORMAT(1X, A11, A50, I7)
           DO 901 WHILE (L.LE.ISUBNO)
-            WRITE(12,117) debugSTAT,' Processing Line >> ', LINE
-  117       FORMAT(10X, A11, A20, I7)
+            WRITE(12,115) debugSTAT,' Processing Line >> ', LINE
             READ(11,*)D1,D2, &
               (COIAM(I),I=1,12),(CAY(I),I=1,12), &
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
@@ -205,8 +208,7 @@ LOGICAL :: EX
             WRITE(12,221)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
             WRITE(30,221)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
   221       FORMAT(1X,11(F4.2,' '),F4.2,6X,I1,5X,I1,3X,I4)
-            WRITE(12,118) debugRES,LINE,L,ISUBNO
-  118       FORMAT(10X, A11, ' CALIBRATED LINE ', I7, ' --- HRU # ', I4, ' OUT OF ', I4)
+            WRITE(12,119) debugRES,' CALIBRATED LINE ', LINE,'--- HRU # ',L,' OUT OF ',ISUBNO
             L=L+1
 	        LINE=LINE+1
   901     END DO
@@ -216,10 +218,10 @@ LOGICAL :: EX
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
           WRITE(12,*) '================================================================================='
-          WRITE(12,*) debugSTAT, ' .... CAY CALIBRATION STARTING FROM LINE >> ', LINE
+          WRITE(12,116) debugSTAT, ' .... CAY CALIBRATION STARTING FROM LINE >> ', LINE
           DO 902 WHILE (L.LE.ISUBNO)
             WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
-            WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
+            WRITE(12,115) debugSTAT, ' Processing Line >> ',LINE
             READ(11,*)D1,D2, &
               (COIAM(I),I=1,12),(CAY(I),I=1,12), &
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
@@ -228,7 +230,7 @@ LOGICAL :: EX
             WRITE(12,222)(CAY(I),I=1,12),(L)
             WRITE(30,222)(CAY(I),I=1,12),(L)
   222       FORMAT(1X,12(F4.2,1X),15X,I4)
-            WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
+            WRITE(12,118) debugRES,LINE,L,ISUBNO
             L=L+1
 	        LINE=LINE+1
   902     END DO
@@ -239,10 +241,10 @@ LOGICAL :: EX
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
           WRITE(12,*) '================================================================================='
-          WRITE(12,*) debugSTAT, ' .... ELAIM CALIBRATION STARTING FROM LINE >> ', LINE
+          WRITE(12,116) debugSTAT, ' .... ELAIM CALIBRATION STARTING FROM LINE >> ', LINE
           DO 903 WHILE (L.LE.ISUBNO)
             WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
-            WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
+            WRITE(12,115) debugSTAT, ' Processing Line >> ',LINE
             READ(11,*)D1,D2, &
               (COIAM(I),I=1,12),(CAY(I),I=1,12), &
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
@@ -250,7 +252,7 @@ LOGICAL :: EX
             READ(20,111) DUM
             WRITE(12,222)(ELAIM(I),I=1,12),(L)
             WRITE(30,222)(ELAIM(I),I=1,12),(L)
-            WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
+            WRITE(12,118) debugRES,LINE,L,ISUBNO
             L=L+1
 	        LINE=LINE+1
   903     END DO
@@ -261,10 +263,10 @@ LOGICAL :: EX
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
           WRITE(12,*) '================================================================================='
-          WRITE(12,*) debugSTAT, ' .... ROOTA CALIBRATION STARTING FROM LINE >> ', LINE
+          WRITE(12,116) debugSTAT, ' .... ROOTA CALIBRATION STARTING FROM LINE >> ', LINE
           DO 904 WHILE (L.LE.ISUBNO)
             WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
-            WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
+            WRITE(12,115) debugSTAT, ' Processing Line >> ',LINE
             READ(11,*)D1,D2, &
               (COIAM(I),I=1,12),(CAY(I),I=1,12), &
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
@@ -272,7 +274,7 @@ LOGICAL :: EX
             READ(20,111) DUM
             WRITE(12,222)(ROOTA(I),I=1,12),(L)
             WRITE(30,222)(ROOTA(I),I=1,12),(L)
-            WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
+            WRITE(12,118) debugRES,LINE,L,ISUBNO
             L=L+1
 	        LINE=LINE+1
   904     END DO
@@ -283,18 +285,18 @@ LOGICAL :: EX
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
           WRITE(12,*) '================================================================================='
-          WRITE(12,*) debugSTAT, ' .... COIAM CALIBRATION STARTING FROM LINE >> ', LINE
+          WRITE(12,116) debugSTAT, ' .... COIAM CALIBRATION STARTING FROM LINE >> ', LINE
           DO 905 WHILE (L.LE.ISUBNO)
             WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
-            WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
+            WRITE(12,115) debugSTAT, ' Processing Line >> ',LINE
             READ(11,*)D1,D2, &
               (COIAM(I),I=1,12),(CAY(I),I=1,12), &
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
               (ICC(I),I=1,12),(ALBEDO(I),I=1,12)
             READ(20,111) DUM
-            WRITE(12,222)(COIAM(I),I=1,12),(L)
-            WRITE(30,222)(COIAM(I),I=1,12),(L)
-            WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
+	          WRITE(12,222)(COIAM(I),I=1,12),(L)
+  	        WRITE(30,222)(COIAM(I),I=1,12),(L)
+            WRITE(12,118) debugRES,LINE,L,ISUBNO
             L=L+1
 	        LINE=LINE+1
   905     END DO
@@ -305,10 +307,10 @@ LOGICAL :: EX
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
           WRITE(12,*) '================================================================================='
-          WRITE(12,*) debugSTAT, ' .... ICC CALIBRATION STARTING FROM LINE >> ', LINE
+          WRITE(12,116) debugSTAT, ' .... ICC CALIBRATION STARTING FROM LINE >> ', LINE
           DO 906 WHILE (L.LE.ISUBNO)
             WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
-            WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
+            WRITE(12,115) debugSTAT, ' Processing Line >> ',LINE
             READ(11,*)D1,D2, &
               (COIAM(I),I=1,12),(CAY(I),I=1,12), &
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
@@ -317,22 +319,22 @@ LOGICAL :: EX
             WRITE(12,223)(ICC(I),I=1,12),(L)
             WRITE(30,223)(ICC(I),I=1,12),(L)
   223       FORMAT(2X,12(I3.2,2X),14X,I4)
-            WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
+  			    WRITE(12,119) debugRES,' CALIBRATED LINE ', LINE,'--- HRU # ',L,' OUT OF ',ISUBNO
             L=L+1
 	        LINE=LINE+1
   906     END DO
           WRITE(12,*) '================================================================================='
           CLOSE(11)
-        ELSE ! SIMPLY READ AND COPY LINES
+       ELSE ! SIMPLY READ AND COPY LINES
           READ(20,111) DUM
           WRITE(30,111) DUM
           LINE=LINE+1
         ENDIF
   900 END DO
       CLOSE(20)
-      WRITE(*,119) debugSTAT, LINE
-      WRITE(12,119) debugSTAT, LINE
-  119 FORMAT(1X, A11, ' PROCESSED ', I7, ' NUMBER OF LINES.')
+      WRITE(12,*)
+      WRITE(*,120) debugSTAT, LINE
+      WRITE(12,120) debugSTAT, LINE
       WRITE(12,*)
       DUM2 = ' MENU SCRIPT VERSION JULY 2015 --- MENU CALIBRATED & CREATED BY CHARMAINE BONIFACIO '
       WRITE(30,111) DUM2
