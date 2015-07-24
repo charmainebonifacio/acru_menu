@@ -23,8 +23,9 @@ INTEGER :: COUNT_0, COUNT_1, COUNT_RATE, COUNT_MAX
 INTEGER :: LINE,I,L,P,OK,TOTALLINE
 INTEGER :: LINECOIAM,LINECAY,LINEELAIM,LINEROOTA,LINEEOF
 INTEGER :: LINEICC,LINEALBEDO,ICONS,ISWAVE
+INTEGER, DIMENSION(12) :: ICC
 REAL :: D1, D2
-REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ICC, ALBEDO
+REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
 CHARACTER(LEN=4), PARAMETER :: MENU = 'MENU'
 CHARACTER(LEN=50), PARAMETER :: MENUVARS = 'menu_variable.txt'
 CHARACTER(LEN=100) :: OUTFILE, INFILE, LOGRUN, VARFILE
@@ -188,15 +189,15 @@ LOGICAL :: EX
         L=1
 !=================================================
 ! CHECK WHERE VARIABLES SHOULD BE OVERWRITTEN
-        IF(LINE.EQ.LINEALBEDO) THEN ! CHECK WHERE ALBEDO SHOULD BE OVERWRITTEN  
+        IF(LINE.EQ.LINEALBEDO) THEN ! CHECK WHERE ALBEDO SHOULD BE OVERWRITTEN
           OPEN(UNIT=11,FILE=VARFILE)
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
-          WRITE(12,*) '=================================================================================' 
-          WRITE(12,*) debugSTAT, ' .... ALBEDO CALIBRATION STARTING FROM LINE >> ', LINE         
+          WRITE(12,*) '================================================================================='
+          WRITE(12,*) debugSTAT, ' .... ALBEDO CALIBRATION STARTING FROM LINE >> ', LINE
           DO 901 WHILE (L.LE.ISUBNO)
             WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
-            WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE            
+            WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
             READ(11,*)D1,D2, &
               (COIAM(I),I=1,12),(CAY(I),I=1,12), &
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
@@ -211,14 +212,14 @@ LOGICAL :: EX
             L=L+1
           LINE=LINE+1
   901     END DO
-          WRITE(12,*) '=================================================================================' 
+          WRITE(12,*) '================================================================================='
           CLOSE(11)
-        ELSEIF(LINE.EQ.LINECAY) THEN ! CHECK WHERE CAY SHOULD BE OVERWRITTEN  
+        ELSEIF(LINE.EQ.LINECAY) THEN ! CHECK WHERE CAY SHOULD BE OVERWRITTEN
           OPEN(UNIT=11,FILE=VARFILE)
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
-          WRITE(12,*) '=================================================================================' 
-          WRITE(12,*) debugSTAT, ' .... CAY CALIBRATION STARTING FROM LINE >> ', LINE   
+          WRITE(12,*) '================================================================================='
+          WRITE(12,*) debugSTAT, ' .... CAY CALIBRATION STARTING FROM LINE >> ', LINE
           DO 902 WHILE (L.LE.ISUBNO)
             WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
             WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
@@ -235,14 +236,14 @@ LOGICAL :: EX
             L=L+1
           LINE=LINE+1
   902     END DO
-          WRITE(12,*) '=================================================================================' 
+          WRITE(12,*) '================================================================================='
           CLOSE(11)
-        ELSEIF(LINE.EQ.LINEELAIM) THEN ! CHECK WHERE ELAIM SHOULD BE OVERWRITTEN  
+        ELSEIF(LINE.EQ.LINEELAIM) THEN ! CHECK WHERE ELAIM SHOULD BE OVERWRITTEN
           OPEN(UNIT=11,FILE=VARFILE)
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
-          WRITE(12,*) '=================================================================================' 
-          WRITE(12,*) debugSTAT, ' .... ELAIM CALIBRATION STARTING FROM LINE >> ', LINE   
+          WRITE(12,*) '================================================================================='
+          WRITE(12,*) debugSTAT, ' .... ELAIM CALIBRATION STARTING FROM LINE >> ', LINE
           DO 903 WHILE (L.LE.ISUBNO)
             WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
             WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
@@ -258,14 +259,14 @@ LOGICAL :: EX
             L=L+1
           LINE=LINE+1
   903     END DO
-          WRITE(12,*) '=================================================================================' 
+          WRITE(12,*) '================================================================================='
           CLOSE(11)
-        ELSEIF(LINE.EQ.LINEROOTA) THEN ! CHECK WHERE ROOTA SHOULD BE OVERWRITTEN  
+        ELSEIF(LINE.EQ.LINEROOTA) THEN ! CHECK WHERE ROOTA SHOULD BE OVERWRITTEN
           OPEN(UNIT=11,FILE=VARFILE)
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
-          WRITE(12,*) '=================================================================================' 
-          WRITE(12,*) debugSTAT, ' .... ROOTA CALIBRATION STARTING FROM LINE >> ', LINE   
+          WRITE(12,*) '================================================================================='
+          WRITE(12,*) debugSTAT, ' .... ROOTA CALIBRATION STARTING FROM LINE >> ', LINE
           DO 904 WHILE (L.LE.ISUBNO)
             WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
             WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
@@ -281,14 +282,14 @@ LOGICAL :: EX
             L=L+1
           LINE=LINE+1
   904     END DO
-          WRITE(12,*) '=================================================================================' 
+          WRITE(12,*) '================================================================================='
           CLOSE(11)
-        ELSEIF(LINE.EQ.LINECOIAM) THEN ! CHECK WHERE COIAM SHOULD BE OVERWRITTEN  
+        ELSEIF(LINE.EQ.LINECOIAM) THEN ! CHECK WHERE COIAM SHOULD BE OVERWRITTEN
           OPEN(UNIT=11,FILE=VARFILE)
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
-          WRITE(12,*) '=================================================================================' 
-          WRITE(12,*) debugSTAT, ' .... COIAM CALIBRATION STARTING FROM LINE >> ', LINE   
+          WRITE(12,*) '================================================================================='
+          WRITE(12,*) debugSTAT, ' .... COIAM CALIBRATION STARTING FROM LINE >> ', LINE
           DO 905 WHILE (L.LE.ISUBNO)
             WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
             WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
@@ -304,7 +305,31 @@ LOGICAL :: EX
             L=L+1
           LINE=LINE+1
   905     END DO
-          WRITE(12,*) '=================================================================================' 
+          WRITE(12,*) '================================================================================='
+          CLOSE(11)
+        ELSEIF(LINE.EQ.LINEICC) THEN ! CHECK WHERE ICC SHOULD BE OVERWRITTEN
+          OPEN(UNIT=11,FILE=VARFILE)
+          READ(11,*) DUM2  ! Header
+          READ(11,*) DUM2  ! Header
+          WRITE(12,*) '================================================================================='
+          WRITE(12,*) debugSTAT, ' .... ICC CALIBRATION STARTING FROM LINE >> ', LINE
+          DO 906 WHILE (L.LE.ISUBNO)
+            WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
+            WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
+            READ(11,*)D1,D2, &
+              (COIAM(I),I=1,12),(CAY(I),I=1,12), &
+              (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
+              (ICC(I),I=1,12),(ALBEDO(I),I=1,12)
+            READ(20,111) DUM
+            WRITE(12,223)(ICC(I),I=1,12),(L)
+            WRITE(30,223)(ICC(I),I=1,12),(L)
+  223       FORMAT(2X,12(I3.2,2X),14X,I4)
+            WRITE(*,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
+            WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
+            L=L+1
+          LINE=LINE+1
+  906     END DO
+          WRITE(12,*) '================================================================================='
           CLOSE(11)
        ELSE ! SIMPLY READ AND COPY LINES
           READ(20,111) DUM
