@@ -7,8 +7,8 @@
 ! DATE REVISED : July 22, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The program will copy values from a tab delimited
-!                file that contains ALBEDO, COIAM, CAY, ELAIM,
-!                ROOTA and ICC
+!                file that contains ALBEDO, CAY, ELAIM, ROOTA
+!                COIAM and ICC
 ! REQUIREMENT  : MUST run the .EXE file within the input directory.
 ! INPUT        : 1) MENU FILE = MENU
 !                2) VARIABLE FILE = menu_variable.txt
@@ -28,8 +28,8 @@ INTEGER, DIMENSION(12) :: ICC
 REAL :: D1, D2
 REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
 CHARACTER(LEN=4), PARAMETER :: MENU = 'MENU'
-CHARACTER(LEN=50), PARAMETER :: MENUVARS = 'menu_variable.txt'
-CHARACTER(LEN=100) :: OUTFILE, INFILE, LOGRUN, VARFILE
+CHARACTER(LEN=30), PARAMETER :: MENUVARS = 'menu_variable.txt'
+CHARACTER(LEN=30) :: OUTFILE, INFILE, LOGRUN, VARFILE
 CHARACTER(LEN=80) :: DUM, DUM2
 CHARACTER(LEN=8) :: DATEINFO
 CHARACTER(LEN=4) :: YEAR, MONTH*2, DAY*2
@@ -37,7 +37,7 @@ CHARACTER(LEN=2) :: HRS, MIN, SEC*6
 CHARACTER(LEN=10) :: DATE, TIMEINFO, TIMENOW*12, DATENOW, TIMEEND*12, DATEEND
 LOGICAL :: EX
 !***********************************************************************
-! Setup new MENU file
+! SETUP START TIME
 !***********************************************************************
       CALL DATE_AND_TIME(DATEINFO, TIMEINFO)
       CALL SYSTEM_CLOCK(COUNT_0, COUNT_RATE, COUNT_MAX)
@@ -53,19 +53,6 @@ LOGICAL :: EX
 !***********************************************************************
 ! START PROGRAM
 !***********************************************************************
-      WRITE(*,*)
-      WRITE(*,*) "###################################################################"
-      WRITE(*,*) ' '
-      WRITE(*,*) ' The ACRU_MENU program will COPY values from a tab-delimited file. '
-      WRITE(*,*) ' '
-      WRITE(*,*) "###################################################################"
-      WRITE(*,*)
-!***********************************************************************
-! DATE
-!***********************************************************************
-    WRITE(*,*) debugSTAT, ' Start Date of log  -> ', DATENOW
-      WRITE(*,*) debugSTAT, ' Start Time of log  -> ', TIMENOW
-      WRITE(*,*)
       LOGRUN = 'LOGRUN_MENU_'//DATE//'.txt'
       INQUIRE(FILE=LOGRUN, EXIST=EX)
       WRITE(*,*) debugSTAT, ' Checking file: ', LOGRUN
@@ -75,15 +62,25 @@ LOGICAL :: EX
         OPEN(UNIT=12,FILE=LOGRUN,STATUS='NEW',IOSTAT=OK)
       ENDIF
       IF (OK/=0) THEN
-        WRITE(*,*) debugRES, 'COULD NOT OPEN FILE.'
+        WRITE(12,*) debugRES, 'COULD NOT OPEN FILE.'
         STOP
       ENDIF
-    WRITE(*,*) debugRES, ' File opened: ', LOGRUN
-    WRITE(*,*) debugRES, ' File status ok = ', OK
-      WRITE(12,*)
+!***********************************************************************
+! FORMAT
+!***********************************************************************
+  106 FORMAT(1X, A11, A20, F10.5)
+  107 FORMAT(1X, A11, A20, A30)
+  108 FORMAT(1X, A11, A20, A12)
+  109 FORMAT(1X, A11, '  FILENAME OPENED : ', A30)
+  110 FORMAT(1X, A11, '      FILE STATUS : ', I4)
+  111 FORMAT(A80)
+  112 FORMAT(3X,I4)
+  113 FORMAT(1X, A11, A30, I7)
+  115 FORMAT(1X, A15, I7)
 !***********************************************************************
 ! START LOG
 !***********************************************************************
+      WRITE(12,*)
       WRITE(12,*) 'START OF PROGRAM. '
       WRITE(12,*)
       WRITE(12,*) "###################################################################"
@@ -92,11 +89,13 @@ LOGICAL :: EX
       WRITE(12,*) ' '
       WRITE(12,*) "###################################################################"
       WRITE(12,*)
-      WRITE(12,*) debugSTAT, ' DATE -> ', DATENOW
-      WRITE(12,*) debugSTAT, ' TIME -> ', TIMENOW
+      WRITE(12,108) debugSTAT, '             DATE : ', DATENOW
+      WRITE(12,108) debugSTAT, '             TIME : ', TIMENOW
       WRITE(12,*)
-      WRITE(12,*) debugSTAT, ' LOGFILE -> ', LOGRUN
-      WRITE(12,*) debugSTAT, ' STATUS -> ', OK
+      WRITE(12,107) debugSTAT, '          LOGFILE : ', LOGRUN
+      WRITE(12,110) debugSTAT, OK
+      WRITE(12,*)
+      WRITE(12,*) '[ P R O C E S S I N G   M E N U   F I L E ] '
       WRITE(12,*)
       WRITE(12,*) debugSTAT, ' Copy MENU file and rename to MENU_OLD. '
       INFILE = MENU
@@ -104,28 +103,29 @@ LOGICAL :: EX
       CALL SYSTEM( "copy " // INFILE // " " // OUTFILE)
       CALL SYSTEM( "copy " // INFILE // " " // MENU//'2')
       OPEN(UNIT=30,FILE=INFILE,IOSTAT=OK)
+      WRITE(12,110) debugSTAT, OK
       IF (OK.EQ.0) THEN
         CLOSE(30, STATUS='DELETE')
+        WRITE(12,*) debugRES, ' Deleted old MENU file.'
       ENDIF
-      WRITE(12,*) debugRES, ' Deleted old MENU file.'
       WRITE(12,*)
-      WRITE(12,*) debugSTAT, ' Process files..... '
+      WRITE(12,*) '[ P R O C E S S I N G   R E Q U I R E D   F I L E S ] '
+      WRITE(12,*)
       VARFILE = MENUVARS
       OPEN(UNIT=11,FILE=VARFILE,IOSTAT=OK)
-      WRITE(*,*) debugRES, ' File opened: ', VARFILE
-      WRITE(*,*) debugSTAT, ' File status ok = ', OK
-      WRITE(12,*) debugRES, ' VARIABLE FILE -> ', VARFILE
-      WRITE(12,*) debugSTAT, ' STATUS -> ', OK
+      WRITE(12,*) 'Variable File.'
+      WRITE(12,109) debugRES, VARFILE
+      WRITE(12,110) debugSTAT, OK
+      WRITE(12,*)
       OPEN(UNIT=20,FILE=OUTFILE,IOSTAT=OK)
-      WRITE(*,*) debugRES, ' File opened: ', OUTFILE
-      WRITE(*,*) debugSTAT, ' File status ok = ', OK
-      WRITE(12,*) debugRES, ' MENUFILE COPY -> ', OUTFILE
-      WRITE(12,*) debugSTAT, ' STATUS -> ', OK
+      WRITE(12,*) 'Old copy of Menu File.'
+      WRITE(12,109) debugRES, OUTFILE
+      WRITE(12,110) debugSTAT, OK
+      WRITE(12,*)
       OPEN(UNIT=30,FILE=INFILE,IOSTAT=OK)
-      WRITE(*,*) debugRES, ' File opened: ', INFILE
-      WRITE(*,*) debugSTAT, ' File status ok = ', OK
-      WRITE(12,*) debugRES, ' MENUFILE -> ', INFILE
-      WRITE(12,*) debugSTAT, ' STATUS -> ', OK
+      WRITE(12,*) 'Working copy of Menu File.'
+      WRITE(12,109) debugRES, INFILE
+      WRITE(12,110) debugSTAT, OK
 !***********************************************************************
 ! START PROCESSING MENU FILE - How many HRUs in this menu file?
 !***********************************************************************
@@ -134,14 +134,13 @@ LOGICAL :: EX
       DO 898 WHILE (P.LT.11)
         READ(20,111) DUM2
         P=P+1
-  898 CONTINUE
-  111 FORMAT(A80)
+  898 END DO
       READ(20,112) ISUBNO
-      WRITE(12,112) ISUBNO
-  112 FORMAT(3X,I4)
       CLOSE(20)
-      WRITE(*,*) debugRES, 'Number of HRUs = ',ISUBNO
-      WRITE(12,*) debugRES, 'Number of HRUs = ',ISUBNO
+      WRITE(12,*)
+      WRITE(12,*) '[ O B T A I N   N U M B E R   O F   H R U  ] '
+      WRITE(12,*)
+      WRITE(12,113) debugRES, '       NUMBER OF HRU IN MENU : ', ISUBNO
       WRITE(12,*)
 !***********************************************************************
 ! EOF MENU FILE - How many lines in total?
@@ -154,12 +153,11 @@ LOGICAL :: EX
         TOTALLINE=TOTALLINE+1
   899 END DO
       CLOSE(20)
-      WRITE(*,*) 'Number of lines read? ',TOTALLINE
-      WRITE(*,*) 'Number of lines as per HRU calculation? ',LINEEOF
-      WRITE(*,*)
-      WRITE(12,*) 'Number of lines read? ',TOTALLINE
-      WRITE(12,*) 'Number of lines as per HRU calculation? ',LINEEOF
       WRITE(12,*)
+      WRITE(12,*) '[ E O F   C H E C K ] '
+      WRITE(12,*)
+      WRITE(12,113) debugRES, '  COUNTED END OF FILE LINES : ', TOTALLINE
+      WRITE(12,113) debugRES, '    CALCULATED LINES BY HRU : ', LINEEOF
 !***********************************************************************
 ! Calculate line number for each variable!
 ! Then overwrite values once line is found. Continue for X HRUs.
@@ -170,22 +168,20 @@ LOGICAL :: EX
       LINEROOTA =23+((ISUBNO+5)*56)
       LINECOIAM =23+((ISUBNO+5)*67)
       LINEICC   =23+((ISUBNO+5)*141)
-      WRITE(*,*) 'ALBEDO Line = ',LINEALBEDO
-      WRITE(*,*) '   CAY Line = ',LINECAY
-      WRITE(*,*) ' ELAIM Line = ',LINEELAIM
-      WRITE(*,*) ' ROOTA Line = ',LINEROOTA
-      WRITE(*,*) ' COIAM Line = ',LINECOIAM
-      WRITE(*,*) '   ICC Line = ',LINEICC
-      WRITE(*,*)
-      WRITE(12,*) 'ALBEDO Line = ',LINEALBEDO
-      WRITE(12,*) '   CAY Line = ',LINECAY
-      WRITE(12,*) ' ELAIM Line = ',LINEELAIM
-      WRITE(12,*) ' ROOTA Line = ',LINEROOTA
-      WRITE(12,*) ' COIAM Line = ',LINECOIAM
-      WRITE(12,*) '   ICC Line = ',LINEICC
       WRITE(12,*)
+      WRITE(12,*) '[ S U M M A R Y   O F   V A R I A B L E S ] '
+      WRITE(12,*)
+      WRITE(12,115) ' ALBEDO Line = ',LINEALBEDO
+      WRITE(12,115) '    CAY Line = ',LINECAY
+      WRITE(12,115) '  ELAIM Line = ',LINEELAIM
+      WRITE(12,115) '  ROOTA Line = ',LINEROOTA
+      WRITE(12,115) '  COIAM Line = ',LINECOIAM
+      WRITE(12,115) '    ICC Line = ',LINEICC
       OPEN(UNIT=20,FILE=OUTFILE)
       LINE=1
+      WRITE(12,*)
+      WRITE(12,*) '[ C A L I B R A T I N G   M E N U   F I L E ] '
+      WRITE(12,*)
       DO 900 WHILE (LINE.LT.LINEEOF)
         L=1
 !=================================================
@@ -195,10 +191,11 @@ LOGICAL :: EX
           READ(11,*) DUM2  ! Header
           READ(11,*) DUM2  ! Header
           WRITE(12,*) '================================================================================='
-          WRITE(12,*) debugSTAT, ' .... ALBEDO CALIBRATION STARTING FROM LINE >> ', LINE
+          WRITE(12,116) debugSTAT, ' .... ALBEDO CALIBRATION STARTING FROM LINE >> ', LINE
+  116     FORMAT(1X, A11, A50, I7)
           DO 901 WHILE (L.LE.ISUBNO)
-            WRITE(*,*) debugSTAT, ' Processing Line >> ',LINE
-            WRITE(12,*) debugSTAT, ' Processing Line >> ',LINE
+            WRITE(12,117) debugSTAT,' Processing Line >> ', LINE
+  117       FORMAT(10X, A11, A20, I7)
             READ(11,*)D1,D2, &
               (COIAM(I),I=1,12),(CAY(I),I=1,12), &
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
@@ -208,12 +205,11 @@ LOGICAL :: EX
             WRITE(12,221)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
             WRITE(30,221)(ALBEDO(I),I=1,12),ICONS,ISWAVE,L
   221       FORMAT(1X,11(F4.2,' '),F4.2,6X,I1,5X,I1,3X,I4)
-            WRITE(*,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
-            WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
+            WRITE(12,118) debugRES,LINE,L,ISUBNO
+  118       FORMAT(10X, A11, ' CALIBRATED LINE ', I7, ' --- HRU # ', I4, ' OUT OF ', I4)
             L=L+1
-          LINE=LINE+1
+	        LINE=LINE+1
   901     END DO
-          WRITE(12,*) '================================================================================='
           CLOSE(11)
         ELSEIF(LINE.EQ.LINECAY) THEN ! CHECK WHERE CAY SHOULD BE OVERWRITTEN
           OPEN(UNIT=11,FILE=VARFILE)
@@ -231,11 +227,10 @@ LOGICAL :: EX
             READ(20,111) DUM
             WRITE(12,222)(CAY(I),I=1,12),(L)
             WRITE(30,222)(CAY(I),I=1,12),(L)
-  222       FORMAT(1X,12(F4.2,2X),15X,I4)
-            WRITE(*,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
+  222       FORMAT(1X,12(F4.2,1X),15X,I4)
             WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             L=L+1
-          LINE=LINE+1
+	        LINE=LINE+1
   902     END DO
           WRITE(12,*) '================================================================================='
           CLOSE(11)
@@ -255,10 +250,9 @@ LOGICAL :: EX
             READ(20,111) DUM
             WRITE(12,222)(ELAIM(I),I=1,12),(L)
             WRITE(30,222)(ELAIM(I),I=1,12),(L)
-            WRITE(*,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             L=L+1
-          LINE=LINE+1
+	        LINE=LINE+1
   903     END DO
           WRITE(12,*) '================================================================================='
           CLOSE(11)
@@ -278,10 +272,9 @@ LOGICAL :: EX
             READ(20,111) DUM
             WRITE(12,222)(ROOTA(I),I=1,12),(L)
             WRITE(30,222)(ROOTA(I),I=1,12),(L)
-            WRITE(*,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             L=L+1
-          LINE=LINE+1
+	        LINE=LINE+1
   904     END DO
           WRITE(12,*) '================================================================================='
           CLOSE(11)
@@ -301,10 +294,9 @@ LOGICAL :: EX
             READ(20,111) DUM
             WRITE(12,222)(COIAM(I),I=1,12),(L)
             WRITE(30,222)(COIAM(I),I=1,12),(L)
-            WRITE(*,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             L=L+1
-          LINE=LINE+1
+	        LINE=LINE+1
   905     END DO
           WRITE(12,*) '================================================================================='
           CLOSE(11)
@@ -325,22 +317,23 @@ LOGICAL :: EX
             WRITE(12,223)(ICC(I),I=1,12),(L)
             WRITE(30,223)(ICC(I),I=1,12),(L)
   223       FORMAT(2X,12(I3.2,2X),14X,I4)
-            WRITE(*,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             L=L+1
-          LINE=LINE+1
+	        LINE=LINE+1
   906     END DO
           WRITE(12,*) '================================================================================='
           CLOSE(11)
-       ELSE ! SIMPLY READ AND COPY LINES
+        ELSE ! SIMPLY READ AND COPY LINES
           READ(20,111) DUM
           WRITE(30,111) DUM
-          WRITE(*,*) debugSTAT, ' PROCESSED LINE ',LINE
-          WRITE(12,*) debugSTAT, ' PROCESSED LINE ',LINE
           LINE=LINE+1
         ENDIF
   900 END DO
       CLOSE(20)
+      WRITE(*,119) debugSTAT, LINE
+      WRITE(12,119) debugSTAT, LINE
+  119 FORMAT(1X, A11, ' PROCESSED ', I7, ' NUMBER OF LINES.')
+      WRITE(12,*)
       DUM2 = ' MENU SCRIPT VERSION JULY 2015 --- MENU CALIBRATED & CREATED BY CHARMAINE BONIFACIO '
       WRITE(30,111) DUM2
       ENDFILE(30)
@@ -362,28 +355,17 @@ LOGICAL :: EX
 !***********************************************************************
 ! END PROGRAM
 !***********************************************************************
-      WRITE(*,*) "###################################################################"
-      WRITE(*,*) ' '
-      WRITE(*,*) '   The ACRU_MENU program has finished updating the menu file. '
-      WRITE(*,*) ' '
-      WRITE(*,*) "###################################################################"
-      WRITE(*,*)
-      WRITE(*,*) debugSTAT, ' End Date of log  -> ', DATEEND
-      WRITE(*,*) debugSTAT, ' End Time of log  -> ', TIMEEND
-      WRITE(*,*) debugSTAT, ' ELAPSED TIME : ', REAL(COUNT_1 - COUNT_0)/ REAL(COUNT_RATE)
-      WRITE(*,*)
-      WRITE(*,*) 'END OF PROGRAM. '
       WRITE(12,*) "###################################################################"
       WRITE(12,*) ' '
       WRITE(12,*) '   The ACRU_MENU program has finished updating the menu file. '
       WRITE(12,*) ' '
       WRITE(12,*) "###################################################################"
       WRITE(12,*)
-      WRITE(12,*) debugSTAT, ' End Date of log  -> ', DATEEND
-      WRITE(12,*) debugSTAT, ' End Time of log  -> ', TIMEEND
-      WRITE(12,*) debugSTAT, ' ELAPSED TIME : ', REAL(COUNT_1 - COUNT_0)/ REAL(COUNT_RATE)
+      WRITE(12,108) debugSTAT, '             DATE : ', DATEEND
+      WRITE(12,108) debugSTAT, '             TIME : ', TIMEEND
+      WRITE(12,106) debugSTAT, '     ELAPSED TIME : ', REAL(COUNT_1 - COUNT_0)/ REAL(COUNT_RATE)
       WRITE(12,*)
       WRITE(12,*) 'END OF PROGRAM. '
       CLOSE(12)
-      STOP
+   	  STOP
 END PROGRAM ACRU_MENU_CALIBRATION
