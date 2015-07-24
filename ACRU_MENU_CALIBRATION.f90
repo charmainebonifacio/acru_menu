@@ -4,10 +4,11 @@
 ! CREATED BY   : Dr. Stefan W. Kienzle
 ! DATE EDITED  : May 19, 2008
 ! REVISED BY   : Charmaine Bonifacio
-! DATE REVISED : July 21, 2015
+! DATE REVISED : July 22, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The program will copy values from a tab delimited
-!                file that contains ALBEDO, COIAM, CAY, ELAIM, ROOTA
+!                file that contains ALBEDO, COIAM, CAY, ELAIM,
+!                ROOTA and ICC
 ! REQUIREMENT  : MUST run the .EXE file within the input directory.
 ! INPUT        : 1) MENU FILE = MENU
 !                2) VARIABLE FILE = menu_variable.txt
@@ -230,7 +231,7 @@ LOGICAL :: EX
             READ(20,111) DUM
             WRITE(12,222)(CAY(I),I=1,12),(L)
             WRITE(30,222)(CAY(I),I=1,12),(L)
-  222       FORMAT(1X,12(F4.2,','),15X,I4)
+  222       FORMAT(1X,12(F4.2,2X),15X,I4)
             WRITE(*,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             WRITE(12,*) debugRES, ' CALIBRATED LINE ',LINE, '--- HRU # ',L, ' OUT OF ',ISUBNO
             L=L+1
