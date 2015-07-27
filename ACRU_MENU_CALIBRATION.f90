@@ -7,9 +7,12 @@
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain DATE and TIME subroutines.
 ! SUBROUTINE 1 : This subroutine will calculate the date and time.
-! SUBROUTINE 2 : This subroutine will calculate the elapsed time
+! SUBROUTINE 2 : This subroutine will check if the file was opened
+!                successfully.
+! SUBROUTINE 3 : This subroutine will check ISUBNO value.
+! SUBROUTINE 4 : This subroutine will calculate the elapsed time
 !###################################################################
-MODULE M_DATETIMESETUP
+MODULE M_SYSTEMCHECKS
 IMPLICIT NONE
 CONTAINS
    SUBROUTINE DATETIMELOG(DATE, DATENOW, TIMENOW)
@@ -30,13 +33,22 @@ CONTAINS
       SEC = TIMEINFO(5:10)
       TIMENOW = HRS // ':' // MIN // ':' // SEC
    END SUBROUTINE DATETIMELOG
+   SUBROUTINE FILESTATCHECK(STATUS,UNIT_NO)
+      INTEGER, INTENT(IN) :: UNIT_NO, STATUS
+      IF (STATUS==0) THEN
+         WRITE(UNIT_NO,*) 'SUCCESSFULLY OPENED FILE.'
+      END IF
+      IF (STATUS/=0) THEN
+         WRITE(UNIT_NO,*) 'COULD NOT OPEN FILE.'
+      END IF
+   END SUBROUTINE FILESTATCHECK
    SUBROUTINE ELAPSEDTIME(ELAPSED_TIME, SYS_COUNT_0, SYS_COUNT_1, COUNTRATE)
       REAL, INTENT(OUT) :: ELAPSED_TIME
       INTEGER, INTENT(IN) :: SYS_COUNT_0, SYS_COUNT_1, COUNTRATE
       ELAPSED_TIME = 0
       ELAPSED_TIME = REAL(SYS_COUNT_1 - SYS_COUNT_0)/ REAL(COUNTRATE)
    END SUBROUTINE ELAPSEDTIME
-END MODULE M_DATETIMESETUP
+END MODULE M_SYSTEMCHECKS
 !###################################################################
 ! MODULE TITLE : M_LOGSYSTEM
 !-------------------------------------------------------------------
@@ -118,7 +130,7 @@ END MODULE M_CALIBRATION
 !                2) LOG file
 !###################################################################
 PROGRAM P_ACRU_MENU_CALIBRATION
-USE M_DATETIMESETUP
+USE M_SYSTEMCHECKS
 USE M_LOGSYSTEM
 USE M_CALIBRATION
 IMPLICIT NONE
@@ -204,20 +216,19 @@ REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
       WRITE(12,*) 'Variable File.'
       WRITE(12,109) debugRES, VARFILE
       WRITE(12,110) debugSTAT, OK
+      CALL FILESTATCHECK(OK,12)
       WRITE(12,*)
-      IF (OK/=0) THEN
-        WRITE(12,*) debugRES, 'COULD NOT OPEN FILE.'
-        STOP
-      ENDIF
       OPEN(UNIT=20,FILE=OUTFILE,IOSTAT=OK)
       WRITE(12,*) 'Old copy of Menu File.'
       WRITE(12,109) debugRES, OUTFILE
       WRITE(12,110) debugSTAT, OK
+      CALL FILESTATCHECK(OK,12)
       WRITE(12,*)
       OPEN(UNIT=30,FILE=INFILE,IOSTAT=OK)
       WRITE(12,*) 'Working copy of Menu File.'
       WRITE(12,109) debugRES, INFILE
       WRITE(12,110) debugSTAT, OK
+      CALL FILESTATCHECK(OK,12)
 !***********************************************************************
 ! START PROCESSING MENU FILE - How many HRUs in this menu file?
 !***********************************************************************
@@ -440,5 +451,4 @@ REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
       WRITE(12,106) debugSTAT, '     ELAPSED TIME : ', ELAPSED_TIME
       CALL STARTPROGRAMLOG(12)
       CLOSE(12)
-   	  STOP
 END PROGRAM P_ACRU_MENU_CALIBRATION
