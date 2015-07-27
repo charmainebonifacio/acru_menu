@@ -1,10 +1,32 @@
 !###################################################################
-! TITLE        : ACRU_MENU_CALIBRATION
+! MODULE TITLE : CALIBRATION
+!-------------------------------------------------------------------
+! CREATED BY   : Charmaine Bonifacio
+! DATE CREATED : July 24, 2015
+! DATE REVISED : July 26, 2015
+!-------------------------------------------------------------------
+! DESCRIPTION  : The module will contain various subroutines
+!                needed for the program to work.
+! SUBROUTINE 1 : This subroutin will calculate the row line
+!                associated with the variable.
+!###################################################################
+MODULE CALIBRATION
+IMPLICIT NONE
+CONTAINS
+   SUBROUTINE CALCVARLINE(LINEVAR, totalHRU, numRow)
+      INTEGER, INTENT(OUT) :: LINEVAR
+      INTEGER, INTENT(IN) :: totalHRU, numRow
+      LINEVAR = 0
+      LINEVAR = 23 + (totalHRU + 5) * numRow
+   END SUBROUTINE CALCVARLINE
+END MODULE CALIBRATION
+!###################################################################
+! MAIN TITLE   : ACRU_MENU_CALIBRATION
 !-------------------------------------------------------------------
 ! CREATED BY   : Dr. Stefan W. Kienzle
 ! DATE EDITED  : May 19, 2008
 ! REVISED BY   : Charmaine Bonifacio
-! DATE REVISED : July 24, 2015
+! DATE REVISED : July 26, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The program will copy values from a tab delimited
 !                file that contains ALBEDO, CAY, ELAIM, ROOTA
@@ -16,16 +38,8 @@
 !                2) LOG file
 !###################################################################
 PROGRAM ACRU_MENU_CALIBRATION
-
+USE CALIBRATION
 IMPLICIT NONE
-
-INTERFACE
-SUBROUTINE CALCVARLINE(LINEVAR, totalHRU, numRow)
-      INTEGER, INTENT(OUT) :: LINEVAR
-      INTEGER, INTENT(IN) :: totalHRU, numRow
-END SUBROUTINE CALCVARLINE
-END INTERFACE
-
 CHARACTER(LEN=11), PARAMETER :: debugSTAT = '[ STATUS ] '
 CHARACTER(LEN=11), PARAMETER :: debugRES = '[ RESULT ] '
 INTEGER :: ISUBNO
@@ -378,22 +392,4 @@ LOGICAL :: EX
       WRITE(12,*) 'END OF PROGRAM. '
       CLOSE(12)
    	  STOP
-
 END PROGRAM ACRU_MENU_CALIBRATION
-!###################################################################
-! TITLE        : CALCVARLINE
-!-------------------------------------------------------------------
-! CREATED BY   : Charmaine Bonifacio
-! DATE REVISED : July 24, 2015
-!-------------------------------------------------------------------
-! DESCRIPTION  : The program will calculate the row line associated
-!                with the variable.
-!###################################################################
-SUBROUTINE CALCVARLINE(LINEVAR, totalHRU, numRow)
-
-      INTEGER, INTENT(OUT) :: LINEVAR
-      INTEGER, INTENT(IN) :: totalHRU, numRow
-      LINEVAR = 0
-      LINEVAR = 23 + (totalHRU + 5) * numRow
-
-END SUBROUTINE CALCVARLINE
