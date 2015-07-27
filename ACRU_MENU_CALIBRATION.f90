@@ -3,7 +3,7 @@
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
-! DATE REVISED : July 26, 2015
+! DATE REVISED : July 27, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain various subroutines
 !                needed for the program to work.
@@ -13,11 +13,35 @@
 MODULE CALIBRATION
 IMPLICIT NONE
 CONTAINS
-   SUBROUTINE CALCVARLINE(LINEVAR, totalHRU, numRow)
-      INTEGER, INTENT(OUT) :: LINEVAR
-      INTEGER, INTENT(IN) :: totalHRU, numRow
-      LINEVAR = 0
-      LINEVAR = 23 + (totalHRU + 5) * numRow
+   SUBROUTINE DATETIMELOG(DATE, DATENOW, TIMENOW)
+      CHARACTER(LEN=8) :: DATEINFO
+      CHARACTER(LEN=4) :: YEAR, MONTH*2, DAY*2
+      CHARACTER(LEN=2) :: HRS, MIN, SEC*6
+      CHARACTER(LEN=10) :: TIMEINFO
+      CHARACTER(LEN=10), INTENT(OUT) :: DATE, DATENOW
+      CHARACTER(LEN=12), INTENT(OUT) :: TIMENOW
+      CALL DATE_AND_TIME(DATEINFO, TIMEINFO)
+      YEAR = DATEINFO(1:4)
+      MONTH = DATEINFO(5:6)
+      DAY = DATEINFO(7:8)
+      DATE = YEAR // '_' // MONTH // '_' // DAY
+      DATENOW = YEAR // '-' // MONTH // '-' // DAY
+      HRS = TIMEINFO(1:2)
+      MIN = TIMEINFO(3:4)
+      SEC = TIMEINFO(5:10)
+      TIMENOW = HRS // ':' // MIN // ':' // SEC
+   END SUBROUTINE DATETIMELOG
+   SUBROUTINE ELAPSEDTIME(ELAPSED_TIME,SYS_COUNT_0,SYS_COUNT_1,COUNTRATE)
+      REAL, INTENT(OUT) :: ELAPSED_TIME
+      INTEGER, INTENT(IN) :: SYS_COUNT_0,SYS_COUNT_1,COUNTRATE
+      ELAPSED_TIME = 0
+      ELAPSED_TIME = REAL(SYS_COUNT_1 - SYS_COUNT_0)/ REAL(COUNTRATE)
+   END SUBROUTINE ELAPSEDTIME
+   SUBROUTINE CALCVARLINE(LINE_VAR, ISUBNO, VAR_ROW)
+      INTEGER, INTENT(OUT) :: LINE_VAR
+      INTEGER, INTENT(IN) :: ISUBNO, VAR_ROW
+      LINE_VAR = 0
+      LINE_VAR = 23 + (ISUBNO + 5) * VAR_ROW
    END SUBROUTINE CALCVARLINE
 END MODULE CALIBRATION
 !###################################################################
@@ -42,37 +66,26 @@ USE CALIBRATION
 IMPLICIT NONE
 CHARACTER(LEN=11), PARAMETER :: debugSTAT = '[ STATUS ] '
 CHARACTER(LEN=11), PARAMETER :: debugRES = '[ RESULT ] '
-INTEGER :: ISUBNO
-INTEGER :: COUNT_0, COUNT_1, COUNT_RATE, COUNT_MAX
-INTEGER :: LINE,I,L,P,OK,TOTALLINE
-INTEGER :: LINECOIAM,LINECAY,LINEELAIM,LINEROOTA,LINEEOF
-INTEGER :: LINEICC,LINEALBEDO,ICONS,ISWAVE
-INTEGER, DIMENSION(12) :: ICC
-REAL :: D1, D2
-REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
 CHARACTER(LEN=4), PARAMETER :: MENU = 'MENU'
 CHARACTER(LEN=30), PARAMETER :: MENUVARS = 'menu_variable.txt'
 CHARACTER(LEN=30) :: OUTFILE, INFILE, LOGRUN, VARFILE
 CHARACTER(LEN=80) :: DUM, DUM2
-CHARACTER(LEN=8) :: DATEINFO
-CHARACTER(LEN=4) :: YEAR, MONTH*2, DAY*2
-CHARACTER(LEN=2) :: HRS, MIN, SEC*6
-CHARACTER(LEN=10) :: DATE, TIMEINFO, TIMENOW*12, DATENOW, TIMEEND*12, DATEEND
+CHARACTER(LEN=10) :: DATE, DATENOW, DATEEND
+CHARACTER(LEN=12) :: TIMENOW, TIMEEND
+INTEGER :: ISUBNO
+INTEGER :: COUNT_0, COUNT_1, COUNT_RATE, COUNT_MAX
+INTEGER :: LINE, I, L, P, OK, TOTALLINE
+INTEGER :: LINECOIAM, LINECAY, LINEELAIM, LINEROOTA, LINEEOF
+INTEGER :: LINEICC, LINEALBEDO, ICONS, ISWAVE
 LOGICAL :: EX
+REAL :: D1, D2, ELAPSED_TIME
+INTEGER, DIMENSION(12) :: ICC
+REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
 !***********************************************************************
 ! SETUP START TIME
 !***********************************************************************
-      CALL DATE_AND_TIME(DATEINFO, TIMEINFO)
       CALL SYSTEM_CLOCK(COUNT_0, COUNT_RATE, COUNT_MAX)
-      YEAR = DATEINFO(1:4)
-      MONTH = DATEINFO(5:6)
-      DAY = DATEINFO(7:8)
-      DATE = YEAR // '_' // MONTH // '_' // DAY
-      DATENOW = YEAR // '-' // MONTH // '-' // DAY
-      HRS = TIMEINFO(1:2)
-      MIN = TIMEINFO(3:4)
-      SEC = TIMEINFO(5:10)
-      TIMENOW = HRS // ':' // MIN // ':' // SEC
+      CALL DATETIMELOG(DATE, DATENOW, TIMENOW)
 !***********************************************************************
 ! START PROGRAM
 !***********************************************************************
@@ -365,17 +378,8 @@ LOGICAL :: EX
 !***********************************************************************
 ! ELAPSED TIME
 !***********************************************************************
-      CALL DATE_AND_TIME(DATEINFO, TIMEINFO)
       CALL SYSTEM_CLOCK(COUNT_1, COUNT_RATE, COUNT_MAX)
-      YEAR = DATEINFO(1:4)
-      MONTH = DATEINFO(5:6)
-      DAY = DATEINFO(7:8)
-      DATE = YEAR // '_' // MONTH // '_' // DAY
-      DATEEND = YEAR // '-' // MONTH // '-' // DAY
-      HRS = TIMEINFO(1:2)
-      MIN = TIMEINFO(3:4)
-      SEC = TIMEINFO(5:10)
-      TIMEEND = HRS // ':' // MIN // ':' // SEC
+      CALL DATETIMELOG(DATE, DATEEND, TIMEEND)
 !***********************************************************************
 ! END PROGRAM
 !***********************************************************************
@@ -387,7 +391,8 @@ LOGICAL :: EX
       WRITE(12,*)
       WRITE(12,108) debugSTAT, '             DATE : ', DATEEND
       WRITE(12,108) debugSTAT, '             TIME : ', TIMEEND
-      WRITE(12,106) debugSTAT, '     ELAPSED TIME : ', REAL(COUNT_1 - COUNT_0)/ REAL(COUNT_RATE)
+      CALL ELAPSEDTIME(ELAPSED_TIME, COUNT_0, COUNT_1, COUNT_RATE)
+      WRITE(12,106) debugSTAT, '     ELAPSED TIME : ', ELAPSED_TIME !REAL(COUNT_1 - COUNT_0)/ REAL(COUNT_RATE)
       WRITE(12,*)
       WRITE(12,*) 'END OF PROGRAM. '
       CLOSE(12)
