@@ -16,7 +16,16 @@
 !                2) LOG file
 !###################################################################
 PROGRAM ACRU_MENU_CALIBRATION
+
 IMPLICIT NONE
+
+INTERFACE
+SUBROUTINE CALCVARLINE(LINEVAR, totalHRU, numRow)
+      INTEGER, INTENT(OUT) :: LINEVAR
+      INTEGER, INTENT(IN) :: totalHRU, numRow
+END SUBROUTINE CALCVARLINE
+END INTERFACE
+
 CHARACTER(LEN=11), PARAMETER :: debugSTAT = '[ STATUS ] '
 CHARACTER(LEN=11), PARAMETER :: debugRES = '[ RESULT ] '
 INTEGER :: ISUBNO
@@ -135,7 +144,6 @@ LOGICAL :: EX
 !***********************************************************************
 ! START PROCESSING MENU FILE - How many HRUs in this menu file?
 !***********************************************************************
-      ISUBNO=0
       P=1
       DO 898 WHILE (P.LT.11)
         READ(20,111) DUM2
@@ -167,12 +175,12 @@ LOGICAL :: EX
 ! Calculate line number for each variable!
 ! Then overwrite values once line is found. Continue for X HRUs.
 !***********************************************************************
-      LINEALBEDO=23+((ISUBNO+5)*28)
-      LINECAY   =23+((ISUBNO+5)*53)
-      LINEELAIM =23+((ISUBNO+5)*54)
-      LINEROOTA =23+((ISUBNO+5)*56)
-      LINECOIAM =23+((ISUBNO+5)*67)
-      LINEICC   =23+((ISUBNO+5)*141)
+      CALL CALCVARLINE(LINEALBEDO, ISUBNO, 28)
+      CALL CALCVARLINE(LINECAY, ISUBNO, 53)
+      CALL CALCVARLINE(LINEELAIM, ISUBNO, 54)
+      CALL CALCVARLINE(LINEROOTA, ISUBNO, 56)
+      CALL CALCVARLINE(LINECOIAM, ISUBNO, 67)
+      CALL CALCVARLINE(LINEICC, ISUBNO, 141)
       WRITE(12,*)
       WRITE(12,*) '[ S U M M A R Y   O F   V A R I A B L E S ] '
       WRITE(12,*)
@@ -294,7 +302,7 @@ LOGICAL :: EX
               (ELAIM(I),I=1,12),(ROOTA(I),I=1,12), &
               (ICC(I),I=1,12),(ALBEDO(I),I=1,12)
             READ(20,111) DUM
-	          WRITE(12,222)(COIAM(I),I=1,12),(L)
+	        WRITE(12,222)(COIAM(I),I=1,12),(L)
   	        WRITE(30,222)(COIAM(I),I=1,12),(L)
             WRITE(12,118) debugRES,LINE,L,ISUBNO
             L=L+1
@@ -319,7 +327,7 @@ LOGICAL :: EX
             WRITE(12,223)(ICC(I),I=1,12),(L)
             WRITE(30,223)(ICC(I),I=1,12),(L)
   223       FORMAT(2X,12(I3.2,2X),14X,I4)
-  			    WRITE(12,119) debugRES,' CALIBRATED LINE ', LINE,'--- HRU # ',L,' OUT OF ',ISUBNO
+  		    WRITE(12,119) debugRES,' CALIBRATED LINE ', LINE,'--- HRU # ',L,' OUT OF ',ISUBNO
             L=L+1
 	        LINE=LINE+1
   906     END DO
@@ -370,4 +378,22 @@ LOGICAL :: EX
       WRITE(12,*) 'END OF PROGRAM. '
       CLOSE(12)
    	  STOP
+
 END PROGRAM ACRU_MENU_CALIBRATION
+!###################################################################
+! TITLE        : CALCVARLINE
+!-------------------------------------------------------------------
+! CREATED BY   : Charmaine Bonifacio
+! DATE REVISED : July 24, 2015
+!-------------------------------------------------------------------
+! DESCRIPTION  : The program will calculate the row line associated
+!                with the variable.
+!###################################################################
+SUBROUTINE CALCVARLINE(LINEVAR, totalHRU, numRow)
+
+      INTEGER, INTENT(OUT) :: LINEVAR
+      INTEGER, INTENT(IN) :: totalHRU, numRow
+      LINEVAR = 0
+      LINEVAR = 23 + (totalHRU + 5) * numRow
+
+END SUBROUTINE CALCVARLINE
