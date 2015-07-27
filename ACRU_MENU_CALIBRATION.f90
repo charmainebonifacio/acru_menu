@@ -1,16 +1,15 @@
 !###################################################################
-! MODULE TITLE : CALIBRATION
+! MODULE TITLE : M_DATETIMESETUP
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
 ! DATE REVISED : July 27, 2015
 !-------------------------------------------------------------------
-! DESCRIPTION  : The module will contain various subroutines
-!                needed for the program to work.
-! SUBROUTINE 1 : This subroutin will calculate the row line
-!                associated with the variable.
+! DESCRIPTION  : The module will contain DATE and TIME subroutines.
+! SUBROUTINE 1 : This subroutine will calculate the date and time.
+! SUBROUTINE 2 : This subroutine will calculate the elapsed time
 !###################################################################
-MODULE CALIBRATION
+MODULE M_DATETIMESETUP
 IMPLICIT NONE
 CONTAINS
    SUBROUTINE DATETIMELOG(DATE, DATENOW, TIMENOW)
@@ -31,19 +30,76 @@ CONTAINS
       SEC = TIMEINFO(5:10)
       TIMENOW = HRS // ':' // MIN // ':' // SEC
    END SUBROUTINE DATETIMELOG
-   SUBROUTINE ELAPSEDTIME(ELAPSED_TIME,SYS_COUNT_0,SYS_COUNT_1,COUNTRATE)
+   SUBROUTINE ELAPSEDTIME(ELAPSED_TIME, SYS_COUNT_0, SYS_COUNT_1, COUNTRATE)
       REAL, INTENT(OUT) :: ELAPSED_TIME
-      INTEGER, INTENT(IN) :: SYS_COUNT_0,SYS_COUNT_1,COUNTRATE
+      INTEGER, INTENT(IN) :: SYS_COUNT_0, SYS_COUNT_1, COUNTRATE
       ELAPSED_TIME = 0
       ELAPSED_TIME = REAL(SYS_COUNT_1 - SYS_COUNT_0)/ REAL(COUNTRATE)
    END SUBROUTINE ELAPSEDTIME
+END MODULE M_DATETIMESETUP
+!###################################################################
+! MODULE TITLE : M_LOGSYSTEM
+!-------------------------------------------------------------------
+! CREATED BY   : Charmaine Bonifacio
+! DATE CREATED : July 27, 2015
+! DATE REVISED : July 27, 2015
+!-------------------------------------------------------------------
+! DESCRIPTION  : The module will contain various subroutines
+!                needed for the LOG FILE to work.
+! SUBROUTINE 1 : This subroutine will print out the start log
+!                header for this script.
+! SUBROUTINE 2 : This subroutine will print out the end log
+!                header for this script.
+!###################################################################
+MODULE M_LOGSYSTEM
+IMPLICIT NONE
+CONTAINS
+   SUBROUTINE STARTPROGRAMLOG(UNIT_NO)
+      INTEGER, INTENT(IN) :: UNIT_NO
+      WRITE(UNIT_NO,*)
+      WRITE(UNIT_NO,*) 'START OF PROGRAM. '
+      WRITE(UNIT_NO,*)
+      WRITE(UNIT_NO,*) "###################################################################"
+      WRITE(UNIT_NO,*) ' '
+      WRITE(UNIT_NO,*) ' The ACRU_MENU program will COPY values from a tab-delimited file. '
+      WRITE(UNIT_NO,*) ' '
+      WRITE(UNIT_NO,*) "###################################################################"
+      WRITE(UNIT_NO,*)
+   END SUBROUTINE STARTPROGRAMLOG
+   SUBROUTINE ENDPROGRAMLOG(UNIT_NO)
+      INTEGER, INTENT(IN) :: UNIT_NO
+      WRITE(UNIT_NO,*)
+      WRITE(UNIT_NO,*) "###################################################################"
+      WRITE(UNIT_NO,*) ' '
+      WRITE(UNIT_NO,*) '   The ACRU_MENU program has finished updating the menu file. '
+      WRITE(UNIT_NO,*) ' '
+      WRITE(UNIT_NO,*) "###################################################################"
+      WRITE(UNIT_NO,*)
+      WRITE(UNIT_NO,*) 'END OF PROGRAM. '
+   END SUBROUTINE ENDPROGRAMLOG
+END MODULE M_LOGSYSTEM
+!###################################################################
+! MODULE TITLE : M_CALIBRATION
+!-------------------------------------------------------------------
+! CREATED BY   : Charmaine Bonifacio
+! DATE CREATED : July 24, 2015
+! DATE REVISED : July 27, 2015
+!-------------------------------------------------------------------
+! DESCRIPTION  : The module will contain various subroutines
+!                needed for the program to work.
+! SUBROUTINE 1 : This subroutine will calculate the row line
+!                associated with the variable.
+!###################################################################
+MODULE M_CALIBRATION
+IMPLICIT NONE
+CONTAINS
    SUBROUTINE CALCVARLINE(LINE_VAR, ISUBNO, VAR_ROW)
       INTEGER, INTENT(OUT) :: LINE_VAR
       INTEGER, INTENT(IN) :: ISUBNO, VAR_ROW
       LINE_VAR = 0
       LINE_VAR = 23 + (ISUBNO + 5) * VAR_ROW
    END SUBROUTINE CALCVARLINE
-END MODULE CALIBRATION
+END MODULE M_CALIBRATION
 !###################################################################
 ! MAIN TITLE   : ACRU_MENU_CALIBRATION
 !-------------------------------------------------------------------
@@ -61,8 +117,10 @@ END MODULE CALIBRATION
 ! OUTPUT       : 1) Updated MENU File
 !                2) LOG file
 !###################################################################
-PROGRAM ACRU_MENU_CALIBRATION
-USE CALIBRATION
+PROGRAM P_ACRU_MENU_CALIBRATION
+USE M_DATETIMESETUP
+USE M_LOGSYSTEM
+USE M_CALIBRATION
 IMPLICIT NONE
 CHARACTER(LEN=11), PARAMETER :: debugSTAT = '[ STATUS ] '
 CHARACTER(LEN=11), PARAMETER :: debugRES = '[ RESULT ] '
@@ -97,10 +155,6 @@ REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
       ELSE
         OPEN(UNIT=12,FILE=LOGRUN,STATUS='NEW',IOSTAT=OK)
       ENDIF
-      IF (OK/=0) THEN
-        WRITE(12,*) debugRES, 'COULD NOT OPEN FILE.'
-        STOP
-      ENDIF
 !***********************************************************************
 ! FORMAT
 !***********************************************************************
@@ -122,15 +176,7 @@ REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
 !***********************************************************************
 ! START LOG
 !***********************************************************************
-      WRITE(12,*)
-      WRITE(12,*) 'START OF PROGRAM. '
-      WRITE(12,*)
-      WRITE(12,*) "###################################################################"
-      WRITE(12,*) ' '
-      WRITE(12,*) ' The ACRU_MENU program will COPY values from a tab-delimited file. '
-      WRITE(12,*) ' '
-      WRITE(12,*) "###################################################################"
-      WRITE(12,*)
+      CALL STARTPROGRAMLOG(12)
       WRITE(12,108) debugSTAT, '             DATE : ', DATENOW
       WRITE(12,108) debugSTAT, '             TIME : ', TIMENOW
       WRITE(12,*)
@@ -159,6 +205,10 @@ REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
       WRITE(12,109) debugRES, VARFILE
       WRITE(12,110) debugSTAT, OK
       WRITE(12,*)
+      IF (OK/=0) THEN
+        WRITE(12,*) debugRES, 'COULD NOT OPEN FILE.'
+        STOP
+      ENDIF
       OPEN(UNIT=20,FILE=OUTFILE,IOSTAT=OK)
       WRITE(12,*) 'Old copy of Menu File.'
       WRITE(12,109) debugRES, OUTFILE
@@ -171,6 +221,7 @@ REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
 !***********************************************************************
 ! START PROCESSING MENU FILE - How many HRUs in this menu file?
 !***********************************************************************
+      ISUBNO=0
       P=1
       DO 898 WHILE (P.LT.11)
         READ(20,111) DUM2
@@ -383,18 +434,11 @@ REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
 !***********************************************************************
 ! END PROGRAM
 !***********************************************************************
-      WRITE(12,*) "###################################################################"
-      WRITE(12,*) ' '
-      WRITE(12,*) '   The ACRU_MENU program has finished updating the menu file. '
-      WRITE(12,*) ' '
-      WRITE(12,*) "###################################################################"
-      WRITE(12,*)
       WRITE(12,108) debugSTAT, '             DATE : ', DATEEND
       WRITE(12,108) debugSTAT, '             TIME : ', TIMEEND
       CALL ELAPSEDTIME(ELAPSED_TIME, COUNT_0, COUNT_1, COUNT_RATE)
-      WRITE(12,106) debugSTAT, '     ELAPSED TIME : ', ELAPSED_TIME !REAL(COUNT_1 - COUNT_0)/ REAL(COUNT_RATE)
-      WRITE(12,*)
-      WRITE(12,*) 'END OF PROGRAM. '
+      WRITE(12,106) debugSTAT, '     ELAPSED TIME : ', ELAPSED_TIME
+      CALL STARTPROGRAMLOG(12)
       CLOSE(12)
    	  STOP
-END PROGRAM ACRU_MENU_CALIBRATION
+END PROGRAM P_ACRU_MENU_CALIBRATION
