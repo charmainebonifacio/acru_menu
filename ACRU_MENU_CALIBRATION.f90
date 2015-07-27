@@ -1,5 +1,5 @@
 !###################################################################
-! MODULE TITLE : M_DATETIMESETUP
+! MODULE TITLE : M_SYSTEMCHECKS
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
@@ -14,14 +14,15 @@
 !###################################################################
 MODULE M_SYSTEMCHECKS
 IMPLICIT NONE
+
 CONTAINS
    SUBROUTINE DATETIMELOG(DATE, DATENOW, TIMENOW)
-      CHARACTER(LEN=8) :: DATEINFO
-      CHARACTER(LEN=4) :: YEAR, MONTH*2, DAY*2
-      CHARACTER(LEN=2) :: HRS, MIN, SEC*6
-      CHARACTER(LEN=10) :: TIMEINFO
-      CHARACTER(LEN=10), INTENT(OUT) :: DATE, DATENOW
-      CHARACTER(LEN=12), INTENT(OUT) :: TIMENOW
+   CHARACTER(LEN=8) :: DATEINFO
+   CHARACTER(LEN=4) :: YEAR, MONTH*2, DAY*2
+   CHARACTER(LEN=2) :: HRS, MIN, SEC*6
+   CHARACTER(LEN=10) :: TIMEINFO
+   CHARACTER(LEN=10), INTENT(OUT) :: DATE, DATENOW
+   CHARACTER(LEN=12), INTENT(OUT) :: TIMENOW
       CALL DATE_AND_TIME(DATEINFO, TIMEINFO)
       YEAR = DATEINFO(1:4)
       MONTH = DATEINFO(5:6)
@@ -33,22 +34,38 @@ CONTAINS
       SEC = TIMEINFO(5:10)
       TIMENOW = HRS // ':' // MIN // ':' // SEC
    END SUBROUTINE DATETIMELOG
-   SUBROUTINE FILESTATCHECK(STATUS,UNIT_NO)
-      INTEGER, INTENT(IN) :: UNIT_NO, STATUS
+   SUBROUTINE FILESTATCHECK(STATUS, UNIT_NO)
+   INTEGER, INTENT(IN) :: UNIT_NO, STATUS
       IF (STATUS==0) THEN
-         WRITE(UNIT_NO,*) 'SUCCESSFULLY OPENED FILE.'
+        WRITE(UNIT_NO,*) 'SUCCESSFULLY OPENED FILE.'
       END IF
       IF (STATUS/=0) THEN
-         WRITE(UNIT_NO,*) 'COULD NOT OPEN FILE.'
+        WRITE(UNIT_NO,*) 'COULD NOT OPEN FILE.'
       END IF
    END SUBROUTINE FILESTATCHECK
+
+   SUBROUTINE VALUECHECK(VALUE, UNIT_NO1, UNIT_NO2)
+   INTEGER, INTENT(IN) :: UNIT_NO1, UNIT_NO2, VALUE
+      IF (VALUE==0) THEN
+        WRITE(UNIT_NO1,*)
+        WRITE(UNIT_NO1,*) "###################################################################"
+        WRITE(UNIT_NO1,*)
+        WRITE(UNIT_NO1,*) 'INVALID VALUE. TERMINATING PROGRAM'
+        WRITE(UNIT_NO1,*)
+        CLOSE(UNIT_NO1)
+        CLOSE(UNIT_NO2)
+        STOP ' INVALID VALUE. TERMINATING PROGRAM. '
+      END IF
+   END SUBROUTINE VALUECHECK
+
    SUBROUTINE ELAPSEDTIME(ELAPSED_TIME, SYS_COUNT_0, SYS_COUNT_1, COUNTRATE)
-      REAL, INTENT(OUT) :: ELAPSED_TIME
-      INTEGER, INTENT(IN) :: SYS_COUNT_0, SYS_COUNT_1, COUNTRATE
+   INTEGER, INTENT(IN) :: SYS_COUNT_0, SYS_COUNT_1, COUNTRATE
+   REAL, INTENT(OUT) :: ELAPSED_TIME
       ELAPSED_TIME = 0
       ELAPSED_TIME = REAL(SYS_COUNT_1 - SYS_COUNT_0)/ REAL(COUNTRATE)
    END SUBROUTINE ELAPSEDTIME
 END MODULE M_SYSTEMCHECKS
+
 !###################################################################
 ! MODULE TITLE : M_LOGSYSTEM
 !-------------------------------------------------------------------
@@ -65,9 +82,10 @@ END MODULE M_SYSTEMCHECKS
 !###################################################################
 MODULE M_LOGSYSTEM
 IMPLICIT NONE
+
 CONTAINS
    SUBROUTINE STARTPROGRAMLOG(UNIT_NO)
-      INTEGER, INTENT(IN) :: UNIT_NO
+   INTEGER, INTENT(IN) :: UNIT_NO
       WRITE(UNIT_NO,*)
       WRITE(UNIT_NO,*) 'START OF PROGRAM. '
       WRITE(UNIT_NO,*)
@@ -78,8 +96,9 @@ CONTAINS
       WRITE(UNIT_NO,*) "###################################################################"
       WRITE(UNIT_NO,*)
    END SUBROUTINE STARTPROGRAMLOG
+
    SUBROUTINE ENDPROGRAMLOG(UNIT_NO)
-      INTEGER, INTENT(IN) :: UNIT_NO
+   INTEGER, INTENT(IN) :: UNIT_NO
       WRITE(UNIT_NO,*)
       WRITE(UNIT_NO,*) "###################################################################"
       WRITE(UNIT_NO,*) ' '
@@ -90,6 +109,7 @@ CONTAINS
       WRITE(UNIT_NO,*) 'END OF PROGRAM. '
    END SUBROUTINE ENDPROGRAMLOG
 END MODULE M_LOGSYSTEM
+
 !###################################################################
 ! MODULE TITLE : M_CALIBRATION
 !-------------------------------------------------------------------
@@ -104,10 +124,11 @@ END MODULE M_LOGSYSTEM
 !###################################################################
 MODULE M_CALIBRATION
 IMPLICIT NONE
+
 CONTAINS
    SUBROUTINE CALCVARLINE(LINE_VAR, ISUBNO, VAR_ROW)
-      INTEGER, INTENT(OUT) :: LINE_VAR
-      INTEGER, INTENT(IN) :: ISUBNO, VAR_ROW
+   INTEGER, INTENT(OUT) :: LINE_VAR
+   INTEGER, INTENT(IN) :: ISUBNO, VAR_ROW
       LINE_VAR = 0
       LINE_VAR = 23 + (ISUBNO + 5) * VAR_ROW
    END SUBROUTINE CALCVARLINE
@@ -134,6 +155,7 @@ USE M_SYSTEMCHECKS
 USE M_LOGSYSTEM
 USE M_CALIBRATION
 IMPLICIT NONE
+
 CHARACTER(LEN=11), PARAMETER :: debugSTAT = '[ STATUS ] '
 CHARACTER(LEN=11), PARAMETER :: debugRES = '[ RESULT ] '
 CHARACTER(LEN=4), PARAMETER :: MENU = 'MENU'
@@ -151,6 +173,7 @@ LOGICAL :: EX
 REAL :: D1, D2, ELAPSED_TIME
 INTEGER, DIMENSION(12) :: ICC
 REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
+
 !***********************************************************************
 ! SETUP START TIME
 !***********************************************************************
@@ -201,34 +224,28 @@ REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
       INFILE = MENU
       OUTFILE = MENU//'_OLD'
       CALL SYSTEM( "copy " // INFILE // " " // OUTFILE)
-      CALL SYSTEM( "copy " // INFILE // " " // MENU//'2')
-      OPEN(UNIT=30,FILE=INFILE,IOSTAT=OK)
-      WRITE(12,110) debugSTAT, OK
-      IF (OK.EQ.0) THEN
-        CLOSE(30, STATUS='DELETE')
-        WRITE(12,*) debugRES, ' Deleted old MENU file.'
-      ENDIF
+      CALL SYSTEM( "copy " // INFILE // " " // 'ORIGINAL_'//MENU)
       WRITE(12,*)
       WRITE(12,*) '[ P R O C E S S I N G   R E Q U I R E D   F I L E S ] '
       WRITE(12,*)
       VARFILE = MENUVARS
       OPEN(UNIT=11,FILE=VARFILE,IOSTAT=OK)
-      WRITE(12,*) 'Variable File.'
+      WRITE(12,*) '>> Variable File.'
+      CALL FILESTATCHECK(OK,12)
       WRITE(12,109) debugRES, VARFILE
       WRITE(12,110) debugSTAT, OK
-      CALL FILESTATCHECK(OK,12)
       WRITE(12,*)
       OPEN(UNIT=20,FILE=OUTFILE,IOSTAT=OK)
-      WRITE(12,*) 'Old copy of Menu File.'
+      WRITE(12,*) '>> Old copy of Menu File.'
+      CALL FILESTATCHECK(OK,12)
       WRITE(12,109) debugRES, OUTFILE
       WRITE(12,110) debugSTAT, OK
-      CALL FILESTATCHECK(OK,12)
       WRITE(12,*)
       OPEN(UNIT=30,FILE=INFILE,IOSTAT=OK)
-      WRITE(12,*) 'Working copy of Menu File.'
+      WRITE(12,*) '>> Working copy of Menu File.'
+      CALL FILESTATCHECK(OK,12)
       WRITE(12,109) debugRES, INFILE
       WRITE(12,110) debugSTAT, OK
-      CALL FILESTATCHECK(OK,12)
 !***********************************************************************
 ! START PROCESSING MENU FILE - How many HRUs in this menu file?
 !***********************************************************************
@@ -244,6 +261,7 @@ REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
       WRITE(12,*) '[ O B T A I N   N U M B E R   O F   H R U  ] '
       WRITE(12,*)
       WRITE(12,113) debugRES, '       NUMBER OF HRU IN MENU : ', ISUBNO
+      CALL VALUECHECK(ISUBNO,12,30)
 !***********************************************************************
 ! EOF MENU FILE - How many lines in total?
 !***********************************************************************
