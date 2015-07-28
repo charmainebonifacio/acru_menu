@@ -139,11 +139,11 @@ END MODULE M_CALIBRATION
 ! CREATED BY   : Dr. Stefan W. Kienzle
 ! DATE EDITED  : May 19, 2008
 ! REVISED BY   : Charmaine Bonifacio
-! DATE REVISED : July 26, 2015
+! DATE REVISED : July 28, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The program will copy values from a tab delimited
 !                file that contains ALBEDO, CAY, ELAIM, ROOTA
-!                COIAM and ICC
+!                COIAM and ICC.
 ! REQUIREMENT  : MUST run the .EXE file within the input directory.
 ! INPUT        : 1) MENU FILE = MENU
 !                2) VARIABLE FILE = menu_variable.txt
@@ -161,7 +161,7 @@ CHARACTER(LEN=11), PARAMETER :: debugRES = '[ RESULT ] '
 CHARACTER(LEN=4), PARAMETER :: MENU = 'MENU'
 CHARACTER(LEN=30), PARAMETER :: MENUVARS = 'menu_variable.txt'
 CHARACTER(LEN=30) :: OUTFILE, INFILE, LOGRUN, VARFILE
-CHARACTER(LEN=80) :: DUM, DUM2
+CHARACTER(LEN=80) :: DUM, DUM2, MSG
 CHARACTER(LEN=10) :: DATE, DATENOW, DATEEND
 CHARACTER(LEN=12) :: TIMENOW, TIMEEND
 INTEGER :: ISUBNO
@@ -451,8 +451,9 @@ REAL, DIMENSION(12) :: COIAM, CAY, ELAIM, ROOTA, ALBEDO
       WRITE(*,120) debugSTAT, LINE
       WRITE(12,120) debugSTAT, LINE
       WRITE(12,*)
-      DUM2 = ' MENU SCRIPT VERSION JULY 2015 --- MENU CALIBRATED & CREATED BY CHARMAINE BONIFACIO '
-      WRITE(30,111) DUM2
+      MSG = ' MENU CALIBRATED & CREATED BY CHARMAINE BONIFACIO. MENU SCRIPT VERSION --- '
+      WRITE(30,111) MSG, DATE, ' | ', TIMENOW
+ 125  FORMAT(A75,A10,A3,A5)
       ENDFILE(30)
       CLOSE(30)
 !***********************************************************************
