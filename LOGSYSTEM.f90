@@ -14,9 +14,10 @@
 !###################################################################
 MODULE M_LOGSYSTEM
 IMPLICIT NONE
+
 CONTAINS
    SUBROUTINE STARTPROGRAMLOG(UNIT_NO)
-      INTEGER, INTENT(IN) :: UNIT_NO
+   INTEGER, INTENT(IN) :: UNIT_NO
       WRITE(UNIT_NO,*)
       WRITE(UNIT_NO,*) 'START OF PROGRAM. '
       WRITE(UNIT_NO,*)
@@ -27,8 +28,9 @@ CONTAINS
       WRITE(UNIT_NO,*) "###################################################################"
       WRITE(UNIT_NO,*)
    END SUBROUTINE STARTPROGRAMLOG
+
    SUBROUTINE ENDPROGRAMLOG(UNIT_NO)
-      INTEGER, INTENT(IN) :: UNIT_NO
+   INTEGER, INTENT(IN) :: UNIT_NO
       WRITE(UNIT_NO,*)
       WRITE(UNIT_NO,*) "###################################################################"
       WRITE(UNIT_NO,*) ' '
