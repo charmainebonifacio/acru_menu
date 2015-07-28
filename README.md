@@ -13,7 +13,7 @@ The purpose of revising the fortran scripts is to upgrade the scripts to Fortran
 
 # License
 
-The revised scripts are licensed under a GNU General Public License v2.0
+The modules and scripts are licensed under a GNU General Public License v2.0
 
 Copyright (C) 2013-2015 Charmaine Michelle T. Bonifacio
 
