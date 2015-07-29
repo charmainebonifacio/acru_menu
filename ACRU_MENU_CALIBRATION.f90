@@ -1,9 +1,9 @@
 !###################################################################
-! MODULE TITLE : M_SYSTEMCHECKS
+! MODULE TITLE : M_SYSTEMCHECK
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
-! DATE REVISED : July 27, 2015
+! DATE REVISED : July 28, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain DATE and TIME subroutines.
 ! SUBROUTINE 1 : This subroutine will calculate the date and time.
@@ -12,7 +12,7 @@
 ! SUBROUTINE 3 : This subroutine will check ISUBNO value.
 ! SUBROUTINE 4 : This subroutine will calculate the elapsed time
 !###################################################################
-MODULE M_SYSTEMCHECKS
+MODULE M_SYSTEMCHECK
 IMPLICIT NONE
 
 CONTAINS
@@ -64,14 +64,14 @@ CONTAINS
       ELAPSED_TIME = 0
       ELAPSED_TIME = REAL(SYS_COUNT_1 - SYS_COUNT_0)/ REAL(COUNTRATE)
    END SUBROUTINE ELAPSEDTIME
-END MODULE M_SYSTEMCHECKS
+END MODULE M_SYSTEMCHECK
 
 !###################################################################
-! MODULE TITLE : M_LOGSYSTEM
+! MODULE TITLE : M_SYSTEMLOG
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 27, 2015
-! DATE REVISED : July 27, 2015
+! DATE REVISED : July 28, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain various subroutines
 !                needed for the LOG FILE to work.
@@ -80,7 +80,7 @@ END MODULE M_SYSTEMCHECKS
 ! SUBROUTINE 2 : This subroutine will print out the end log
 !                header for this script.
 !###################################################################
-MODULE M_LOGSYSTEM
+MODULE M_SYSTEMLOG
 IMPLICIT NONE
 
 CONTAINS
@@ -108,7 +108,7 @@ CONTAINS
       WRITE(UNIT_NO,*)
       WRITE(UNIT_NO,*) 'END OF PROGRAM. '
    END SUBROUTINE ENDPROGRAMLOG
-END MODULE M_LOGSYSTEM
+END MODULE M_SYSTEMLOG
 
 !###################################################################
 ! MODULE TITLE : M_CALIBRATION
@@ -133,6 +133,7 @@ CONTAINS
       LINE_VAR = 23 + (ISUBNO + 5) * VAR_ROW
    END SUBROUTINE CALCVARLINE
 END MODULE M_CALIBRATION
+
 !###################################################################
 ! MAIN TITLE   : ACRU_MENU_CALIBRATION
 !-------------------------------------------------------------------
@@ -151,8 +152,8 @@ END MODULE M_CALIBRATION
 !                2) LOG file
 !###################################################################
 PROGRAM P_ACRU_MENU_CALIBRATION
-USE M_SYSTEMCHECKS
-USE M_LOGSYSTEM
+USE M_SYSTEMCHECK
+USE M_SYSTEMLOG
 USE M_CALIBRATION
 IMPLICIT NONE
 
