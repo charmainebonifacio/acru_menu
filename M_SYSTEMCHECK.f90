@@ -7,62 +7,76 @@
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain DATE and TIME subroutines.
 ! SUBROUTINE 1 : This subroutine will calculate the date and time.
-! SUBROUTINE 2 : This subroutine will check if the file was opened
+! SUBROUTINE 2 : This subroutine will calculate the elapsed time.
+! SUBROUTINE 3 : This subroutine will check if the file was opened
 !                successfully.
-! SUBROUTINE 3 : This subroutine will check ISUBNO value.
-! SUBROUTINE 4 : This subroutine will calculate the elapsed time
+! SUBROUTINE 4 : This subroutine will check ISUBNO value.
 !###################################################################
-MODULE M_SYSTEMCHECK
-IMPLICIT NONE
+module m_systemcheck
 
-CONTAINS
-   SUBROUTINE DATETIMELOG(DATE, DATENOW, TIMENOW)
-   CHARACTER(LEN=8) :: DATEINFO
-   CHARACTER(LEN=4) :: YEAR, MONTH*2, DAY*2
-   CHARACTER(LEN=2) :: HRS, MIN, SEC*6
-   CHARACTER(LEN=10) :: TIMEINFO
-   CHARACTER(LEN=10), INTENT(OUT) :: DATE, DATENOW
-   CHARACTER(LEN=12), INTENT(OUT) :: TIMENOW
-      CALL DATE_AND_TIME(DATEINFO, TIMEINFO)
-      YEAR = DATEINFO(1:4)
-      MONTH = DATEINFO(5:6)
-      DAY = DATEINFO(7:8)
-      DATE = YEAR // '_' // MONTH // '_' // DAY
-      DATENOW = YEAR // '-' // MONTH // '-' // DAY
-      HRS = TIMEINFO(1:2)
-      MIN = TIMEINFO(3:4)
-      SEC = TIMEINFO(5:10)
-      TIMENOW = HRS // ':' // MIN // ':' // SEC
-   END SUBROUTINE DATETIMELOG
+    use m_systemlog, only: programHeader
+    implicit none
 
-   SUBROUTINE FILESTATCHECK(STATUS, UNIT_NO)
-   INTEGER, INTENT(IN) :: UNIT_NO, STATUS
-      IF (STATUS==0) THEN
-        WRITE(UNIT_NO,*) 'SUCCESSFULLY OPENED FILE.'
-      END IF
-      IF (STATUS/=0) THEN
-        WRITE(UNIT_NO,*) 'COULD NOT OPEN FILE.'
-      END IF
-   END SUBROUTINE FILESTATCHECK
+contains
 
-   SUBROUTINE VALUECHECK(VALUE, UNIT_NO1, UNIT_NO2)
-   INTEGER, INTENT(IN) :: UNIT_NO1, UNIT_NO2, VALUE
-      IF (VALUE==0) THEN
-        WRITE(UNIT_NO1,*)
-        WRITE(UNIT_NO1,*) "###################################################################"
-        WRITE(UNIT_NO1,*)
-        WRITE(UNIT_NO1,*) 'INVALID VALUE. TERMINATING PROGRAM'
-        WRITE(UNIT_NO1,*)
-        CLOSE(UNIT_NO1)
-        CLOSE(UNIT_NO2)
-        STOP ' INVALID VALUE. TERMINATING PROGRAM. '
-      END IF
-   END SUBROUTINE VALUECHECK
+   subroutine datetimelog(date, datenow, timenow)
 
-   SUBROUTINE ELAPSEDTIME(ELAPSED_TIME, SYS_COUNT_0, SYS_COUNT_1, COUNTRATE)
-   INTEGER, INTENT(IN) :: SYS_COUNT_0, SYS_COUNT_1, COUNTRATE
-   REAL, INTENT(OUT) :: ELAPSED_TIME
-      ELAPSED_TIME = 0
-      ELAPSED_TIME = REAL(SYS_COUNT_1 - SYS_COUNT_0)/ REAL(COUNTRATE)
-   END SUBROUTINE ELAPSEDTIME
-END MODULE M_SYSTEMCHECK
+       character(len=8) :: dateinfo
+       character(len=4) :: year, month*2, day*2
+       character(len=2) :: hrs, min, sec*6
+       character(len=10) :: timeinfo
+       character(len=10), intent(out) :: date, datenow
+       character(len=12), intent(out) :: timenow
+       call date_and_time(dateinfo, timeinfo)
+       year = dateinfo(1:4)
+       month = dateinfo(5:6)
+       day = dateinfo(7:8)
+       date = year // '_' // month // '_' // day
+       datenow = year // '-' // month // '-' // day
+       hrs = timeinfo(1:2)
+       min = timeinfo(3:4)
+       sec = timeinfo(5:10)
+       timenow = hrs // ':' // min // ':' // sec
+
+   end subroutine datetimelog
+
+   subroutine elapsedtime(elapsed_time, sys_count_0, sys_count_1, countrate)
+
+       integer, intent(in) :: sys_count_0, sys_count_1, countrate
+       real, intent(out) :: elapsed_time
+       elapsed_time = 0
+       elapsed_time = real(sys_count_1 - sys_count_0)/ real(countrate)
+
+   end subroutine elapsedtime
+
+   subroutine filestatcheck(status, unit_no)
+
+       integer, intent(in) :: unit_no, status
+
+       if (status==0) then
+           write(unit_no,*) 'SUCCESSFULLY OPENED FILE.'
+       end if
+       if (status/=0) then
+           write(unit_no,*) 'COULD NOT OPEN FILE.'
+       end if
+
+   end subroutine filestatcheck
+
+    subroutine valuecheck(value, unit_no1, unit_no2)
+
+        integer, intent(in) :: unit_no1, unit_no2, value
+
+        if (value==0) then
+            write(unit_no1,*)
+            write(unit_no1,*) programHeader
+            write(unit_no1,*)
+            write(unit_no1,*) 'INVALID VALUE. TERMINATING PROGRAM'
+            write(unit_no1,*)
+            close(unit_no1)
+            close(unit_no2)
+            stop ' INVALID VALUE. TERMINATING PROGRAM. '
+        end if
+
+    end subroutine valuecheck
+
+end module m_systemcheck
