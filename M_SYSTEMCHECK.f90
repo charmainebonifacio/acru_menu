@@ -1,9 +1,9 @@
 !###################################################################
-! MODULE TITLE : M_SYSTEMCHECKS
+! MODULE TITLE : M_SYSTEMCHECK
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
-! DATE REVISED : July 27, 2015
+! DATE REVISED : July 28, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain DATE and TIME subroutines.
 ! SUBROUTINE 1 : This subroutine will calculate the date and time.
@@ -12,7 +12,7 @@
 ! SUBROUTINE 3 : This subroutine will check ISUBNO value.
 ! SUBROUTINE 4 : This subroutine will calculate the elapsed time
 !###################################################################
-MODULE M_SYSTEMCHECKS
+MODULE M_SYSTEMCHECK
 IMPLICIT NONE
 
 CONTAINS
@@ -65,4 +65,4 @@ CONTAINS
       ELAPSED_TIME = 0
       ELAPSED_TIME = REAL(SYS_COUNT_1 - SYS_COUNT_0)/ REAL(COUNTRATE)
    END SUBROUTINE ELAPSEDTIME
-END MODULE M_SYSTEMCHECKS
+END MODULE M_SYSTEMCHECK
