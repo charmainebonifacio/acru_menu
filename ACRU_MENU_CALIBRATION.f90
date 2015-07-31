@@ -207,7 +207,7 @@ end module m_systemlog
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
-! DATE REVISED : July 30, 2015
+! DATE REVISED : July 31, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain various subroutines
 !                needed for the program to work.
@@ -255,11 +255,11 @@ contains
 !       DESCRIPTION  :  This subroutine will calibrate the variables
 !                       according to the line number.
 !       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
+!      DATE REVISED  :  July 31, 2015
 !        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
 !                       Integer, INPUT, unit number associated with file opened
 !                       Integer, INPUT, unit number associated with file opened
-!                       Integer, INPUT, unit number associated with file opened !                       Integer, INPUT
+!                       Integer, INPUT, unit number associated with file opened
 !                       Integer, INPUT, total number of HRU in MENU
 !                       Integer, OUTPUT the total number of lines processed
 !                       Integer, INPUT, the index associated with a variable
@@ -270,10 +270,13 @@ contains
         integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_index
         integer, intent(inout) :: line
         character(80) :: dum, dum2
-        integer :: icons, iswave, i, l
-        integer :: d1, d2
+        integer :: icons, iswave, ihemi, irun
+        real :: sauef, depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
+        real :: smddep, qfresp, cofru
+        real :: clarea, elect, alat, wssize, adjump, disimp, stoimp
+        integer ::  i, l, d1, d2
         integer, dimension(12) :: icc
-        real, dimension(12) :: coiam, cay, elaim, roota, albedo
+        real, dimension(12) :: coiam, cay, elaim, roota, albedo, tmaxlr, tminlr
 
         l=1
         read(unit_var,*) dum2  ! header
@@ -283,32 +286,35 @@ contains
         do 700 while (l.le.isubno)
             write(unit_no,101) debugStat,' PROCESSING LINE >> ', line
     101     format(1X, A11, A20, I7)
-            read(unit_var,*)d1,d2, &
+            read(unit_var,*)d1, d2, sauef, depaho, depbho, &
+              wp1, wp2, fc1, fc2, po1, po2, &
+              abresp, bfresp, qfresp, cofru, smddep, &
               (coiam(i),i=1,12),(cay(i),i=1,12), &
               (elaim(i),i=1,12),(roota(i),i=1,12), &
-              (icc(i),i=1,12),(albedo(i),i=1,12)
+              (icc(i),i=1,12),(albedo(i),i=1,12), &
+              (tmaxlr(i),i=1,12),(tminlr(i),i=1,12)
             select case (var_index)
-               case (1)
+               case (4)
                    read(unit_oldMenu,format_icon_iswave)icons,iswave ! read original menu icons and iswave variables
                    write(unit_no,format_albedo)(albedo(i),i=1,12),icons,iswave,l
                    write(unit_menu,format_albedo)(albedo(i),i=1,12),icons,iswave,l
-               case (2)
+               case (6)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc)(cay(i),i=1,12),(l)
                    write(unit_menu,format_cerc)(cay(i),i=1,12),(l)
-               case (3)
+               case (7)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc)(elaim(i),i=1,12),(l)
                    write(unit_menu,format_cerc)(elaim(i),i=1,12),(l)
-               case (4)
+               case (8)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc)(roota(i),i=1,12),(l)
                    write(unit_menu,format_cerc)(roota(i),i=1,12),(l)
-               case (5)
+               case (10)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc)(coiam(i),i=1,12),(l)
                    write(unit_menu,format_cerc)(coiam(i),i=1,12),(l)
-               case (6)
+               case (11)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_icc)(icc(i),i=1,12),(l)
                    write(unit_menu,format_icc)(icc(i),i=1,12),(l)
@@ -329,11 +335,14 @@ end module m_calibration
 ! CREATED BY   : Dr. Stefan W. Kienzle
 ! DATE EDITED  : May 19, 2008
 ! REVISED BY   : Charmaine Bonifacio
-! DATE REVISED : July 30, 2015
+! DATE REVISED : July 31, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The program will copy values from a tab delimited
-!                file that contains ALBEDO, CAY, ELAIM, ROOTA
-!                COIAM and ICC
+!                file that contains 22 variables:
+!                SAUEF, DEPAHO, DEPBHO, WP1, WP2, FC1, FC2,
+!                PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU,
+!                SMDDEP, COIAM, CAY, ELAIM, ROOTA,
+!                ICC, ALBEDO, TMAXLR, TMINLR
 ! REQUIREMENT  : MUST run the .EXE file within the input directory.
 ! MODULES      : Must include m_systemcheck, m_systemlog and
 !                m_calibration modules
@@ -369,12 +378,13 @@ program p_acru_menu_calibration
     integer :: isubno
     integer :: count_0, count_1, count_rate, count_max
     integer :: line, line_num, i, p, ok, totalLine
-    integer :: lineCoiam, lineCay, lineElaim, lineRoota, lineEof
-    integer :: lineIcc, lineAlbedo
+    integer :: lineSauef, lineDepaho, lineQfresp, lineTmxlr, lineTmnlr
+    integer :: lineCoiam, lineCay, lineElaim, lineRoota, lineIcc, lineAlbedo
+    integer :: lineEof
     logical :: ex
     real :: elapsed_time
-    character(10), dimension(6) :: varType
-    integer, dimension(6) :: varLineNum
+    character(10), dimension(11) :: varType
+    integer, dimension(11) :: varLineNum
 
 !***********************************************************************
 ! START PROGRAM - DAY & TIME SETUP AND LOGFILE SETUP
@@ -453,31 +463,49 @@ program p_acru_menu_calibration
 !***********************************************************************
 ! CALCULATE LINE NUMBER FOR EACH VARIABLE!
 ! THEN OVERWRITE VALUES ONCE LINE IS FOUND. CONTINUE FOR X HRUS.
+    call calcvarline(lineSauef, isubno, 9)
+    call calcvarline(lineTmxlr, isubno, 20)
+    call calcvarline(lineTmnlr, isubno, 21)
     call calcvarline(lineAlbedo, isubno, 28)
+    call calcvarline(lineDepaho, isubno, 43)
     call calcvarline(lineCay, isubno, 53)
     call calcvarline(lineElaim, isubno, 54)
     call calcvarline(lineRoota, isubno, 56)
+    call calcvarline(lineQfresp, isubno, 66)
     call calcvarline(lineCoiam, isubno, 67)
     call calcvarline(lineIcc, isubno, 141)
     write(12,*)
     write(12,*) '[ S U M M A R Y   O F   L I N E S ] '
     write(12,*)
 ! Initiate varType
-    varType(1) = ' ALBEDO '
-    varType(2) = ' CAY    '
-    varType(3) = ' ELAIM  '
-    varType(4) = ' ROOTA  '
-    varType(5) = ' COIAM  '
-    varType(6) = ' ICC    '
-    varLineNum(1) = lineAlbedo
-    varLineNum(2) = lineCay
-    varLineNum(3) = lineElaim
-    varLineNum(4) = lineRoota
-    varLineNum(5) = lineCoiam
-    varLineNum(6) = lineIcc
-    do i=1, 6
+    varType(1) = ' SAUEF  '
+    varType(2) = ' TMXLR  '
+    varType(3) = ' TMNLR  '
+    varType(4) = ' ALBEDO '
+    varType(5) = ' SOILS  '
+    varType(6) = ' CAY    '
+    varType(7) = ' ELAIM  '
+    varType(8) = ' ROOTA  '
+    varType(9) = ' QFRESP '
+    varType(10) = ' COIAM  '
+    varType(11) = ' ICC    '
+    varLineNum(1) = lineSauef
+    varLineNum(2) = lineTmxlr
+    varLineNum(3) = lineTmnlr
+    varLineNum(4) = lineAlbedo
+    varLineNum(5) = lineDepaho
+    varLineNum(6) = lineCay
+    varLineNum(7) = lineElaim
+    varLineNum(8) = lineRoota
+    varLineNum(9) = lineQfresp
+    varLineNum(10) = lineCoiam
+    varLineNum(11) = lineIcc
+    do i=1, 11
       write(12,format_var_summary) debugStat, varType(i)//': ', varLineNum(i)
     end do
+  !  close(12)
+ !   close(30)
+   ! stop 'counting rows'
 !***********************************************************************
 ! VARIABLE CALIBRATION STARTS HERE!
     write(12,*)
@@ -489,37 +517,37 @@ program p_acru_menu_calibration
         if(line.eq.lineAlbedo) then ! check where albedo should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 1)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 4)
             line = line_num
             close(11)
         elseif(line.eq.lineCay) then ! check where cay should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 2)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 6)
             line = line_num
             close(11)
         elseif(line.eq.lineElaim) then ! check where elaim should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 3)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 7)
             line = line_num
             close(11)
         elseif(line.eq.lineRoota) then ! check where cay should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 4)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 8)
             line = line_num
             close(11)
         elseif(line.eq.lineCoiam) then ! check where cay should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 5)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 10)
             line = line_num
             close(11)
         elseif(line.eq.lineIcc) then ! check where cay should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 6)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 11)
             line = line_num
             close(11)
         else ! simply read and copy lines

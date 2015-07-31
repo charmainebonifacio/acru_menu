@@ -67,9 +67,3 @@ contains
    end subroutine elapsedtime
 
 end module m_systemcheck
-
-!###################################################################
-! MODULE TITLE : M_SYSTEMLOG
-!-------------------------------------------------------------------
-! CREATED BY   : Charmaine Bonifacio
-! DATE CREATED : July 27

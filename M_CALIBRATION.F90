@@ -3,7 +3,7 @@
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
-! DATE REVISED : July 30, 2015
+! DATE REVISED : July 31, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain various subroutines
 !                needed for the program to work.
@@ -51,11 +51,11 @@ contains
 !       DESCRIPTION  :  This subroutine will calibrate the variables
 !                       according to the line number.
 !       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
+!      DATE REVISED  :  July 31, 2015
 !        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
 !                       Integer, INPUT, unit number associated with file opened
 !                       Integer, INPUT, unit number associated with file opened
-!                       Integer, INPUT, unit number associated with file opened !                       Integer, INPUT
+!                       Integer, INPUT, unit number associated with file opened !
 !                       Integer, INPUT, total number of HRU in MENU
 !                       Integer, OUTPUT the total number of lines processed
 !                       Integer, INPUT, the index associated with a variable
@@ -66,10 +66,13 @@ contains
         integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_index
         integer, intent(inout) :: line
         character(80) :: dum, dum2
-        integer :: icons, iswave, i, l
-        integer :: d1, d2
+        integer :: icons, iswave, ihemi, irun
+        real :: sauef, depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
+        real :: smddep, qfresp, cofru
+        real :: clarea, elect, alat, wssize, adjump, disimp, stoimp
+        integer ::  i, l, d1, d2
         integer, dimension(12) :: icc
-        real, dimension(12) :: coiam, cay, elaim, roota, albedo
+        real, dimension(12) :: coiam, cay, elaim, roota, albedo, tmaxlr, tminlr
 
         l=1
         read(unit_var,*) dum2  ! header
@@ -79,32 +82,35 @@ contains
         do 700 while (l.le.isubno)
             write(unit_no,101) debugStat,' PROCESSING LINE >> ', line
     101     format(1X, A11, A20, I7)
-            read(unit_var,*)d1,d2, &
+            read(unit_var,*)d1, d2, sauef, depaho, depbho, &
+              wp1, wp2, fc1, fc2, po1, po2, &
+              abresp, bfresp, qfresp, cofru, smddep, &
               (coiam(i),i=1,12),(cay(i),i=1,12), &
               (elaim(i),i=1,12),(roota(i),i=1,12), &
-              (icc(i),i=1,12),(albedo(i),i=1,12)
+              (icc(i),i=1,12),(albedo(i),i=1,12), &
+              (tmaxlr(i),i=1,12),(tminlr(i),i=1,12)
             select case (var_index)
-               case (1)
+               case (4)
                    read(unit_oldMenu,format_icon_iswave)icons,iswave ! read original menu icons and iswave variables
                    write(unit_no,format_albedo)(albedo(i),i=1,12),icons,iswave,l
                    write(unit_menu,format_albedo)(albedo(i),i=1,12),icons,iswave,l
-               case (2)
+               case (6)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc)(cay(i),i=1,12),(l)
                    write(unit_menu,format_cerc)(cay(i),i=1,12),(l)
-               case (3)
+               case (7)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc)(elaim(i),i=1,12),(l)
                    write(unit_menu,format_cerc)(elaim(i),i=1,12),(l)
-               case (4)
+               case (8)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc)(roota(i),i=1,12),(l)
                    write(unit_menu,format_cerc)(roota(i),i=1,12),(l)
-               case (5)
+               case (10)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc)(coiam(i),i=1,12),(l)
                    write(unit_menu,format_cerc)(coiam(i),i=1,12),(l)
-               case (6)
+               case (11)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_icc)(icc(i),i=1,12),(l)
                    write(unit_menu,format_icc)(icc(i),i=1,12),(l)
