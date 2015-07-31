@@ -3,7 +3,7 @@
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
-! DATE REVISED : July 29, 2015
+! DATE REVISED : July 30, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will be used to check the date and time.
 !###################################################################
@@ -13,6 +13,17 @@ module m_systemcheck
 
 contains
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  DATETIMELOG
+!       DESCRIPTION  :  This subroutine will calculate the date and time.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Character, OUTPUT, date of the run (YYYY_MM_DD format)
+!                       Character, OUTPUT, date of the run (YYYY-MM-DD format)
+!                       Character, OUTPUT, time of the run
+!
+!-------------------------------------------------------------------------------
    subroutine datetimelog(date, datenow, timenow)
 
        character(len=8) :: dateinfo
@@ -34,6 +45,18 @@ contains
 
    end subroutine datetimelog
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  ELAPSEDTIME
+!       DESCRIPTION  :  This subroutine will calculate the elapsed time.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Integer, OUTPUT, total time the program ran
+!                       Integer, INPUT, start count
+!                       Integer, INPUT, end count
+!                       Integer, INPUT, rate count
+!
+!-------------------------------------------------------------------------------
    subroutine elapsedtime(elapsed_time, sys_count_0, sys_count_1, countrate)
 
        integer, intent(in) :: sys_count_0, sys_count_1, countrate
@@ -50,7 +73,7 @@ end module m_systemcheck
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 27, 2015
-! DATE REVISED : July 29, 2015
+! DATE REVISED : July 30, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain various subroutines
 !                needed to format the LOG FILE.
@@ -69,11 +92,21 @@ module m_systemlog
     character(20), parameter :: fileNameOpened =  '  FILENAME OPENED : '
     character(20), parameter :: fileStat =  '      FILE STATUS : '
     character(81), parameter :: lineHeader = '================================================================================='
-    character(len=*), parameter:: format_status_line = '( A11, A80 )'
+    character(len=*), parameter:: format_status_line = '( 1X, A11, A26 )'
     save
 
 contains
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  STARTPROGRAMLOG
+!       DESCRIPTION  :  This subroutine will print out the start log
+!                       header for this script.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
+!
+!-------------------------------------------------------------------------------
     subroutine startprogramlog(unit_no)
 
         integer, intent(in) :: unit_no
@@ -90,6 +123,16 @@ contains
 
     end subroutine startprogramlog
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  ENDPROGRAMLOG
+!       DESCRIPTION  :  This subroutine will print out the end log
+!                       header for this script.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
+!
+!-------------------------------------------------------------------------------
     subroutine endprogramlog(unit_no)
 
         integer, intent(in) :: unit_no
@@ -104,6 +147,17 @@ contains
         write(unit_no,*) 'END OF PROGRAM. '
      end subroutine endprogramlog
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  FILESTATCHECK
+!       DESCRIPTION  :  This subroutine will check if the file was opened
+!                       successfully.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
+!                       Integer, INPUT, status value 0 is successful
+!
+!-------------------------------------------------------------------------------
    subroutine filestatcheck(status, unit_no)
 
        integer, intent(in) :: unit_no, status
@@ -117,6 +171,18 @@ contains
 
    end subroutine filestatcheck
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  VALUECHECK
+!       DESCRIPTION  :  This subroutine will check the validity of the
+!                       ISUBNO value before proceeding with the calibration.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Integer, INPUT, value 0 means no ISUBNO found
+!                    :  Integer, INPUT, unit number associated with file opened
+!                    :  Integer, INPUT, unit number associated with file opened
+!
+!-------------------------------------------------------------------------------
     subroutine valuecheck(value, unit_no1, unit_no2)
 
         integer, intent(in) :: unit_no1, unit_no2, value
@@ -141,7 +207,7 @@ end module m_systemlog
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
-! DATE REVISED : July 29, 2015
+! DATE REVISED : July 30, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain various subroutines
 !                needed for the program to work.
@@ -161,6 +227,18 @@ module m_calibration
 
 contains
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  CALCVARLINE
+!       DESCRIPTION  :  This subroutine will calculate the row line
+!                       associated with the variable.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Integer, OUTPUT the row line for each variable
+!                       Integer, INPUT the total # of HRU
+!                       Integer, INPUT the variable rank within Menu File.
+!
+!-------------------------------------------------------------------------------
     subroutine calcvarline(line_var, isubno, var_rank)
 
         integer, intent(out) :: line_var
@@ -171,13 +249,29 @@ contains
 
     end subroutine calcvarline
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  CALIBRATELINE
+!       DESCRIPTION  :  This subroutine will calibrate the variables
+!                       according to the line number.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
+!                       Integer, INPUT, unit number associated with file opened
+!                       Integer, INPUT, unit number associated with file opened
+!                       Integer, INPUT, unit number associated with file opened !                       Integer, INPUT
+!                       Integer, INPUT, total number of HRU in MENU
+!                       Integer, OUTPUT the total number of lines processed
+!                       Integer, INPUT, the index associated with a variable
+!
+!-------------------------------------------------------------------------------
     subroutine calibrateline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, line, var_index)
 
         integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_index
         integer, intent(inout) :: line
         character(80) :: dum, dum2
         integer :: icons, iswave, i, l
-        real :: d1, d2
+        integer :: d1, d2
         integer, dimension(12) :: icc
         real, dimension(12) :: coiam, cay, elaim, roota, albedo
 
@@ -235,7 +329,7 @@ end module m_calibration
 ! CREATED BY   : Dr. Stefan W. Kienzle
 ! DATE EDITED  : May 19, 2008
 ! REVISED BY   : Charmaine Bonifacio
-! DATE REVISED : July 29, 2015
+! DATE REVISED : July 30, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The program will copy values from a tab delimited
 !                file that contains ALBEDO, CAY, ELAIM, ROOTA
@@ -265,8 +359,9 @@ program p_acru_menu_calibration
     character(len=*), parameter:: format_etime = '(1X, A11, A20, F10.5)'
     character(len=*), parameter:: format_logfile = '(1X, A11, A20, A30)'
     character(len=*), parameter:: format_logstat = '(1X, A11, A20, A20)'
+    character(len=*), parameter:: format_daytime = '(1X, A11, A20, A15)'
     character(len=*), parameter:: format_filestat = '(1X, A11, A20, I4)'
-    character(len=*), parameter::format_endmsg = '( A75,A10,A3,A5 )'
+    character(len=*), parameter:: format_endmsg = '( A75,A10,A3,A5 )'
     character(len=30) :: outfile, infile, logrun, varfile
     character(len=80) :: dum, dum2, msg
     character(len=10) :: date, date_now, date_end
@@ -294,8 +389,8 @@ program p_acru_menu_calibration
         open(unit=12,file=logrun,status='new',iostat=ok)
     endif
     call startprogramlog(12)
-    write(12,format_logstat) debugLog, dayStat, date_now
-    write(12,format_logstat) debugLog, timeStat, time_now
+    write(12,format_daytime) debugLog, dayStat, date_now
+    write(12,format_daytime) debugLog, timeStat, time_now
     write(12,*)
     write(12,format_logfile) debugLog, logfileStat, logrun
     write(12,format_filestat) debugLog, fileStat, ok
@@ -447,8 +542,8 @@ program p_acru_menu_calibration
 ! END PROGRAM - ELAPSED TIME
     call system_clock(count_1, count_rate, count_max)
     call datetimelog(date, date_end, time_end)
-    write(12,format_logstat) debugStat, dayStat, date_end
-    write(12,format_logstat) debugStat, timeStat, time_end
+    write(12,format_daytime) debugStat, dayStat, date_end
+    write(12,format_daytime) debugStat, timeStat, time_end
     call elapsedtime(elapsed_time, count_0, count_1, count_rate)
     write(12,format_etime) debugStat, etimeStat, elapsed_time
     call endprogramlog(12)

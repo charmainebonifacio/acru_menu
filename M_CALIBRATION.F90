@@ -3,7 +3,7 @@
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
-! DATE REVISED : July 29, 2015
+! DATE REVISED : July 30, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will contain various subroutines
 !                needed for the program to work.
@@ -22,7 +22,19 @@ module m_calibration
     character(len=*), parameter:: format_calibrated = '( 10X, A11, A17, I7, A11, I4, A9, I4 )'
 
 contains
-   
+
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  CALCVARLINE
+!       DESCRIPTION  :  This subroutine will calculate the row line
+!                       associated with the variable.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Integer, OUTPUT the row line for each variable
+!                       Integer, INPUT the total # of HRU
+!                       Integer, INPUT the variable rank within Menu File.
+!
+!-------------------------------------------------------------------------------
     subroutine calcvarline(line_var, isubno, var_rank)
 
         integer, intent(out) :: line_var
@@ -33,13 +45,29 @@ contains
 
     end subroutine calcvarline
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  CALIBRATELINE
+!       DESCRIPTION  :  This subroutine will calibrate the variables
+!                       according to the line number.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
+!                       Integer, INPUT, unit number associated with file opened
+!                       Integer, INPUT, unit number associated with file opened
+!                       Integer, INPUT, unit number associated with file opened !                       Integer, INPUT
+!                       Integer, INPUT, total number of HRU in MENU
+!                       Integer, OUTPUT the total number of lines processed
+!                       Integer, INPUT, the index associated with a variable
+!
+!-------------------------------------------------------------------------------
     subroutine calibrateline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, line, var_index)
 
         integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_index
         integer, intent(inout) :: line
         character(80) :: dum, dum2
         integer :: icons, iswave, i, l
-        real :: d1, d2
+        integer :: d1, d2
         integer, dimension(12) :: icc
         real, dimension(12) :: coiam, cay, elaim, roota, albedo
 

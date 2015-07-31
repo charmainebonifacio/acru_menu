@@ -3,7 +3,7 @@
 !-------------------------------------------------------------------
 ! CREATED BY   : Charmaine Bonifacio
 ! DATE CREATED : July 24, 2015
-! DATE REVISED : July 29, 2015
+! DATE REVISED : July 30, 2015
 !-------------------------------------------------------------------
 ! DESCRIPTION  : The module will be used to check the date and time.
 !###################################################################
@@ -13,6 +13,17 @@ module m_systemcheck
 
 contains
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  DATETIMELOG
+!       DESCRIPTION  :  This subroutine will calculate the date and time.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Character, OUTPUT, date of the run (YYYY_MM_DD format)
+!                       Character, OUTPUT, date of the run (YYYY-MM-DD format)
+!                       Character, OUTPUT, time of the run
+!
+!-------------------------------------------------------------------------------
    subroutine datetimelog(date, datenow, timenow)
 
        character(len=8) :: dateinfo
@@ -34,6 +45,18 @@ contains
 
    end subroutine datetimelog
 
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  ELAPSEDTIME
+!       DESCRIPTION  :  This subroutine will calculate the elapsed time.
+!       AUTHORED BY  :  Charmaine Bonifacio
+!      DATE REVISED  :  July 30, 2015
+!        PARAMETERS  :  Integer, OUTPUT, total time the program ran
+!                       Integer, INPUT, start count
+!                       Integer, INPUT, end count
+!                       Integer, INPUT, rate count
+!
+!-------------------------------------------------------------------------------
    subroutine elapsedtime(elapsed_time, sys_count_0, sys_count_1, countrate)
 
        integer, intent(in) :: sys_count_0, sys_count_1, countrate
@@ -44,3 +67,9 @@ contains
    end subroutine elapsedtime
 
 end module m_systemcheck
+
+!###################################################################
+! MODULE TITLE : M_SYSTEMLOG
+!-------------------------------------------------------------------
+! CREATED BY   : Charmaine Bonifacio
+! DATE CREATED : July 27
