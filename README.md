@@ -1,15 +1,13 @@
-# The ACRU Model Menu Generator Scripts
+# The ACRU Calibration Menu Generator
+
+This fortran script will automatically calibrate 21 variables in the MENU parameter file. Implemented a logfile system to ensure accuracy when dealing with calibration.
 
 ## Context
 [Dr. Stefan Kienzle](http://people.uleth.ca/~stefan.kienzle/) created many fortran scripts to automate calibration on the [ACRU - Agricultural Catchments Research Unit](http://unfccc.int/adaptation/nairobi_work_programme/knowledge_resources_and_publications/items/5299.php) model using Fortran 77 language and compiled with Compaq Visual Fortran Version 6.6 compiler.
 
 ## Legacy
 
-The purpose of revising the fortran scripts is to upgrade the scripts to Fortran 90 and compiled using the SilverFrost Plato Fortran 95 compiler. I have also implemented a logfile system to ensure accuracy when dealing with changing calibration values for each ACRU runs. For my project, I will only be using three scripts:
-
-- Fortran script that will select a specific range of Hydrological response unite (HRUs).
-- Fortran script that will convert the MENU file into an appropriate  for distributed mode
-- Fortran script that will copy calibration values from a tab-delimited file that contains specific ACRU variables.
+The purpose is to revise the scripts to Fortran 90 and compiled using the SilverFrost Plato Fortran 95 compiler.
 
 # License
 
