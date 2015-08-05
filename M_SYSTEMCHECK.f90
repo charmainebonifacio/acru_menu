@@ -1,11 +1,9 @@
 !###################################################################
 ! MODULE TITLE : M_SYSTEMCHECK
-!-------------------------------------------------------------------
-! CREATED BY   : Charmaine Bonifacio
-! DATE CREATED : July 24, 2015
-! DATE REVISED : July 30, 2015
-!-------------------------------------------------------------------
-! DESCRIPTION  : The module will be used to check the date and time.
+! CREATED BY   : CHARMAINE BONIFACIO
+! DATE CREATED : JULY 24, 2015
+! DATE REVISED : JULY 30, 2015
+! DESCRIPTION  : THE MODULE WILL BE USED TO CHECK THE DATE AND TIME.
 !###################################################################
 module m_systemcheck
 
@@ -16,12 +14,12 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  DATETIMELOG
-!       DESCRIPTION  :  This subroutine will calculate the date and time.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
-!        PARAMETERS  :  Character, OUTPUT, date of the run (YYYY_MM_DD format)
-!                       Character, OUTPUT, date of the run (YYYY-MM-DD format)
-!                       Character, OUTPUT, time of the run
+!       DESCRIPTION  :  THIS SUBROUTINE WILL CALCULATE THE DATE AND TIME.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 30, 2015
+!        PARAMETERS  :  CHARACTER, OUTPUT, DATE OF THE RUN (YYYY_MM_DD FORMAT)
+!                       CHARACTER, OUTPUT, DATE OF THE RUN (YYYY-MM-DD FORMAT)
+!                       CHARACTER, OUTPUT, TIME OF THE RUN
 !
 !-------------------------------------------------------------------------------
    subroutine datetimelog(date, datenow, timenow)
@@ -48,13 +46,13 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  ELAPSEDTIME
-!       DESCRIPTION  :  This subroutine will calculate the elapsed time.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
-!        PARAMETERS  :  Integer, OUTPUT, total time the program ran
-!                       Integer, INPUT, start count
-!                       Integer, INPUT, end count
-!                       Integer, INPUT, rate count
+!       DESCRIPTION  :  THIS SUBROUTINE WILL CALCULATE THE ELAPSED TIME.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 30, 2015
+!        PARAMETERS  :  INTEGER, OUTPUT, TOTAL TIME THE PROGRAM RAN
+!                       INTEGER, INPUT, START COUNT
+!                       INTEGER, INPUT, END COUNT
+!                       INTEGER, INPUT, RATE COUNT
 !
 !-------------------------------------------------------------------------------
    subroutine elapsedtime(elapsed_time, sys_count_0, sys_count_1, countrate)

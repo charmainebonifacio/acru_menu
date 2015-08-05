@@ -1,11 +1,9 @@
 !###################################################################
 ! MODULE TITLE : M_SYSTEMCHECK
-!-------------------------------------------------------------------
-! CREATED BY   : Charmaine Bonifacio
-! DATE CREATED : July 24, 2015
-! DATE REVISED : July 30, 2015
-!-------------------------------------------------------------------
-! DESCRIPTION  : The module will be used to check the date and time.
+! CREATED BY   : CHARMAINE BONIFACIO
+! DATE CREATED : JULY 24, 2015
+! DATE REVISED : JULY 30, 2015
+! DESCRIPTION  : THE MODULE WILL BE USED TO CHECK THE DATE AND TIME.
 !###################################################################
 module m_systemcheck
 
@@ -16,12 +14,12 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  DATETIMELOG
-!       DESCRIPTION  :  This subroutine will calculate the date and time.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
-!        PARAMETERS  :  Character, OUTPUT, date of the run (YYYY_MM_DD format)
-!                       Character, OUTPUT, date of the run (YYYY-MM-DD format)
-!                       Character, OUTPUT, time of the run
+!       DESCRIPTION  :  THIS SUBROUTINE WILL CALCULATE THE DATE AND TIME.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 30, 2015
+!        PARAMETERS  :  CHARACTER, OUTPUT, DATE OF THE RUN (YYYY_MM_DD FORMAT)
+!                       CHARACTER, OUTPUT, DATE OF THE RUN (YYYY-MM-DD FORMAT)
+!                       CHARACTER, OUTPUT, TIME OF THE RUN
 !
 !-------------------------------------------------------------------------------
    subroutine datetimelog(date, datenow, timenow)
@@ -48,13 +46,13 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  ELAPSEDTIME
-!       DESCRIPTION  :  This subroutine will calculate the elapsed time.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
-!        PARAMETERS  :  Integer, OUTPUT, total time the program ran
-!                       Integer, INPUT, start count
-!                       Integer, INPUT, end count
-!                       Integer, INPUT, rate count
+!       DESCRIPTION  :  THIS SUBROUTINE WILL CALCULATE THE ELAPSED TIME.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 30, 2015
+!        PARAMETERS  :  INTEGER, OUTPUT, TOTAL TIME THE PROGRAM RAN
+!                       INTEGER, INPUT, START COUNT
+!                       INTEGER, INPUT, END COUNT
+!                       INTEGER, INPUT, RATE COUNT
 !
 !-------------------------------------------------------------------------------
    subroutine elapsedtime(elapsed_time, sys_count_0, sys_count_1, countrate)
@@ -70,13 +68,11 @@ end module m_systemcheck
 
 !###################################################################
 ! MODULE TITLE : M_SYSTEMLOG
-!-------------------------------------------------------------------
-! CREATED BY   : Charmaine Bonifacio
-! DATE CREATED : July 27, 2015
-! DATE REVISED : July 30, 2015
-!-------------------------------------------------------------------
-! DESCRIPTION  : The module will contain various subroutines
-!                needed to format the LOG FILE.
+! CREATED BY   : CHARMAINE BONIFACIO
+! DATE CREATED : JULY 27, 2015
+! DATE REVISED : AUGUST 1, 2015
+! DESCRIPTION  : THE MODULE WILL CONTAIN VARIOUS SUBROUTINES
+!                NEEDED TO FORMAT THE LOG FILE.
 !###################################################################
 module m_systemlog
 
@@ -84,6 +80,7 @@ module m_systemlog
     character(11), parameter :: debugStat = '[ STATUS ] '
     character(11), parameter :: debugRes = '[ RESULT ] '
     character(11), parameter :: debugLog = '[ LOGGED ] '
+    character(36), parameter :: logHeader = '**************************************'
     character(67), parameter :: programHeader = "###################################################################"
     character(20), parameter :: dayStat = '             DATE : '
     character(20), parameter :: timeStat = '             TIME : '
@@ -91,7 +88,7 @@ module m_systemlog
     character(20), parameter :: logfileStat = '          LOGFILE : '
     character(20), parameter :: fileNameOpened =  '  FILENAME OPENED : '
     character(20), parameter :: fileStat =  '      FILE STATUS : '
-    character(81), parameter :: lineHeader = '================================================================================='
+    character(81), parameter :: sectionHeader = '================================================================================='
     character(len=*), parameter:: format_status_line = '( 1X, A11, A26 )'
     save
 
@@ -99,12 +96,38 @@ contains
 
 !-------------------------------------------------------------------------------
 !
+!  SUBROUTINE TITLE  :  HEADERLOG
+!       DESCRIPTION  :  THIS SUBROUTINE WILL PRINT OUT THE HEADER CONTAINING
+!                       SPECIFIC INFORMATION.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  AUGUST 1, 2015
+!        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!
+!-------------------------------------------------------------------------------
+    subroutine headerlog(unit_no)
+
+        integer, intent(in) :: unit_no
+
+        write(unit_no,*)
+        write(unit_no,*) logHeader
+        write(unit_no,*)
+        write(unit_no,*) '        ACRU MENU LOG FILE'
+        write(unit_no,*)
+        write(unit_no,*) ' CREATED BY   : Charmaine Bonifacio'
+        write(unit_no,*) ' DATE REVISED : August 1, 2015'
+        write(unit_no,*)
+        write(unit_no,*) logHeader
+
+    end subroutine headerlog
+
+!-------------------------------------------------------------------------------
+!
 !  SUBROUTINE TITLE  :  STARTPROGRAMLOG
-!       DESCRIPTION  :  This subroutine will print out the start log
-!                       header for this script.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
-!        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
+!       DESCRIPTION  :  THIS SUBROUTINE WILL PRINT OUT THE START LOG
+!                       HEADER FOR THIS SCRIPT.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 30, 2015
+!        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !
 !-------------------------------------------------------------------------------
     subroutine startprogramlog(unit_no)
@@ -126,11 +149,11 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  ENDPROGRAMLOG
-!       DESCRIPTION  :  This subroutine will print out the end log
-!                       header for this script.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
-!        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
+!       DESCRIPTION  :  THIS SUBROUTINE WILL PRINT OUT THE END LOG
+!                       HEADER FOR THIS SCRIPT.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 30, 2015
+!        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !
 !-------------------------------------------------------------------------------
     subroutine endprogramlog(unit_no)
@@ -150,12 +173,12 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  FILESTATCHECK
-!       DESCRIPTION  :  This subroutine will check if the file was opened
-!                       successfully.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
-!        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
-!                       Integer, INPUT, status value 0 is successful
+!       DESCRIPTION  :  THIS SUBROUTINE WILL CHECK IF THE FILE WAS OPENED
+!                       SUCCESSFULLY.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 30, 2015
+!        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, STATUS VALUE 0 IS SUCCESSFUL
 !
 !-------------------------------------------------------------------------------
    subroutine filestatcheck(status, unit_no)
@@ -174,13 +197,13 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  VALUECHECK
-!       DESCRIPTION  :  This subroutine will check the validity of the
-!                       ISUBNO value before proceeding with the calibration.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
-!        PARAMETERS  :  Integer, INPUT, value 0 means no ISUBNO found
-!                    :  Integer, INPUT, unit number associated with file opened
-!                    :  Integer, INPUT, unit number associated with file opened
+!       DESCRIPTION  :  THIS SUBROUTINE WILL CHECK THE VALIDITY OF THE
+!                       ISUBNO VALUE BEFORE PROCEEDING WITH THE CALIBRATION.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 30, 2015
+!        PARAMETERS  :  INTEGER, INPUT, VALUE 0 MEANS NO ISUBNO FOUND
+!                    :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                    :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !
 !-------------------------------------------------------------------------------
     subroutine valuecheck(value, unit_no1, unit_no2)
@@ -204,17 +227,15 @@ end module m_systemlog
 
 !###################################################################
 ! MODULE TITLE : M_CALIBRATION
-!-------------------------------------------------------------------
-! CREATED BY   : Charmaine Bonifacio
-! DATE CREATED : July 24, 2015
-! DATE REVISED : July 31, 2015
-!-------------------------------------------------------------------
-! DESCRIPTION  : The module will contain various subroutines
-!                needed for the program to work.
+! CREATED BY   : CHARMAINE BONIFACIO
+! DATE CREATED : JULY 24, 2015
+! DATE REVISED : JULY 31, 2015
+! DESCRIPTION  : THE MODULE WILL CONTAIN VARIOUS SUBROUTINES
+!                NEEDED FOR THE PROGRAM TO WORK.
 !###################################################################
 module m_calibration
 
-    use m_systemlog, only: debugStat, debugRes, lineHeader
+    use m_systemlog, only: debugStat, debugRes, sectionHeader
     implicit none
 
     character(len=*), parameter:: format_line = '( A80 )'
@@ -230,13 +251,13 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  CALCVARLINE
-!       DESCRIPTION  :  This subroutine will calculate the row line
-!                       associated with the variable.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
-!        PARAMETERS  :  Integer, OUTPUT the row line for each variable
-!                       Integer, INPUT the total # of HRU
-!                       Integer, INPUT the variable rank within Menu File.
+!       DESCRIPTION  :  THIS SUBROUTINE WILL CALCULATE THE ROW LINE
+!                       ASSOCIATED WITH THE VARIABLE.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 30, 2015
+!        PARAMETERS  :  INTEGER, OUTPUT THE ROW LINE FOR EACH VARIABLE
+!                       INTEGER, INPUT THE TOTAL # OF HRU
+!                       INTEGER, INPUT THE VARIABLE RANK WITHIN MENU FILE.
 !
 !-------------------------------------------------------------------------------
     subroutine calcvarline(line_var, isubno, var_rank)
@@ -252,17 +273,17 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  CALIBRATELINE
-!       DESCRIPTION  :  This subroutine will calibrate the variables
-!                       according to the line number.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 31, 2015
-!        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
-!                       Integer, INPUT, unit number associated with file opened
-!                       Integer, INPUT, unit number associated with file opened
-!                       Integer, INPUT, unit number associated with file opened
-!                       Integer, INPUT, total number of HRU in MENU
-!                       Integer, OUTPUT the total number of lines processed
-!                       Integer, INPUT, the index associated with a variable
+!       DESCRIPTION  :  THIS SUBROUTINE WILL CALIBRATE THE VARIABLES
+!                       ACCORDING TO THE LINE NUMBER.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 31, 2015
+!        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, TOTAL NUMBER OF HRU IN MENU
+!                       INTEGER, OUTPUT THE TOTAL NUMBER OF LINES PROCESSED
+!                       INTEGER, INPUT, THE INDEX ASSOCIATED WITH A VARIABLE
 !
 !-------------------------------------------------------------------------------
     subroutine calibrateline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, line, var_index)
@@ -281,7 +302,7 @@ contains
         l=1
         read(unit_var,*) dum2  ! header
         read(unit_var,*) dum2  ! header
-        write(unit_no,*) lineHeader
+        write(unit_no,*) sectionHeader
         write(unit_no,format_var_header) debugStat, ' .... Menu Calibration starting from line >> ', line
         do 700 while (l.le.isubno)
             write(unit_no,101) debugStat,' PROCESSING LINE >> ', line
@@ -331,25 +352,22 @@ end module m_calibration
 
 !###################################################################
 ! MAIN TITLE   : P_ACRU_MENU_CALIBRATION
-!-------------------------------------------------------------------
-! CREATED BY   : Dr. Stefan W. Kienzle
-! DATE EDITED  : May 19, 2008
-! REVISED BY   : Charmaine Bonifacio
-! DATE REVISED : July 31, 2015
-!-------------------------------------------------------------------
-! DESCRIPTION  : The program will copy values from a tab delimited
-!                file that contains 22 variables:
+! CREATED BY   : CHARMAINE BONIFACIOO
+! DATE CREATED : MAY 8, 2015
+! DATE REVISED : AUGUST 1, 2015
+! DESCRIPTION  : THE PROGRAM WILL COPY VALUES FROM A TAB DELIMITED
+!                FILE THAT CONTAINS 22 VARIABLES:
 !                SAUEF, DEPAHO, DEPBHO, WP1, WP2, FC1, FC2,
 !                PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU,
 !                SMDDEP, COIAM, CAY, ELAIM, ROOTA,
 !                ICC, ALBEDO, TMAXLR, TMINLR
-! REQUIREMENT  : MUST run the .EXE file within the input directory.
-! MODULES      : Must include m_systemcheck, m_systemlog and
-!                m_calibration modules
+! REQUIREMENT  : MUST RUN THE .EXE FILE WITHIN THE INPUT DIRECTORY.
+! MODULES      : MUST INCLUDE M_SYSTEMCHECK, M_SYSTEMLOG AND
+!                M_CALIBRATION MODULES
 ! INPUT        : 1) MENU FILE = MENU
-!                2) VARIABLE FILE = menu_variable.txt
-! OUTPUT       : 1) Updated MENU File
-!                2) LOG file
+!                2) VARIABLE FILE = MENU_VARIABLE.TXT
+! OUTPUT       : 1) UPDATED MENU FILE
+!                2) LOG FILE
 !###################################################################
 program p_acru_menu_calibration
 
@@ -378,7 +396,7 @@ program p_acru_menu_calibration
     integer :: isubno
     integer :: count_0, count_1, count_rate, count_max
     integer :: line, line_num, i, p, ok, totalLine
-    integer :: lineSauef, lineDepaho, lineQfresp, lineTmxlr, lineTmnlr
+    integer :: lineSauef, lineSoils, lineQfresp, lineTmxlr, lineTmnlr
     integer :: lineCoiam, lineCay, lineElaim, lineRoota, lineIcc, lineAlbedo
     integer :: lineEof
     logical :: ex
@@ -398,6 +416,7 @@ program p_acru_menu_calibration
     else
         open(unit=12,file=logrun,status='new',iostat=ok)
     endif
+    call headerlog(12)
     call startprogramlog(12)
     write(12,format_daytime) debugLog, dayStat, date_now
     write(12,format_daytime) debugLog, timeStat, time_now
@@ -467,7 +486,7 @@ program p_acru_menu_calibration
     call calcvarline(lineTmxlr, isubno, 20)
     call calcvarline(lineTmnlr, isubno, 21)
     call calcvarline(lineAlbedo, isubno, 28)
-    call calcvarline(lineDepaho, isubno, 43)
+    call calcvarline(lineSoils, isubno, 43)
     call calcvarline(lineCay, isubno, 53)
     call calcvarline(lineElaim, isubno, 54)
     call calcvarline(lineRoota, isubno, 56)
@@ -493,7 +512,7 @@ program p_acru_menu_calibration
     varLineNum(2) = lineTmxlr
     varLineNum(3) = lineTmnlr
     varLineNum(4) = lineAlbedo
-    varLineNum(5) = lineDepaho
+    varLineNum(5) = lineSoils
     varLineNum(6) = lineCay
     varLineNum(7) = lineElaim
     varLineNum(8) = lineRoota
@@ -503,9 +522,9 @@ program p_acru_menu_calibration
     do i=1, 11
       write(12,format_var_summary) debugStat, varType(i)//': ', varLineNum(i)
     end do
-  !  close(12)
- !   close(30)
-   ! stop 'counting rows'
+    close(12)
+    close(30)
+    stop 'counting rows'
 !***********************************************************************
 ! VARIABLE CALIBRATION STARTS HERE!
     write(12,*)
@@ -557,7 +576,7 @@ program p_acru_menu_calibration
         endif
 900 end do
     close(20)
-    write(12,*) lineHeader
+    write(12,*) sectionHeader
     write(12,*)
     write(*,format_processed) debugStat, line, ' = NUMBER OF PROCESSED LINES '
     write(12,format_processed) debugStat, line, ' = NUMBER OF PROCESSED LINES '

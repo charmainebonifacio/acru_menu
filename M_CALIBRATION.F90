@@ -1,16 +1,14 @@
 !###################################################################
 ! MODULE TITLE : M_CALIBRATION
-!-------------------------------------------------------------------
-! CREATED BY   : Charmaine Bonifacio
-! DATE CREATED : July 24, 2015
-! DATE REVISED : July 31, 2015
-!-------------------------------------------------------------------
-! DESCRIPTION  : The module will contain various subroutines
-!                needed for the program to work.
+! CREATED BY   : CHARMAINE BONIFACIO
+! DATE CREATED : JULY 24, 2015
+! DATE REVISED : JULY 31, 2015
+! DESCRIPTION  : THE MODULE WILL CONTAIN VARIOUS SUBROUTINES
+!                NEEDED FOR THE PROGRAM TO WORK.
 !###################################################################
 module m_calibration
 
-    use m_systemlog, only: debugStat, debugRes, lineHeader
+    use m_systemlog, only: debugStat, debugRes, sectionHeader
     implicit none
 
     character(len=*), parameter:: format_line = '( A80 )'
@@ -26,13 +24,13 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  CALCVARLINE
-!       DESCRIPTION  :  This subroutine will calculate the row line
-!                       associated with the variable.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 30, 2015
-!        PARAMETERS  :  Integer, OUTPUT the row line for each variable
-!                       Integer, INPUT the total # of HRU
-!                       Integer, INPUT the variable rank within Menu File.
+!       DESCRIPTION  :  THIS SUBROUTINE WILL CALCULATE THE ROW LINE
+!                       ASSOCIATED WITH THE VARIABLE.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 30, 2015
+!        PARAMETERS  :  INTEGER, OUTPUT THE ROW LINE FOR EACH VARIABLE
+!                       INTEGER, INPUT THE TOTAL # OF HRU
+!                       INTEGER, INPUT THE VARIABLE RANK WITHIN MENU FILE.
 !
 !-------------------------------------------------------------------------------
     subroutine calcvarline(line_var, isubno, var_rank)
@@ -48,17 +46,17 @@ contains
 !-------------------------------------------------------------------------------
 !
 !  SUBROUTINE TITLE  :  CALIBRATELINE
-!       DESCRIPTION  :  This subroutine will calibrate the variables
-!                       according to the line number.
-!       AUTHORED BY  :  Charmaine Bonifacio
-!      DATE REVISED  :  July 31, 2015
-!        PARAMETERS  :  Integer, INPUT, unit number associated with file opened
-!                       Integer, INPUT, unit number associated with file opened
-!                       Integer, INPUT, unit number associated with file opened
-!                       Integer, INPUT, unit number associated with file opened !
-!                       Integer, INPUT, total number of HRU in MENU
-!                       Integer, OUTPUT the total number of lines processed
-!                       Integer, INPUT, the index associated with a variable
+!       DESCRIPTION  :  THIS SUBROUTINE WILL CALIBRATE THE VARIABLES
+!                       ACCORDING TO THE LINE NUMBER.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  JULY 31, 2015
+!        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, TOTAL NUMBER OF HRU IN MENU
+!                       INTEGER, OUTPUT THE TOTAL NUMBER OF LINES PROCESSED
+!                       INTEGER, INPUT, THE INDEX ASSOCIATED WITH A VARIABLE
 !
 !-------------------------------------------------------------------------------
     subroutine calibrateline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, line, var_index)
@@ -77,7 +75,7 @@ contains
         l=1
         read(unit_var,*) dum2  ! header
         read(unit_var,*) dum2  ! header
-        write(unit_no,*) lineHeader
+        write(unit_no,*) sectionHeader
         write(unit_no,format_var_header) debugStat, ' .... Menu Calibration starting from line >> ', line
         do 700 while (l.le.isubno)
             write(unit_no,101) debugStat,' PROCESSING LINE >> ', line
