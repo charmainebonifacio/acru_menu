@@ -1,10 +1,10 @@
-!###################################################################
+!###############################################################################
 ! MODULE TITLE : M_SYSTEMCHECK
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 24, 2015
 ! DATE REVISED : JULY 30, 2015
-! DESCRIPTION  : THE MODULE WILL BE USED TO CHECK THE DATE AND TIME.
-!###################################################################
+! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES TO CHECK THE DATE AND TIME.
+!###############################################################################
 module m_systemcheck
 
     implicit none

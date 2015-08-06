@@ -1,11 +1,10 @@
-!###################################################################
+!###############################################################################
 ! MODULE TITLE : M_SYSTEMLOG
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 27, 2015
 ! DATE REVISED : AUGUST 1, 2015
-! DESCRIPTION  : THE MODULE WILL CONTAIN VARIOUS SUBROUTINES
-!                NEEDED TO FORMAT THE LOG FILE.
-!###################################################################
+! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED TO FORMAT THE LOG FILE.
+!###############################################################################
 module m_systemlog
 
     implicit none
