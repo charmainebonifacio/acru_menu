@@ -99,10 +99,6 @@ contains
                    read(unit_oldMenu,format_icon_iswave)icons,iswave ! read original menu variables
                    write(unit_no,format_albedo)(albedo(i),i=1,12),icons,iswave,l
                    write(unit_menu,format_albedo)(albedo(i),i=1,12),icons,iswave,l
-               case (5)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_soils)depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp, l
-                   write(unit_menu,format_soils)depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp, l
                case (6)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc)(cay(i),i=1,12),(l)
