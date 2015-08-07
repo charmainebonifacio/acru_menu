@@ -1,9 +1,42 @@
-# The ACRU Calibration Menu Generator
+# The ACRU Parameterization Menu Generator
 
-This fortran script will automatically calibrate 21 variables in the MENU parameter file. Implemented a logfile system to ensure accuracy when dealing with calibration.
+This program will only automatically adjust 22 variables in the MENU Parameter File using an updated parameter text file. This program will work with a distributed mode or point mode MENU Parameter File. This program also utilizes an implemented a logfile system to ensure accuracy when dealing with the automatic adjustment of values.
+
+The variables that will be updated after each run are as follows:
+ - SAUEF
+ - TMAXLR
+ - TMINLR
+ - ALBEDO
+ - DEPAHO
+ - DEPBHO
+ - WP1
+ - WP2
+ - FC1
+ - FC2
+ - PO1
+ - PO2
+ - ABRESP
+ - BFRESP
+ - CAY
+ - ELAIM
+ - ROOTA
+ - QFRESP
+ - COFRU
+ - SMDDEP
+ - COIAM
+ - ICC
+
+ This script will automatically adjust the parameters for calibrating a catchments within the ACRU model. These variables belong to six different information blocks in the Menu Parameter File:
+ - Locational and Catchment Unit Information : SAUEF
+ - Reference Potential Evaporation Unit Information : TMAXLR, TMINLR, ALBEDO
+ - Catchment Soils Information : DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP
+ - Catchment Land Cover Information : CAY, ELAIM, ROOTA
+ - Streamflow Simulation Control Variables : QFRESP, COFRU, SMDDEP, COIAM
+ - Snow Option Variables : ICC
 
 ## Context
-[Dr. Stefan Kienzle](http://people.uleth.ca/~stefan.kienzle/) created many fortran scripts to automate calibration on the [ACRU - Agricultural Catchments Research Unit](http://unfccc.int/adaptation/nairobi_work_programme/knowledge_resources_and_publications/items/5299.php) model using Fortran 77 language and compiled with Compaq Visual Fortran Version 6.6 compiler.
+
+[Dr. Stefan Kienzle](http://people.uleth.ca/~stefan.kienzle/) created many fortran scripts to automate parameterization for the calibration on the [ACRU - Agricultural Catchments Research Unit](http://unfccc.int/adaptation/nairobi_work_programme/knowledge_resources_and_publications/items/5299.php) model. He utilized the Fortran 77 language and compiled with Compaq Visual Fortran Version 6.6 compiler.
 
 ## Legacy
 
