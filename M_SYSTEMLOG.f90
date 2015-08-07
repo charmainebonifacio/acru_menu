@@ -2,7 +2,7 @@
 ! MODULE TITLE : M_SYSTEMLOG
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 27, 2015
-! DATE REVISED : AUGUST 1, 2015
+! DATE REVISED : AUGUST 7, 2015
 ! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED TO FORMAT THE LOG FILE.
 !###############################################################################
 module m_systemlog
@@ -11,8 +11,8 @@ module m_systemlog
     character(11), parameter :: debugStat = '[ STATUS ] '
     character(11), parameter :: debugRes = '[ RESULT ] '
     character(11), parameter :: debugLog = '[ LOGGED ] '
-    character(36), parameter :: logHeader = '**************************************'
-    character(67), parameter :: programHeader = "###################################################################"
+    character(len=*), parameter :: logHeader =  '*******************************************************************'
+    character(67), parameter :: programHeader = '###################################################################'
     character(20), parameter :: dayStat = '             DATE : '
     character(20), parameter :: timeStat = '             TIME : '
     character(20), parameter :: etimeStat = '     ELAPSED TIME : '
@@ -20,7 +20,7 @@ module m_systemlog
     character(20), parameter :: fileNameOpened =  '  FILENAME OPENED : '
     character(20), parameter :: fileStat =  '      FILE STATUS : '
     character(81), parameter :: sectionHeader = '================================================================================='
-    character(len=*), parameter:: format_status_line = '( 1X, A11, A26 )'
+    character(len=*), parameter:: format_status_line = '( 1X,A11,A26 )'
     save
 
 contains
@@ -42,10 +42,10 @@ contains
         write(unit_no,*)
         write(unit_no,*) logHeader
         write(unit_no,*)
-        write(unit_no,*) '        ACRU MENU LOG FILE'
+        write(unit_no,*) '                          ACRU MENU LOG FILE'
         write(unit_no,*)
         write(unit_no,*) ' CREATED BY   : Charmaine Bonifacio'
-        write(unit_no,*) ' DATE REVISED : August 1, 2015'
+        write(unit_no,*) ' DATE REVISED : August 6, 2015'
         write(unit_no,*)
         write(unit_no,*) logHeader
 

@@ -2,7 +2,7 @@
 ! MODULE TITLE : M_CALIBRATION
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 24, 2015
-! DATE REVISED : AUGUST 6, 2015
+! DATE REVISED : AUGUST 7, 2015
 ! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED CALIBRATE THE MENU FILE.
 !###############################################################################
 module m_calibration
@@ -11,19 +11,22 @@ module m_calibration
     implicit none
 
     character(len=*), parameter:: format_line = '( A80 )'
-    character(len=*), parameter:: format_var_header = '( 1X, A11, A50, I7 )'
-    character(len=*), parameter:: format_print_var = '( 1X, A11, A55, I7 )'
-    character(len=*), parameter:: format_var_summary = '( 1X, A11, A20, I7 )'
+    character(len=*), parameter:: format_var_header = '( 1X,A11,A50,I7 )'
+    character(len=*), parameter:: format_block_string = '( 16X,A50 )'
+    character(len=*), parameter:: format_print_var = '( 1X,A11,A55,I7 )'
+    character(len=*), parameter:: format_var_summary = '( 1X,A11,A20,I7 )'
     character(len=*), parameter:: format_isubno = '( 3X,I4 )'
-    character(len=*), parameter:: format_location = '( F8.2, 8X, F6.1, 1X, F5.2, 5X, I1, 1X, F8.1)'
-    character(len=*), parameter:: format_sauef = '( F8.2, 1X, F6.3, 1X, F6.1, 1X, F5.2, 5X, I1, 1X, F8.1, 33X, I4 )'
-    character(len=*), parameter:: format_lr = '( 12(F6.2), 4X, I4 )'
-    character(len=*), parameter:: format_soils = '( 1X, F5.2, 2X, F5.2, 6(F0.3,1X), 5(2X, F5.2), 11X, F42, 4X, I4 )'
+    character(len=*), parameter:: format_location = '( F8.2,8X,F6.1,1X,F5.2,5X,I1,1X,F8.1)'
+    character(len=*), parameter:: format_sauef = '( F8.2,1X,F6.3,1X,F6.1,1X,F5.2,5X,I1,1X,F8.1,33X,I4 )'
+    character(len=*), parameter:: format_lr = '( 12(F6.2),4X,I4 )'
+    character(len=*), parameter:: format_soils = '( 1X,F5.2,2X,F5.2,6(1X,F4.3),2(2X,F5.2),19X,I4 )'
     character(len=*), parameter:: format_icon_iswave = '( 66X,I1,5X,I1 )'
     character(len=*), parameter:: format_albedo = '( 1X,11(F4.2,1X),F4.2,6X,I1,5X,I1,3X,I4 )'
     character(len=*), parameter:: format_cerc = '( 1X,12(F4.2,1X),15X,I4 )'
+    character(len=*), parameter:: format_strmflw_line = '( 25X,I1,2(2X,F5.3),3X,F4.2,29X,I4 )'
+    character(len=*), parameter:: format_strmflw = '( 1X,F5.2,3X,F5.3,1X,F6.2,4X,I1,2(2X,F5.3),3X,F4.2,29X,I4 )'
     character(len=*), parameter:: format_icc = '( 2X,12(I3.2,2X),14X,I4 )'
-    character(len=*), parameter:: format_calibrated = '( 10X, A11, A17, I7, A11, I4, A9, I4 )'
+    character(len=*), parameter:: format_adjustment = '( 1X,A11,A30,I7,A9,I4 )'
 
 contains
 
@@ -55,7 +58,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL CALIBRATE THE VARIABLES
 !                       ACCORDING TO THE LINE NUMBER.
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 6, 2015
+!      DATE REVISED  :  AUGUST 7, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
@@ -65,17 +68,18 @@ contains
 !                       INTEGER, INPUT, THE INDEX ASSOCIATED WITH A VARIABLE
 !
 !-------------------------------------------------------------------------------
-    subroutine calibrateline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, line, var_index)
+    subroutine calibrateline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, &
+                             line, var_index, block_var_string)
 
+        character(len=50), intent(in) :: block_var_string
         integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_index
         integer, intent(inout) :: line
         character(80) :: dum, dum2
-        integer :: icons, iswave, ihemi, irun
-        reall :: sauef
-        real :: clarea, elev, alat, wssize
-        real :: depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
-        real :: qfresp, cofru, smddep, adjump, disimp, stoimp
         integer ::  i, l, d1, d2
+        integer :: icons, iswave, ihemi, irun
+        real :: clarea, sauef, elev, alat, wssize
+        real :: depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
+        real :: qfresp, cofru, smddep, adjimp, disimp, stoimp
         integer, dimension(12) :: icc
         real, dimension(12) :: coiam, cay, elaim, roota, albedo, tmaxlr, tminlr
 
@@ -83,10 +87,9 @@ contains
         read(unit_var,*) dum2  ! header
         read(unit_var,*) dum2  ! header
         write(unit_no,*) sectionHeader
-        write(unit_no,format_var_header) debugStat, ' .... Menu Calibration starting from line >> ', line
+        write(unit_no,format_block_string) block_var_string ! variable to be processed
+        write(unit_no,format_var_header) debugStat,' PARAMETER ADJUSTMENT STARTING FROM LINE '//' : ', line
         do 700 while (l <= isubno)
-            write(unit_no,101) debugStat,' PROCESSING LINE >> ', line
-    101     format(1X, A11, A20, I7)
             read(unit_var,*)d1, d2, sauef, depaho, depbho, &
               wp1, wp2, fc1, fc2, po1, po2, &
               abresp, bfresp, qfresp, cofru, smddep, &
@@ -95,33 +98,58 @@ contains
               (icc(i),i=1,12),(albedo(i),i=1,12), &
               (tmaxlr(i),i=1,12),(tminlr(i),i=1,12)
             select case (var_index)
+               case (1)
+                   read(unit_oldMenu,format_location) clarea, elev, alat, ihemi, wssize ! read original menu variables
+                   write(unit_no,format_sauef) clarea, sauef, elev, &
+                                               alat, ihemi, wssize, l
+                   write(unit_menu,format_sauef) clarea, sauef, elev, &
+                                                 alat, ihemi, wssize, l
+               case (2)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_lr) (tmaxlr(i),i=1,12),(l)
+                   write(unit_menu,format_lr) (tmaxlr(i),i=1,12),(l)
+               case (3)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_lr) (tminlr(i),i=1,12),(l)
+                   write(unit_menu,format_lr) (tminlr(i),i=1,12),(l)
                case (4)
-                   read(unit_oldMenu,format_icon_iswave)icons,iswave ! read original menu variables
-                   write(unit_no,format_albedo)(albedo(i),i=1,12),icons,iswave,l
-                   write(unit_menu,format_albedo)(albedo(i),i=1,12),icons,iswave,l
+                   read(unit_oldMenu,format_icon_iswave) icons,iswave ! read original menu variables
+                   write(unit_no,format_albedo) (albedo(i),i=1,12),icons,iswave,l
+                   write(unit_menu,format_albedo) (albedo(i),i=1,12),icons,iswave,l
+               case (5)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_soils) depaho, depbho, wp1, wp2, fc1, &
+                                               fc2, po1, po2, abresp, bfresp, l
+                   write(unit_menu,format_soils) depaho, depbho, wp1, wp2, fc1, &
+                                               fc2, po1, po2, abresp, bfresp, l
                case (6)
                    read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc)(cay(i),i=1,12),(l)
-                   write(unit_menu,format_cerc)(cay(i),i=1,12),(l)
+                   write(unit_no,format_cerc) (cay(i),i=1,12),(l)
+                   write(unit_menu,format_cerc) (cay(i),i=1,12),(l)
                case (7)
                    read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc)(elaim(i),i=1,12),(l)
-                   write(unit_menu,format_cerc)(elaim(i),i=1,12),(l)
+                   write(unit_no,format_cerc) (elaim(i),i=1,12),(l)
+                   write(unit_menu,format_cerc) (elaim(i),i=1,12),(l)
                case (8)
                    read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc)(roota(i),i=1,12),(l)
-                   write(unit_menu,format_cerc)(roota(i),i=1,12),(l)
+                   write(unit_no,format_cerc) (roota(i),i=1,12),(l)
+                   write(unit_menu,format_cerc) (roota(i),i=1,12),(l)
+               case (9)
+                   read(unit_oldMenu,format_strmflw_line) irun, adjimp, disimp, stoimp
+                   write(unit_no,format_strmflw) qfresp, cofru, smddep, irun, &
+                                                 adjimp, disimp, stoimp, l
+                   write(unit_menu,format_strmflw) qfresp, cofru, smddep, irun, &
+                                                   adjimp, disimp, stoimp, l
                case (10)
                    read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc)(coiam(i),i=1,12),(l)
-                   write(unit_menu,format_cerc)(coiam(i),i=1,12),(l)
+                   write(unit_no,format_cerc) (coiam(i),i=1,12),(l)
+                   write(unit_menu,format_cerc) (coiam(i),i=1,12),(l)
                case (11)
                    read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_icc)(icc(i),i=1,12),(l)
-                   write(unit_menu,format_icc)(icc(i),i=1,12),(l)
+                   write(unit_no,format_icc) (icc(i),i=1,12),(l)
+                   write(unit_menu,format_icc) (icc(i),i=1,12),(l)
            end select
-           write(unit_no,format_calibrated) debugRes,' CALIBRATED LINE ', &
-                                            line,' --- HRU # ',l,' OUT OF ',isubno
+           write(unit_no,format_adjustment) debugRes,' SUCCESSFULLY PROCESSED LINE ', line, ' & HRU # ',l
            l = l + 1
            line = line + 1
     700 end do
@@ -130,16 +158,16 @@ contains
 
 !-------------------------------------------------------------------------------
 !
-!  SUBROUTINE TITLE  :  INITIATEISUBNO
+!  SUBROUTINE TITLE  :  FINDTOTALCATCHMENTNUMBER
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ISUBNO VARIABLE WITH
 !                       TOTAL NUMBER OF HRU IN THE MENU FILE
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 5, 2015
+!      DATE REVISED  :  AUGUST 7, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, TOTAL NUMBER OF CATCHMENT IN WATERSHED
 !
 !-------------------------------------------------------------------------------
-    subroutine initiateISUBNO(unit_menu, isub_no)
+    subroutine findTotalCatchmentNumber(unit_menu, isub_no)
 
         character(80) :: menuheaderline
         integer :: p, num_line
@@ -154,7 +182,7 @@ contains
     898 end do
         read(unit_menu,format_isubno) isub_no
 
-    end subroutine initiateISUBNO
+    end subroutine findTotalCatchmentNumber
 
 !-------------------------------------------------------------------------------
 !
@@ -207,7 +235,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH DIFFERENT
 !                       TYPES OF VARIABLES
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 6, 2015
+!      DATE REVISED  :  AUGUST 7, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       CHARACTER ARRAY, INPUT, BLOCK INFO CONTAINING VARIABLES
@@ -218,17 +246,17 @@ contains
         integer, intent(in) :: num_var
         character(len=50), dimension(num_var), intent(out) :: block_var
 
-        block_var(1) = '             LOCATIONAL and CATCHMENT --- SAUEF  ' ! LOCATIONAL AND CATCHMENT INFO: CLAREA, SAUEF, ELEV, ALAT, IHEMI, WSSIZE
-        block_var(2) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- TMXLR  ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
-        block_var(3) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- TMNLR  ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(1) = ' LOCATIONAL and CATCHMENT ---------------- SAUEF ' ! LOCATIONAL AND CATCHMENT INFO: CLAREA, SAUEF, ELEV, ALAT, IHEMI, WSSIZE
+        block_var(2) = ' REFERENCE POTENTIAL EVAPORATION UNIT ---- TMXLR ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(3) = ' REFERENCE POTENTIAL EVAPORATION UNIT ---- TMNLR ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
         block_var(4) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- ALBEDO ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
-        block_var(5) = '     SOILS --- DEPAB,WP1/2,FC1/2,PO1/2,AB/BFRESP ' ! CATCHMENT SOILS INFO: DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP
-        block_var(6) = '                 CATCHMENT LAND COVER --- CAY    ' ! CATCHMENT LAND COVER INFO
-        block_var(7) = '                 CATCHMENT LAND COVER --- ELAIM  ' ! CATCHMENT LAND COVER INFO
-        block_var(8) = '                 CATCHMENT LAND COVER --- ROOTA  ' ! CATCHMENT LAND COVER INFO
-        block_var(9) = '  STREAMFLOW SIM CONTROL --- QFRESP,COFRU,SMDDEP ' ! STREAMFLOW SIMULATION CONTROL VARIABLES: QFRESP, COFRU, SMDDEP, IRUN, ADJIMP, DISIMP, STOIMP
-        block_var(10) = '               STREAMFLOW SIM CONTROL --- COIAM  ' ! STREAMFLOW SIMULATION CONTROL VARIABLE: COIAM
-        block_var(11) = '                          SNOW OPTION --- ICC    ' ! SNOW VARIABLE: ICC
+        block_var(5) = ' SOILS ------- DEPAB,WP1/2,FC1/2,PO1/2,AB/BFRESP ' ! CATCHMENT SOILS INFO: DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP
+        block_var(6) = ' CATCHMENT LAND COVER ---------------------- CAY ' ! CATCHMENT LAND COVER INFO
+        block_var(7) = ' CATCHMENT LAND COVER -------------------- ELAIM ' ! CATCHMENT LAND COVER INFO
+        block_var(8) = ' CATCHMENT LAND COVER -------------------- ROOTA ' ! CATCHMENT LAND COVER INFO
+        block_var(9) = ' STREAMFLOW SIM CONTROL ---- QFRESP,COFRU,SMDDEP ' ! STREAMFLOW SIMULATION CONTROL VARIABLES: QFRESP, COFRU, SMDDEP, IRUN, ADJIMP, DISIMP, STOIMP
+        block_var(10) = ' STREAMFLOW SIM CONTROL ------------------ COIAM ' ! STREAMFLOW SIMULATION CONTROL VARIABLE: COIAM
+        block_var(11) = ' SNOW OPTION ------------------------------- ICC ' ! SNOW VARIABLE: ICC
 
     end subroutine initiateVarBlock
 

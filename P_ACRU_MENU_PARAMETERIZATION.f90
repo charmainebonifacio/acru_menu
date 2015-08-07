@@ -1,8 +1,8 @@
 !###############################################################################
-! MAIN TITLE   : P_ACRU_MENU_CALIBRATION
+! MAIN TITLE   : P_ACRU_MENU_PARAMETERIZATION
 ! CREATED BY   : CHARMAINE BONIFACIOO
 ! DATE CREATED : MAY 8, 2015
-! DATE REVISED : AUGUST 6, 2015
+! DATE REVISED : AUGUST 7, 2015
 ! DESCRIPTION  : THE PROGRAM WILL COPY VALUES FROM A TAB DELIMITED FILE THAT
 !                CONTAINS 22 VARIABLES: SAUEF, DEPAHO, DEPBHO, WP1, WP2,
 !                FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU, SMDDEP,
@@ -15,7 +15,7 @@
 ! OUTPUT       : 1) UPDATED MENU FILE
 !                2) LOG FILE
 !###############################################################################
-program p_acru_menu_calibration
+program p_acru_menu_parameterization
 
     use m_systemcheck
     use m_systemlog
@@ -24,14 +24,14 @@ program p_acru_menu_calibration
 
     character(len=4), parameter :: menu = 'MENU'
     character(len=*), parameter :: menuvars = 'menu_variable.txt'
-    character(len=*), parameter :: format_header_line = '( A11, A80 )'
-    character(len=*), parameter :: format_line_summary = '( 1X, A11, A30, I7 )'
-    character(len=*), parameter :: format_processed = '( 1X, A11, I7, A30 )'
-    character(len=*), parameter :: format_etime = '(1X, A11, A20, F10.5)'
-    character(len=*), parameter :: format_logfile = '(1X, A11, A20, A30)'
-    character(len=*), parameter :: format_logstat = '(1X, A11, A20, A20)'
-    character(len=*), parameter :: format_daytime = '(1X, A11, A20, A15)'
-    character(len=*), parameter :: format_filestat = '(1X, A11, A20, I4)'
+    character(len=*), parameter :: format_header_line = '( A11,A80 )'
+    character(len=*), parameter :: format_line_summary = '( 1X,A11,A30,I7 )'
+    character(len=*), parameter :: format_processed = '( 1X,A11,I7,A30 )'
+    character(len=*), parameter :: format_etime = '(1X, A11,A20,F10.5 )'
+    character(len=*), parameter :: format_logfile = '( 1X,A11,A20,A30 )'
+    character(len=*), parameter :: format_logstat = '( 1X,A11,A20,A20 )'
+    character(len=*), parameter :: format_daytime = '( 1X,A11,A20,A15 )'
+    character(len=*), parameter :: format_filestat = '( 1X,A11,A20,I4 )'
     character(len=*), parameter :: format_endmsg = '( A75,A10,A3,A5 )'
     integer, parameter :: num_var = 11
     character(len=30) :: outfile, infile, logrun, varfile
@@ -107,10 +107,10 @@ program p_acru_menu_calibration
 ! START BY COUNTING HOW MANY HRUS ARE FOUND IN THIS MENU FILE.
     isubno=0
     open(unit=20,file=outfile)
-    call initiateISUBNO(20, isubno)
+    call findTotalCatchmentNumber(20, isubno)
     close(20)
     write(12,*)
-    write(12,*) '[ O B T A I N   N U M B E R   O F   H R U  ] '
+    write(12,*) '[ O B T A I N   N U M B E R   O F   C A T C H M E N T S  ] '
     write(12,*)
     write(12,format_var_summary) debugStat, ' # OF HRU IN MENU '//': ', isubno
     open(unit=30,file=infile,iostat=ok)
@@ -122,7 +122,7 @@ program p_acru_menu_calibration
     call validateEOF(20, lineeof, totalLine)
     close(20)
     write(12,*)
-    write(12,*) '[ E O F   C H E C K ] '
+    write(12,*) '[ E N D  O F  F I L E   C H E C K ] '
     write(12,*)
     write(12,format_line_summary) debugStat, '  COUNTED END OF FILE LINES : ', totalLine
     write(12,format_line_summary) debugStat, '    CALCULATED LINES BY HRU : ', lineeof
@@ -139,7 +139,7 @@ program p_acru_menu_calibration
 !***********************************************************************
 ! VARIABLE CALIBRATION STARTS HERE!
     write(12,*)
-    write(12,*) '[ C A L I B R A T I N G   M E N U   F I L E ] '
+    write(12,*) '[ M E N U   F I L E   P A R A M E T E R I Z A T I O N ] '
     write(12,*)
 ! Initiate specific lines of block.
     lineSauef  = blockVarRow(1)
@@ -157,46 +157,70 @@ program p_acru_menu_calibration
     open(unit=30,file=infile)
     line=1
     do 900 while (line < lineeof) ! Go thru MENU FILE once!
-        if(line == lineAlbedo) then ! check where albedo should be overwritten
+        if(line == lineSauef) then ! check where SAUEF should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 4)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 1, blockVariable(1))
             line = line_num
             close(11)
-        elseif(line == lineSoils) then ! check where albedo should be overwritten
+        elseif(line == lineTmxlr) then ! check where TMAXLR should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 5)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 2, blockVariable(2))
             line = line_num
             close(11)
-        elseif(line == lineCay) then ! check where cay should be overwritten
+        elseif(line == lineTmnlr) then ! check where TMINLR should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 6)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 3, blockVariable(3))
             line = line_num
             close(11)
-        elseif(line == lineElaim) then ! check where elaim should be overwritten
+        elseif(line == lineAlbedo) then ! check where ALBEDO should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 7)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 4, blockVariable(4))
             line = line_num
             close(11)
-        elseif(line == lineRoota) then ! check where cay should be overwritten
+        elseif(line == lineSoils) then ! check where SOILS should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 8)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 5, blockVariable(5))
             line = line_num
             close(11)
-        elseif(line == lineCoiam) then ! check where cay should be overwritten
+        elseif(line == lineCay) then ! check where CAY should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 10)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 6, blockVariable(6))
             line = line_num
             close(11)
-        elseif(line == lineIcc) then ! check where cay should be overwritten
+        elseif(line == lineElaim) then ! check where ELAIM should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 11)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 7, blockVariable(7))
+            line = line_num
+            close(11)
+        elseif(line == lineRoota) then ! check where ROOTA should be overwritten
+            open(unit=11,file=varfile)
+            line_num = line
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 8, blockVariable(8))
+            line = line_num
+            close(11)
+        elseif(line == lineStrmflw) then ! check where STREAMFLOW should be overwritten
+            open(unit=11,file=varfile)
+            line_num = line
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 9, blockVariable(9))
+            line = line_num
+            close(11)
+        elseif(line == lineCoiam) then ! check where COIAM should be overwritten
+            open(unit=11,file=varfile)
+            line_num = line
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 10, blockVariable(10))
+            line = line_num
+            close(11)
+        elseif(line == lineIcc) then ! check where ICC should be overwritten
+            open(unit=11,file=varfile)
+            line_num = line
+            call calibrateline(12, 20, 30, 11, isubno, line_num, 11, blockVariable(11))
             line = line_num
             close(11)
         else ! simply read and copy lines
@@ -226,4 +250,4 @@ program p_acru_menu_calibration
     call endprogramlog(12)
     close(12)
 
-end program p_acru_menu_calibration
+end program p_acru_menu_parameterization
