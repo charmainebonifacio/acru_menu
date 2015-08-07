@@ -2,7 +2,7 @@
 ! MODULE TITLE : M_CALIBRATION
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 24, 2015
-! DATE REVISED : AUGUST 5, 2015
+! DATE REVISED : AUGUST 6, 2015
 ! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED CALIBRATE THE MENU FILE.
 !###############################################################################
 module m_calibration
@@ -12,8 +12,13 @@ module m_calibration
 
     character(len=*), parameter:: format_line = '( A80 )'
     character(len=*), parameter:: format_var_header = '( 1X, A11, A50, I7 )'
+    character(len=*), parameter:: format_print_var = '( 1X, A11, A55, I7 )'
     character(len=*), parameter:: format_var_summary = '( 1X, A11, A20, I7 )'
     character(len=*), parameter:: format_isubno = '( 3X,I4 )'
+    character(len=*), parameter:: format_location = '( F8.2, 8X, F6.1, 1X, F5.2, 5X, I1, 1X, F8.1)'
+    character(len=*), parameter:: format_sauef = '( F8.2, 1X, F6.3, 1X, F6.1, 1X, F5.2, 5X, I1, 1X, F8.1, 33X, I4 )'
+    character(len=*), parameter:: format_lr = '( 12(F6.2), 4X, I4 )'
+    character(len=*), parameter:: format_soils = '( 1X, F5.2, 2X, F5.2, 6(F0.3,1X), 5(2X, F5.2), 11X, F42, 4X, I4 )'
     character(len=*), parameter:: format_icon_iswave = '( 66X,I1,5X,I1 )'
     character(len=*), parameter:: format_albedo = '( 1X,11(F4.2,1X),F4.2,6X,I1,5X,I1,3X,I4 )'
     character(len=*), parameter:: format_cerc = '( 1X,12(F4.2,1X),15X,I4 )'
@@ -30,7 +35,7 @@ contains
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
 !      DATE REVISED  :  JULY 30, 2015
 !        PARAMETERS  :  INTEGER, OUTPUT THE ROW LINE FOR EACH VARIABLE
-!                       INTEGER, INPUT THE TOTAL # OF HRU
+!                       INTEGER, INPUT, TOTAL NUMBER OF CATCHMENT IN WATERSHED
 !                       INTEGER, INPUT THE VARIABLE RANK WITHIN MENU FILE.
 !
 !-------------------------------------------------------------------------------
@@ -50,12 +55,12 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL CALIBRATE THE VARIABLES
 !                       ACCORDING TO THE LINE NUMBER.
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  JULY 31, 2015
+!      DATE REVISED  :  AUGUST 6, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
-!                       INTEGER, INPUT, TOTAL NUMBER OF HRU IN MENU
+!                       INTEGER, INPUT, TOTAL NUMBER OF CATCHMENT IN WATERSHED
 !                       INTEGER, OUTPUT THE TOTAL NUMBER OF LINES PROCESSED
 !                       INTEGER, INPUT, THE INDEX ASSOCIATED WITH A VARIABLE
 !
@@ -66,9 +71,10 @@ contains
         integer, intent(inout) :: line
         character(80) :: dum, dum2
         integer :: icons, iswave, ihemi, irun
-        real :: sauef, depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
-        real :: smddep, qfresp, cofru
-        real :: clarea, elect, alat, wssize, adjump, disimp, stoimp
+        reall :: sauef
+        real :: clarea, elev, alat, wssize
+        real :: depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
+        real :: qfresp, cofru, smddep, adjump, disimp, stoimp
         integer ::  i, l, d1, d2
         integer, dimension(12) :: icc
         real, dimension(12) :: coiam, cay, elaim, roota, albedo, tmaxlr, tminlr
@@ -90,9 +96,13 @@ contains
               (tmaxlr(i),i=1,12),(tminlr(i),i=1,12)
             select case (var_index)
                case (4)
-                   read(unit_oldMenu,format_icon_iswave)icons,iswave ! read original menu icons and iswave variables
+                   read(unit_oldMenu,format_icon_iswave)icons,iswave ! read original menu variables
                    write(unit_no,format_albedo)(albedo(i),i=1,12),icons,iswave,l
                    write(unit_menu,format_albedo)(albedo(i),i=1,12),icons,iswave,l
+               case (5)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_soils)depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp, l
+                   write(unit_menu,format_soils)depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp, l
                case (6)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc)(cay(i),i=1,12),(l)
@@ -130,7 +140,7 @@ contains
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
 !      DATE REVISED  :  AUGUST 5, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
-!                       INTEGER, OUTPUT, TOTAL NUMBER OF HRU IN MENU
+!                       INTEGER, INPUT, TOTAL NUMBER OF CATCHMENT IN WATERSHED
 !
 !-------------------------------------------------------------------------------
     subroutine initiateISUBNO(unit_menu, isub_no)
@@ -177,15 +187,14 @@ contains
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
 !      DATE REVISED  :  AUGUST 5, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
-!                       INTEGER, INPUT, TOTAL NUMBER OF HRU IN MENU
 !                       INTEGER, OUTPUT THE TOTAL NUMBER OF LINES PROCESSED
 !                       INTEGER, INPUT, THE INDEX ASSOCIATED WITH A VARIABLE
 !
 !-------------------------------------------------------------------------------
-    subroutine validateEOF(unit_menu, isub_no, line_eof, tot_lines)
+    subroutine validateEOF(unit_menu, line_eof, tot_lines)
 
         character(80) :: dum
-        integer, intent(in) :: unit_menu, isub_no, line_eof
+        integer, intent(in) :: unit_menu, line_eof
         integer, intent(inout) :: tot_lines
 
         tot_lines = 1
@@ -202,31 +211,30 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH DIFFERENT
 !                       TYPES OF VARIABLES
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 5, 2015
+!      DATE REVISED  :  AUGUST 6, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
-!                       CHARACTER ARRAY, INPUT, ALL TYPES OF VARIABLES
+!                       CHARACTER ARRAY, INPUT, BLOCK INFO CONTAINING VARIABLES
 !
 !-------------------------------------------------------------------------------
-    subroutine initiateVarType(unit_no, num_var, var_type)
+    subroutine initiateVarBlock(num_var, block_var)
 
-        integer :: i
-        integer, intent(in) :: unit_no, num_var
-        character(10), dimension(num_var), intent(out) :: var_type
+        integer, intent(in) :: num_var
+        character(len=50), dimension(num_var), intent(out) :: block_var
 
-        var_type(1) = ' SAUEF  '
-        var_type(2) = ' TMXLR  '
-        var_type(3) = ' TMNLR  '
-        var_type(4) = ' ALBEDO '
-        var_type(5) = ' SOILS  '
-        var_type(6) = ' CAY    '
-        var_type(7) = ' ELAIM  '
-        var_type(8) = ' ROOTA  '
-        var_type(9) = ' QFRESP '
-        var_type(10) = ' COIAM  '
-        var_type(11) = ' ICC    '
+        block_var(1) = '             LOCATIONAL and CATCHMENT --- SAUEF  ' ! LOCATIONAL AND CATCHMENT INFO: CLAREA, SAUEF, ELEV, ALAT, IHEMI, WSSIZE
+        block_var(2) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- TMXLR  ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(3) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- TMNLR  ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(4) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- ALBEDO ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(5) = '     SOILS --- DEPAB,WP1/2,FC1/2,PO1/2,AB/BFRESP ' ! CATCHMENT SOILS INFO: DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP
+        block_var(6) = '                 CATCHMENT LAND COVER --- CAY    ' ! CATCHMENT LAND COVER INFO
+        block_var(7) = '                 CATCHMENT LAND COVER --- ELAIM  ' ! CATCHMENT LAND COVER INFO
+        block_var(8) = '                 CATCHMENT LAND COVER --- ROOTA  ' ! CATCHMENT LAND COVER INFO
+        block_var(9) = '  STREAMFLOW SIM CONTROL --- QFRESP,COFRU,SMDDEP ' ! STREAMFLOW SIMULATION CONTROL VARIABLES: QFRESP, COFRU, SMDDEP, IRUN, ADJIMP, DISIMP, STOIMP
+        block_var(10) = '               STREAMFLOW SIM CONTROL --- COIAM  ' ! STREAMFLOW SIMULATION CONTROL VARIABLE: COIAM
+        block_var(11) = '                          SNOW OPTION --- ICC    ' ! SNOW VARIABLE: ICC
 
-    end subroutine initiateVarType
+    end subroutine initiateVarBlock
 
 !-------------------------------------------------------------------------------
 !
@@ -235,30 +243,26 @@ contains
 !                       NUMBER FOR EACH VARIABLE
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
 !      DATE REVISED  :  AUGUST 5, 2015
-!        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
-!                       INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
-!                       CHARACTER ARRAY, INPUT, ALL TYPES OF VARIABLES
+!        PARAMETERS  :  INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       INTEGER ARRAY, OUTPUT, BLOCK NUMBER OF CONTAINER
 !
 !-------------------------------------------------------------------------------
-    subroutine initiateVarContainer(unit_no, num_var, var_type, var_container)
+    subroutine initiateVarContainer(num_var, block_container)
 
-        integer :: i
-        integer, intent(in) :: unit_no, num_var
-        character(len=*), dimension(num_var), intent(in) :: var_type
-        integer, dimension(num_var), intent(out) :: var_container
+        integer, intent(in) :: num_var
+        integer, dimension(num_var), intent(out) :: block_container
 
-        var_container(1) = 9
-        var_container(2) = 20
-        var_container(3) = 21
-        var_container(4) = 28
-        var_container(5) = 43
-        var_container(6) = 53
-        var_container(7) = 54
-        var_container(8) = 56
-        var_container(9) = 66
-        var_container(10) = 67
-        var_container(11) = 141
+        block_container(1) = 9
+        block_container(2) = 20
+        block_container(3) = 21
+        block_container(4) = 28
+        block_container(5) = 43
+        block_container(6) = 53
+        block_container(7) = 54
+        block_container(8) = 56
+        block_container(9) = 66
+        block_container(10) = 67
+        block_container(11) = 141
 
     end subroutine initiateVarContainer
 
@@ -268,23 +272,23 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE STARTING LINES FOR
 !                       ALL ASSOCIATED VARIABLES
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 5, 2015
+!      DATE REVISED  :  AUGUST 6, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
-!                       INTEGER, INPUT, TOTAL NUMBER OF HRU IN MENU
+!                       INTEGER, INPUT, TOTAL NUMBER OF CATCHMENT IN WATERSHED
 !                       INTEGER ARRAY, INPUT, BLOCK NUMBER OF CONTAINER
 !                       INTEGER ARRAY, OUTPUT, STARTING LINE FOR EACH BLOCK
 !
 !-------------------------------------------------------------------------------
-    subroutine initiatiateVarLine(unit_no, num_var, isub_no, var_container, var_line)
+    subroutine initiatiateVarLine(num_var, isub_no, block_container, block_line)
 
         integer :: i
-        integer, intent(in) :: unit_no, num_var, isub_no
-        integer, dimension(num_var), intent(in) :: var_container
-        integer, dimension(num_var), intent(out) :: var_line
+        integer, intent(in) :: num_var, isub_no
+        integer, dimension(num_var), intent(in) :: block_container
+        integer, dimension(num_var), intent(out) :: block_line
 
         do i=1, num_var ! Initiate block container with specific numbers
-            call calcvarline(var_line(i), isub_no, var_container(i))
+            call calcvarline(block_line(i), isub_no, block_container(i))
         end do
 
     end subroutine initiatiateVarLine
@@ -303,23 +307,23 @@ contains
 !                       INTEGER ARRAY, INPUT, STARTING LINE FOR EACH BLOCK
 !
 !-------------------------------------------------------------------------------
-    subroutine printResults(unit_no, num_var, var_type, var_container, var_line)
+    subroutine printResults(unit_no, num_var, block_var, block_container, block_line)
 
         integer :: i
         integer, intent(in) :: unit_no, num_var
-        character(10), dimension(num_var), intent(in) :: var_type
-        integer, dimension(num_var), intent(in) :: var_container, var_line
+        character(len=50), dimension(num_var), intent(in) :: block_var
+        integer, dimension(num_var), intent(in) :: block_container, block_line
 
         write(unit_no,*) ' >> INITIALIZING THE FOLLOWING BLOCK FOR EACH VARIABLES... '
         write(unit_no,*)
         do i=1, num_var
-          write(unit_no,format_var_summary) debugStat, var_type(i)//': ', var_container(i)
+          write(unit_no,format_print_var) debugStat, block_var(i)//': ', block_container(i)
         end do
         write(unit_no,*)
         write(unit_no,*) ' >> INITIALIZING THE FOLLOWING STARTING LINES FOR EACH VARIABLES... '
         write(unit_no,*)
         do i=1, num_var
-          write(unit_no,format_var_summary) debugStat, var_type(i)//': ', var_line(i)
+          write(unit_no,format_print_var) debugStat, block_var(i)//': ', block_line(i)
         end do
 
     end subroutine printResults
