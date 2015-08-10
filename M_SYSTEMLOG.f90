@@ -2,7 +2,7 @@
 ! MODULE TITLE : M_SYSTEMLOG
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 27, 2015
-! DATE REVISED : AUGUST 7, 2015
+! DATE REVISED : AUGUST 9, 2015
 ! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED TO FORMAT THE LOG FILE.
 !###############################################################################
 module m_systemlog
@@ -12,7 +12,7 @@ module m_systemlog
     character(11), parameter :: debugRes = '[ RESULT ] '
     character(11), parameter :: debugLog = '[ LOGGED ] '
     character(len=*), parameter :: logHeader =  '*******************************************************************'
-    character(67), parameter :: programHeader = '###################################################################'
+    character(len=*), parameter :: programHeader = '###################################################################'
     character(20), parameter :: dayStat = '             DATE : '
     character(20), parameter :: timeStat = '             TIME : '
     character(20), parameter :: etimeStat = '     ELAPSED TIME : '
