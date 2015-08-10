@@ -58,7 +58,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL CALIBRATE THE VARIABLES
 !                       ACCORDING TO THE LINE NUMBER.
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 7, 2015
+!      DATE REVISED  :  AUGUST 9, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
@@ -68,93 +68,96 @@ contains
 !                       INTEGER, INPUT, THE INDEX ASSOCIATED WITH A VARIABLE
 !
 !-------------------------------------------------------------------------------
-    subroutine calibrateline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, &
-                             line, var_index, block_var_string)
+subroutine calibrateline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, &
+                         line, var_index, block_var_string)
 
-        character(len=50), intent(in) :: block_var_string
-        integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_index
-        integer, intent(inout) :: line
-        character(80) :: dum, dum2
-        integer ::  i, l, d1, d2
-        integer :: icons, iswave, ihemi, irun
-        real :: clarea, sauef, elev, alat, wssize
-        real :: depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
-        real :: qfresp, cofru, smddep, adjimp, disimp, stoimp
-        integer, dimension(12) :: icc
-        real, dimension(12) :: coiam, cay, elaim, roota, albedo, tmaxlr, tminlr
+    character(len=50), intent(in) :: block_var_string
+    integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_index
+    integer, intent(inout) :: line
+    character(80) :: dum, dum2
+    integer ::  i, l, d1, d2
+    integer :: icons, iswave, ihemi, irun
+    real :: clarea, sauef, elev, alat, wssize
+    real :: depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
+    real :: qfresp, cofru, smddep, adjimp, disimp, stoimp
+    real :: depaho2, depbho2, abresp2, bfresp2
+    real :: qfresp2, qfresp3, cofru2, smddep2, smddep3
+    integer, dimension(12) :: icc
+    real, dimension(12) :: coiam, cay, elaim, roota, albedo, tmaxlr, tminlr
 
-        l = 1
-        read(unit_var,*) dum2  ! header
-        read(unit_var,*) dum2  ! header
-        write(unit_no,*) sectionHeader
-        write(unit_no,format_block_string) block_var_string ! variable to be processed
-        write(unit_no,format_var_header) debugStat,' PARAMETER ADJUSTMENT STARTING FROM LINE '//' : ', line
-        do 700 while (l <= isubno)
-            read(unit_var,*)d1, d2, sauef, depaho, depbho, &
-              wp1, wp2, fc1, fc2, po1, po2, &
-              abresp, bfresp, qfresp, cofru, smddep, &
-              (coiam(i),i=1,12),(cay(i),i=1,12), &
-              (elaim(i),i=1,12),(roota(i),i=1,12), &
-              (icc(i),i=1,12),(albedo(i),i=1,12), &
-              (tmaxlr(i),i=1,12),(tminlr(i),i=1,12)
-            select case (var_index)
-               case (1)
-                   read(unit_oldMenu,format_location) clarea, elev, alat, ihemi, wssize ! read original menu variables
-                   write(unit_no,format_sauef) clarea, sauef, elev, &
-                                               alat, ihemi, wssize, l
-                   write(unit_menu,format_sauef) clarea, sauef, elev, &
-                                                 alat, ihemi, wssize, l
-               case (2)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_lr) (tmaxlr(i),i=1,12),(l)
-                   write(unit_menu,format_lr) (tmaxlr(i),i=1,12),(l)
-               case (3)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_lr) (tminlr(i),i=1,12),(l)
-                   write(unit_menu,format_lr) (tminlr(i),i=1,12),(l)
-               case (4)
-                   read(unit_oldMenu,format_icon_iswave) icons,iswave ! read original menu variables
-                   write(unit_no,format_albedo) (albedo(i),i=1,12),icons,iswave,l
-                   write(unit_menu,format_albedo) (albedo(i),i=1,12),icons,iswave,l
-               case (5)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_soils) depaho, depbho, wp1, wp2, fc1, &
-                                               fc2, po1, po2, abresp, bfresp, l
-                   write(unit_menu,format_soils) depaho, depbho, wp1, wp2, fc1, &
-                                               fc2, po1, po2, abresp, bfresp, l
-               case (6)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc) (cay(i),i=1,12),(l)
-                   write(unit_menu,format_cerc) (cay(i),i=1,12),(l)
-               case (7)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc) (elaim(i),i=1,12),(l)
-                   write(unit_menu,format_cerc) (elaim(i),i=1,12),(l)
-               case (8)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc) (roota(i),i=1,12),(l)
-                   write(unit_menu,format_cerc) (roota(i),i=1,12),(l)
-               case (9)
-                   read(unit_oldMenu,format_strmflw_line) irun, adjimp, disimp, stoimp
-                   write(unit_no,format_strmflw) qfresp, cofru, smddep, irun, &
-                                                 adjimp, disimp, stoimp, l
-                   write(unit_menu,format_strmflw) qfresp, cofru, smddep, irun, &
-                                                   adjimp, disimp, stoimp, l
-               case (10)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc) (coiam(i),i=1,12),(l)
-                   write(unit_menu,format_cerc) (coiam(i),i=1,12),(l)
-               case (11)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_icc) (icc(i),i=1,12),(l)
-                   write(unit_menu,format_icc) (icc(i),i=1,12),(l)
-           end select
-           write(unit_no,format_adjustment) debugRes,' SUCCESSFULLY PROCESSED LINE ', line, ' & HRU # ',l
-           l = l + 1
-           line = line + 1
-    700 end do
 
-    end subroutine calibrateline
+    l = 1
+    read(unit_var,*) dum2  ! header
+    read(unit_var,*) dum2  ! header
+    write(unit_no,*) sectionHeader
+    write(unit_no,format_block_string) block_var_string ! variable to be processed
+    write(unit_no,format_var_header) debugStat,' PARAMETER ADJUSTMENT STARTING FROM LINE '//' : ', line
+    do 700 while (l <= isubno)
+        read(unit_var,*) d1, d2, sauef, (tmaxlr(i),i=1,12), &
+          (tminlr(i),i=1,12), (albedo(i),i=1,12), depaho, depbho, &
+          depaho2, depbho2, wp1, wp2, fc1, fc2, po1, po2, &
+          abresp, bfresp, abresp2, bfresp2, (cay(i),i=1,12), &
+          (elaim(i),i=1,12), (roota(i),i=1,12), qfresp, qfresp2, &
+          qfresp3, cofru, cofru2, smddep, smddep2, smddep3, &
+          (coiam(i),i=1,12), (icc(i),i=1,12)
+        select case (var_index)
+           case (1)
+               read(unit_oldMenu,format_location) clarea, elev, alat, ihemi, wssize ! read original menu variables
+               write(unit_no,format_sauef) clarea, sauef, elev, &
+                                           alat, ihemi, wssize, l
+               write(unit_menu,format_sauef) clarea, sauef, elev, &
+                                             alat, ihemi, wssize, l
+           case (2)
+               read(unit_oldMenu,format_line) dum
+               write(unit_no,format_lr) (tmaxlr(i),i=1,12),(l)
+               write(unit_menu,format_lr) (tmaxlr(i),i=1,12),(l)
+           case (3)
+               read(unit_oldMenu,format_line) dum
+               write(unit_no,format_lr) (tminlr(i),i=1,12),(l)
+               write(unit_menu,format_lr) (tminlr(i),i=1,12),(l)
+           case (4)
+               read(unit_oldMenu,format_icon_iswave) icons,iswave ! read original menu variables
+               write(unit_no,format_albedo) (albedo(i),i=1,12),icons,iswave,l
+               write(unit_menu,format_albedo) (albedo(i),i=1,12),icons,iswave,l
+           case (5)
+               read(unit_oldMenu,format_line) dum
+               write(unit_no,format_soils) depaho2, depbho2, wp1, wp2, fc1, &
+                                           fc2, po1, po2, abresp2, bfresp2, l
+               write(unit_menu,format_soils) depaho2, depbho2, wp1, wp2, fc1, &
+                                           fc2, po1, po2, abresp2, bfresp2, l
+           case (6)
+               read(unit_oldMenu,format_line) dum
+               write(unit_no,format_cerc) (cay(i),i=1,12),(l)
+               write(unit_menu,format_cerc) (cay(i),i=1,12),(l)
+           case (7)
+               read(unit_oldMenu,format_line) dum
+               write(unit_no,format_cerc) (elaim(i),i=1,12),(l)
+               write(unit_menu,format_cerc) (elaim(i),i=1,12),(l)
+           case (8)
+               read(unit_oldMenu,format_line) dum
+               write(unit_no,format_cerc) (roota(i),i=1,12),(l)
+               write(unit_menu,format_cerc) (roota(i),i=1,12),(l)
+           case (9)
+               read(unit_oldMenu,format_strmflw_line) irun, adjimp, disimp, stoimp
+               write(unit_no,format_strmflw) qfresp3, cofru2, smddep3, irun, &
+                                             adjimp, disimp, stoimp, l
+               write(unit_menu,format_strmflw) qfresp3, cofru2, smddep3, irun, &
+                                               adjimp, disimp, stoimp, l
+           case (10)
+               read(unit_oldMenu,format_line) dum
+               write(unit_no,format_cerc) (coiam(i),i=1,12),(l)
+               write(unit_menu,format_cerc) (coiam(i),i=1,12),(l)
+           case (11)
+               read(unit_oldMenu,format_line) dum
+               write(unit_no,format_icc) (icc(i),i=1,12),(l)
+               write(unit_menu,format_icc) (icc(i),i=1,12),(l)
+       end select
+       write(unit_no,format_adjustment) debugRes,' SUCCESSFULLY PROCESSED LINE ', line, ' & HRU # ',l
+       l = l + 1
+       line = line + 1
+700 end do
+
+end subroutine calibrateline
 
 !-------------------------------------------------------------------------------
 !
