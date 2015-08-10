@@ -1,11 +1,11 @@
 !###############################################################################
 ! MAIN TITLE   : P_ACRU_MENU_PARAMETERIZATION
-! CREATED BY   : CHARMAINE BONIFACIOO
+! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : MAY 8, 2015
-! DATE REVISED : AUGUST 7, 2015
+! DATE REVISED : AUGUST 10, 2015
 ! DESCRIPTION  : THE PROGRAM WILL COPY VALUES FROM A TAB DELIMITED FILE THAT
 !                CONTAINS 22 VARIABLES: SAUEF, DEPAHO, DEPBHO, WP1, WP2,
-!                FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU, SMDDEP,
+!                FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU, SMDDEP, 
 !                COIAM, CAY, ELAIM, ROOTA, ICC, ALBEDO, TMAXLR, TMINLR
 ! REQUIREMENT  : MUST RUN THE .EXE FILE WITHIN THE INPUT DIRECTORY.
 ! MODULES      : MUST INCLUDE M_SYSTEMCHECK, M_SYSTEMLOG AND
@@ -23,16 +23,16 @@ program p_acru_menu_parameterization
     implicit none
 
     character(len=4), parameter :: menu = 'MENU'
-    character(len=*), parameter :: menuvars = 'menu_variable.txt'
+    character(len=*), parameter :: menuvars = 'MENU_PARAM.txt'
     character(len=*), parameter :: format_header_line = '( A11,A80 )'
     character(len=*), parameter :: format_line_summary = '( 1X,A11,A30,I7 )'
-    character(len=*), parameter :: format_processed = '( 1X,A11,I7,A30 )'
+    character(len=*), parameter :: format_processed = '( 1X,A11,I7,A56 )'
     character(len=*), parameter :: format_etime = '(1X, A11,A20,F10.5 )'
     character(len=*), parameter :: format_logfile = '( 1X,A11,A20,A30 )'
     character(len=*), parameter :: format_logstat = '( 1X,A11,A20,A20 )'
     character(len=*), parameter :: format_daytime = '( 1X,A11,A20,A15 )'
     character(len=*), parameter :: format_filestat = '( 1X,A11,A20,I4 )'
-    character(len=*), parameter :: format_endmsg = '( A75,A10,A3,A5 )'
+    character(len=*), parameter :: format_endmsg = '( A78, A10,A2,A5,A1 )'
     integer, parameter :: num_var = 11
     character(len=30) :: outfile, infile, logrun, varfile
     character(len=80) :: dum, msg
@@ -75,9 +75,12 @@ program p_acru_menu_parameterization
     infile = menu
     outfile = menu//'_OLD'
     call system( "copy " // infile // " " // outfile)
-    call system( "copy " // infile // " " // 'ORIGINAL_'//menu)
     write(12,*) debugStat, ' COPIED MENU FILE AND RENAMED TO MENU_OLD. '
+    call system( "copy " // infile // " " // 'ORIGINAL_'//menu)
+    write(12,*) debugStat, ' COPIED MENU FILE AND RENAMED TO ORIGINAL_MENU. '
     varfile = menuvars
+    call system( "copy " // varfile // " " // 'ORIGINAL_'//menuvars)
+    write(12,*) debugStat, ' COPIED PARAM FILE AND RENAMED TO ORIGINAL_MENU_PARAM.TXT. '
     open(unit=11,file=varfile,iostat=ok)
     write(12,*)
     write(12,*) ' >> PROCESSING VARIABLE FILE...'
@@ -232,13 +235,13 @@ program p_acru_menu_parameterization
     close(20)
     write(12,*) sectionHeader
     write(12,*)
-    write(12,format_processed) debugStat, line, ' = NUMBER OF PROCESSED LINES '
+    write(12,format_processed) debugStat, line, ' = NUMBER OF PROCESSED LINES IN THE MENU PARAMETER FILE.  '
     write(12,*)
-    msg = ' MENU CALIBRATED & CREATED BY CHARMAINE BONIFACIO. MENU SCRIPT VERSION --- '
-    write(30,format_endmsg) msg, date, ' | ', time_now
+    msg = 'PARAMETERIZATION SCRIPT CREATED BY CHARMAINE BONIFACIO. VERSION AUGUST 2015. [ '
+    write(30,format_endmsg) msg, date, '//', time_now,']'
     endfile(30)
     close(30)
-    write(*,format_processed) debugStat, line, ' = NUMBER OF PROCESSED LINES '
+    write(*,format_processed) debugStat, line, ' = NUMBER OF PROCESSED LINES IN THE MENU PARAMETER FILE. '
 !***********************************************************************
 ! END PROGRAM - ELAPSED TIME
     call system_clock(count_1, count_rate, count_max)
