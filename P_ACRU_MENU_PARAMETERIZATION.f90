@@ -2,10 +2,10 @@
 ! MAIN TITLE   : P_ACRU_MENU_PARAMETERIZATION
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : MAY 8, 2015
-! DATE REVISED : AUGUST 10, 2015
+! DATE REVISED : AUGUST 11, 2015
 ! DESCRIPTION  : THE PROGRAM WILL COPY VALUES FROM A TAB DELIMITED FILE THAT
 !                CONTAINS 22 VARIABLES: SAUEF, DEPAHO, DEPBHO, WP1, WP2,
-!                FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU, SMDDEP, 
+!                FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU, SMDDEP,
 !                COIAM, CAY, ELAIM, ROOTA, ICC, ALBEDO, TMAXLR, TMINLR
 ! REQUIREMENT  : MUST RUN THE .EXE FILE WITHIN THE INPUT DIRECTORY.
 ! MODULES      : MUST INCLUDE M_SYSTEMCHECK, M_SYSTEMLOG AND
@@ -25,6 +25,7 @@ program p_acru_menu_parameterization
     character(len=4), parameter :: menu = 'MENU'
     character(len=*), parameter :: menuvars = 'MENU_PARAM.txt'
     character(len=*), parameter :: format_header_line = '( A11,A80 )'
+    character(len=*), parameter :: format_error = '( 1X,A11,A40 )'
     character(len=*), parameter :: format_line_summary = '( 1X,A11,A30,I7 )'
     character(len=*), parameter :: format_processed = '( 1X,A11,I7,A56 )'
     character(len=*), parameter :: format_etime = '(1X, A11,A20,F10.5 )'
@@ -44,7 +45,7 @@ program p_acru_menu_parameterization
     integer :: lineSauef, lineTmxlr, lineTmnlr, lineAlbedo
     integer :: lineSoils, lineCay, lineElaim, lineRoota
     integer :: lineStrmflw, lineCoiam, lineIcc
-    integer :: lineEof
+    integer :: lineEof, valid_stat
     logical :: ex
     real :: elapsed_time
     character(len=50), dimension(11) :: blockVariable
@@ -122,13 +123,30 @@ program p_acru_menu_parameterization
 ! THEN CALCULATE AND VALIDATE EOF FOR THE MENU FILE - HOW MANY LINES IN TOTAL?
     call calculateEOF(isubno, lineeof)
     open(unit=20,file=outfile)
-    call validateEOF(20, lineeof, totalLine)
+    call calculateTOTLINES(20, lineeof, totalLine)
     close(20)
     write(12,*)
     write(12,*) '[ E N D  O F  F I L E   C H E C K ] '
     write(12,*)
     write(12,format_line_summary) debugStat, '  COUNTED END OF FILE LINES : ', totalLine
     write(12,format_line_summary) debugStat, '    CALCULATED LINES BY HRU : ', lineeof
+    call validateEOF(lineeof, totalLine, valid_stat)
+!***********************************************************************
+! EXIT IF EOF FOR THE MENU FILE IS INVALID
+    if (valid_stat /= 0) then
+      write(12,*)
+      write(12,format_error) debugStat, ' CHECK IF THE MENU FILE IS CORRUPTED... '
+      write(12,*)
+      call system_clock(count_1, count_rate, count_max)
+      call datetimelog(date, date_end, time_end)
+      write(12,format_daytime) debugStat, dayStat, date_end
+      write(12,format_daytime) debugStat, timeStat, time_end
+      call elapsedtime(elapsed_time, count_0, count_1, count_rate)
+      write(12,format_etime) debugStat, etimeStat, elapsed_time
+      call endprogramlog(12)
+      close(12)
+      stop
+    endif
 !***********************************************************************
 ! CALCULATE LINE NUMBER FOR EACH VARIABLE!
 ! THEN OVERWRITE VALUES ONCE LINE IS FOUND. CONTINUE FOR X HRUS.
