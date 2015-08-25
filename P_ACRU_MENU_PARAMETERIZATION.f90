@@ -2,11 +2,11 @@
 ! MAIN TITLE   : P_ACRU_MENU_PARAMETERIZATION
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : MAY 8, 2015
-! DATE REVISED : AUGUST 11, 2015
+! DATE REVISED : AUGUST 21, 2015
 ! DESCRIPTION  : THE PROGRAM WILL COPY VALUES FROM A TAB DELIMITED FILE THAT
-!                CONTAINS 22 VARIABLES: SAUEF, DEPAHO, DEPBHO, WP1, WP2,
+!                CONTAINS 18 VARIABLES: TMAXLR, TMINLR, DEPAHO, DEPBHO, WP1, WP2,
 !                FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU, SMDDEP,
-!                COIAM, CAY, ELAIM, ROOTA, ICC, ALBEDO, TMAXLR, TMINLR
+!                ISNOTP, IPSCOR, ISCREE
 ! REQUIREMENT  : MUST RUN THE .EXE FILE WITHIN THE INPUT DIRECTORY.
 ! MODULES      : MUST INCLUDE M_SYSTEMCHECK, M_SYSTEMLOG AND
 !                M_CALIBRATION MODULES
@@ -19,7 +19,7 @@ program p_acru_menu_parameterization
 
     use m_systemcheck
     use m_systemlog
-    use m_calibration
+    use m_acru_menu
     implicit none
 
     character(len=4), parameter :: menu = 'MENU'
@@ -34,7 +34,7 @@ program p_acru_menu_parameterization
     character(len=*), parameter :: format_daytime = '( 1X,A11,A20,A15 )'
     character(len=*), parameter :: format_filestat = '( 1X,A11,A20,I4 )'
     character(len=*), parameter :: format_endmsg = '( A78, A10,A2,A5,A1 )'
-    integer, parameter :: num_var = 11
+    integer, parameter :: num_var = 5
     character(len=30) :: outfile, infile, logrun, varfile
     character(len=80) :: dum, msg
     character(len=10) :: date, date_now, date_end
@@ -42,14 +42,13 @@ program p_acru_menu_parameterization
     integer :: isubno
     integer :: count_0, count_1, count_rate, count_max
     integer :: line, line_num, ok, totalLine
-    integer :: lineSauef, lineTmxlr, lineTmnlr, lineAlbedo
-    integer :: lineSoils, lineCay, lineElaim, lineRoota
-    integer :: lineStrmflw, lineCoiam, lineIcc
-    integer :: lineEof, valid_stat
+    integer :: lineTmxlr, lineTmnlr, lineSoils, lineStrmflw, lineSnow
+    integer :: lineEof, valid_stat, blockIndex
     logical :: ex
     real :: elapsed_time
+    character(len=50) :: blockString
     character(len=50), dimension(11) :: blockVariable
-    integer, dimension(11) :: blockVarRow, blockContainer
+    integer, dimension(5) :: blockVarRow, blockContainer
 
 !***********************************************************************
 ! START PROGRAM - DAY & TIME SETUP AND LOGFILE SETUP
@@ -123,7 +122,7 @@ program p_acru_menu_parameterization
 ! THEN CALCULATE AND VALIDATE EOF FOR THE MENU FILE - HOW MANY LINES IN TOTAL?
     call calculateEOF(isubno, lineeof)
     open(unit=20,file=outfile)
-    call calculateTOTLINES(20, lineeof, totalLine)
+    call calculateTOTLINES(20, totalLine)
     close(20)
     write(12,*)
     write(12,*) '[ E N D  O F  F I L E   C H E C K ] '
@@ -150,8 +149,8 @@ program p_acru_menu_parameterization
 !***********************************************************************
 ! CALCULATE LINE NUMBER FOR EACH VARIABLE!
 ! THEN OVERWRITE VALUES ONCE LINE IS FOUND. CONTINUE FOR X HRUS.
-    call initiateVarBlock(num_var, blockVariable)
-    call initiateVarContainer(num_var, blockContainer)
+    call initiateVarCalibrationBlock(num_var, blockVariable)
+    call initiateVarCalibrationContainer(num_var, blockContainer)
     call initiatiateVarLine(num_var, isubno, blockContainer, blockVarRow)
     write(12,*)
     write(12,*) '[ S U M M A R Y   O F   L I N E S ] '
@@ -163,85 +162,53 @@ program p_acru_menu_parameterization
     write(12,*) '[ M E N U   F I L E   P A R A M E T E R I Z A T I O N ] '
     write(12,*)
 ! Initiate specific lines of block.
-    lineSauef  = blockVarRow(1)
-    lineTmxlr  = blockVarRow(2)
-    lineTmnlr  = blockVarRow(3)
-    lineAlbedo = blockVarRow(4)
-    lineSoils  = blockVarRow(5)
-    lineCay    = blockVarRow(6)
-    lineElaim  = blockVarRow(7)
-    lineRoota  = blockVarRow(8)
-    lineStrmflw = blockVarRow(9)
-    lineCoiam  = blockVarRow(10)
-    lineIcc    = blockVarRow(11)
+    lineTmxlr   = blockVarRow(1)
+    lineTmnlr   = blockVarRow(2)
+    lineSoils   = blockVarRow(3)
+    lineStrmflw = blockVarRow(4)
+	  lineSnow    = blockVarRow(5)
     open(unit=20,file=outfile)
     open(unit=30,file=infile)
     line=1
     do 900 while (line < lineeof) ! Go thru MENU FILE once!
-        if(line == lineSauef) then ! check where SAUEF should be overwritten
+        if(line == lineTmxlr) then ! check where TMAXLR should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 1, blockVariable(1))
-            line = line_num
-            close(11)
-        elseif(line == lineTmxlr) then ! check where TMAXLR should be overwritten
-            open(unit=11,file=varfile)
-            line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 2, blockVariable(2))
+            blockIndex = 1
+            blockString = blockVariable(blockIndex)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockString)
             line = line_num
             close(11)
         elseif(line == lineTmnlr) then ! check where TMINLR should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 3, blockVariable(3))
-            line = line_num
-            close(11)
-        elseif(line == lineAlbedo) then ! check where ALBEDO should be overwritten
-            open(unit=11,file=varfile)
-            line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 4, blockVariable(4))
+            blockIndex = 2
+            blockString = blockVariable(blockIndex)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockString)
             line = line_num
             close(11)
         elseif(line == lineSoils) then ! check where SOILS should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 5, blockVariable(5))
+            blockIndex = 3
+            blockString = blockVariable(blockIndex)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockString)
             line = line_num
             close(11)
-        elseif(line == lineCay) then ! check where CAY should be overwritten
+       elseif(line == lineStrmflw) then ! check where STREAMFLOW should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 6, blockVariable(6))
+            blockIndex = 4
+            blockString = blockVariable(blockIndex)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockString)
             line = line_num
             close(11)
-        elseif(line == lineElaim) then ! check where ELAIM should be overwritten
+       elseif(line == lineSnow) then ! check where SNOW should be overwritten
             open(unit=11,file=varfile)
             line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 7, blockVariable(7))
-            line = line_num
-            close(11)
-        elseif(line == lineRoota) then ! check where ROOTA should be overwritten
-            open(unit=11,file=varfile)
-            line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 8, blockVariable(8))
-            line = line_num
-            close(11)
-        elseif(line == lineStrmflw) then ! check where STREAMFLOW should be overwritten
-            open(unit=11,file=varfile)
-            line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 9, blockVariable(9))
-            line = line_num
-            close(11)
-        elseif(line == lineCoiam) then ! check where COIAM should be overwritten
-            open(unit=11,file=varfile)
-            line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 10, blockVariable(10))
-            line = line_num
-            close(11)
-        elseif(line == lineIcc) then ! check where ICC should be overwritten
-            open(unit=11,file=varfile)
-            line_num = line
-            call calibrateline(12, 20, 30, 11, isubno, line_num, 11, blockVariable(11))
+            blockIndex = 5
+            blockString = blockVariable(blockIndex)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockString)
             line = line_num
             close(11)
         else ! simply read and copy lines

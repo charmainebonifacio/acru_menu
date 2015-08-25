@@ -2,8 +2,8 @@
 ! MODULE TITLE : M_ACRU_MENU
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 24, 2015
-! DATE REVISED : AUGUST 20, 2015
-! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED CALIBRATE THE MENU FILE.
+! DATE REVISED : AUGUST 21, 2015
+! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED TO PROCESS THE MENU FILE.
 !###############################################################################
 module m_acru_menu
 
@@ -27,6 +27,8 @@ module m_acru_menu
     character(len=*), parameter:: format_strmflw_line = '( 25X,I1,2(2X,F5.3),3X,F4.2,29X,I4 )'
     character(len=*), parameter:: format_strmflw = '( 1X,F5.2,3X,F5.3,1X,F6.2,4X,I1,2(2X,F5.3),3X,F4.2,29X,I4 )'
     character(len=*), parameter:: format_icc = '( 2X,12(I3.2,2X),14X,I4 )'
+    character(len=*), parameter:: format_snow_line = '( 4X,I1,21X,2(4X,I1),3X,F4.2,2(2X,F4.2),5X,I1,1X,F5.2 )'
+    character(len=*), parameter:: format_snow = '( 4X,I1,3(6X,I1),2(4X,I1),3X,F4.2,2(2X,F4.2),5X,I1,1X,F5.2,9X,I4 )'
     character(len=*), parameter:: format_adjustment = '( 1X,A11,A30,I7,A9,I4 )'
 
 contains
@@ -108,17 +110,17 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL CALCULATE THE TOTAL NUMBER OF LINES
 !                       BASED ON READING THE FILE
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 11, 2015
+!      DATE REVISED  :  AUGUST 21, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, THE TOTAL NUMBER OF LINES PROCESSED
 !                       INTEGER, OUTPUT, THE NUMBER OF LINE READ
 !
 !-------------------------------------------------------------------------------
-    subroutine calculateTOTLINES(unit_menu, line_eof, tot_lines)
+    subroutine calculateTOTLINES(unit_menu, tot_lines)
 
         character(80) :: dum
         integer :: i
-        integer, intent(in) :: unit_menu, line_eof
+        integer, intent(in) :: unit_menu
         integer, intent(inout) :: tot_lines
 
         i = 0
@@ -224,70 +226,58 @@ contains
 
 !-------------------------------------------------------------------------------
 !
-!                              CALIBRATION SUBROUTINES
+!       P A R A M E T E R   C A L I B R A T I O N   S U B R O U T I N E S
 !
 !-------------------------------------------------------------------------------
 
 !-------------------------------------------------------------------------------
 !
-!  SUBROUTINE TITLE  :  INITIATEVARTYPE
+!  SUBROUTINE TITLE  :  INITIATEVARCALIBRATIONBLOCK
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH DIFFERENT
 !                       TYPES OF VARIABLES
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 7, 2015
+!      DATE REVISED  :  AUGUST 21, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       CHARACTER ARRAY, INPUT, BLOCK INFO CONTAINING VARIABLES
 !
 !-------------------------------------------------------------------------------
-    subroutine initiateVarBlock(num_var, block_var)
+    subroutine initiateVarCalibrationBlock(num_var, block_var)
 
         integer, intent(in) :: num_var
         character(len=50), dimension(num_var), intent(out) :: block_var
 
-        block_var(1) = ' LOCATIONAL and CATCHMENT ---------------- SAUEF ' ! LOCATIONAL AND CATCHMENT INFO: CLAREA, SAUEF, ELEV, ALAT, IHEMI, WSSIZE
-        block_var(2) = ' REFERENCE POTENTIAL EVAPORATION UNIT ---- TMXLR ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
-        block_var(3) = ' REFERENCE POTENTIAL EVAPORATION UNIT ---- TMNLR ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
-        block_var(4) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- ALBEDO ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
-        block_var(5) = ' SOILS ------- DEPAB,WP1/2,FC1/2,PO1/2,AB/BFRESP ' ! CATCHMENT SOILS INFO: DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP
-        block_var(6) = ' CATCHMENT LAND COVER ---------------------- CAY ' ! CATCHMENT LAND COVER INFO
-        block_var(7) = ' CATCHMENT LAND COVER -------------------- ELAIM ' ! CATCHMENT LAND COVER INFO
-        block_var(8) = ' CATCHMENT LAND COVER -------------------- ROOTA ' ! CATCHMENT LAND COVER INFO
-        block_var(9) = ' STREAMFLOW SIM CONTROL ---- QFRESP,COFRU,SMDDEP ' ! STREAMFLOW SIMULATION CONTROL VARIABLES: QFRESP, COFRU, SMDDEP, IRUN, ADJIMP, DISIMP, STOIMP
-        block_var(10) = ' STREAMFLOW SIM CONTROL ------------------ COIAM ' ! STREAMFLOW SIMULATION CONTROL VARIABLE: COIAM
-        block_var(11) = ' SNOW OPTION ------------------------------- ICC ' ! SNOW VARIABLE: ICC
+        block_var(1) = ' REFERENCE POTENTIAL EVAPORATION UNIT ---- TMXLR ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(2) = ' REFERENCE POTENTIAL EVAPORATION UNIT ---- TMNLR ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(3) = ' SOILS ------- DEPAB,WP1/2,FC1/2,PO1/2,AB/BFRESP ' ! CATCHMENT SOILS INFO: DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP
+        block_var(4) = ' STREAMFLOW SIM CONTROL ---- QFRESP,COFRU,SMDDEP ' ! STREAMFLOW SIMULATION CONTROL VARIABLES: QFRESP, COFRU, SMDDEP, IRUN, ADJIMP, DISIMP, STOIMP
+        block_var(5) = ' SNOW VARIABLES: -------- ISNOTP, IPSCOR, ISCREE ' ! SNOW VARIABLE: ICC
 
-    end subroutine initiateVarBlock
+    end subroutine initiateVarCalibrationBlock
 
 !-------------------------------------------------------------------------------
 !
-!  SUBROUTINE TITLE  :  INITIATEVARCONTAINER
+!  SUBROUTINE TITLE  :  INITIATEVARCALIBRATIONCONTAINER
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH BLOCK
 !                       NUMBER FOR EACH VARIABLE
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 5, 2015
+!      DATE REVISED  :  AUGUST 21, 2015
 !        PARAMETERS  :  INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       INTEGER ARRAY, OUTPUT, BLOCK NUMBER OF CONTAINER
 !
 !-------------------------------------------------------------------------------
-    subroutine initiateVarContainer(num_var, block_container)
+    subroutine initiateVarCalibrationContainer(num_var, block_container)
 
         integer, intent(in) :: num_var
         integer, dimension(num_var), intent(out) :: block_container
 
-        block_container(1) = 9
-        block_container(2) = 20
-        block_container(3) = 21
-        block_container(4) = 28
-        block_container(5) = 43
-        block_container(6) = 53
-        block_container(7) = 54
-        block_container(8) = 56
-        block_container(9) = 66
-        block_container(10) = 67
-        block_container(11) = 141
+        block_container(1) = 20
+        block_container(2) = 21
+        block_container(3) = 43
+        block_container(4) = 66
+        block_container(5) = 134
 
-    end subroutine initiateVarContainer
+    end subroutine initiateVarCalibrationContainer
 
 !-------------------------------------------------------------------------------
 !
@@ -295,7 +285,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL CALIBRATE THE VARIABLES
 !                       ACCORDING TO THE LINE NUMBER.
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 20, 2015
+!      DATE REVISED  :  AUGUST 21, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
@@ -313,81 +303,58 @@ contains
         integer, intent(inout) :: line
         character(80) :: dum, dum2
         integer ::  i, l, d1, d2
-        integer :: icons, iswave, ihemi, irun
+        integer :: irun, isnow, isnotp, ipscor, iscree, iexp, ifor, mcdmod
+        real :: d3
         real :: clarea, sauef, elev, alat, wssize
         real :: depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
         real :: qfresp, cofru, smddep, adjimp, disimp, stoimp
         real :: depaho2, depbho2, abresp2, bfresp2
         real :: qfresp2, qfresp3, cofru2, smddep2, smddep3
-        integer, dimension(12) :: icc
-        real, dimension(12) :: coiam, cay, elaim, roota, albedo, tmaxlr, tminlr
-
+        real :: sncapi, snorc, snirc, sncc
+        real, dimension(12) :: tmaxlr, tminlr
 
         l = 1
-        read(unit_var,*) dum2  ! header
-        read(unit_var,*) dum2  ! header
+        read(unit_var,*) dum2  ! calibration header
+        read(unit_var,*) dum2  ! monthly header
+        read(unit_var,*) dum2  ! variable header
         write(unit_no,*) sectionHeader
         write(unit_no,format_block_string) block_var_string ! variable to be processed
         write(unit_no,format_var_header) debugStat,' PARAMETER ADJUSTMENT STARTING FROM LINE '//' : ', line
         do 700 while (l <= isubno)
-            read(unit_var,*) d1, d2, sauef, (tmaxlr(i),i=1,12), &
-              (tminlr(i),i=1,12), (albedo(i),i=1,12), depaho, depbho, &
-              depaho2, depbho2, wp1, wp2, fc1, fc2, po1, po2, &
-              abresp, bfresp, abresp2, bfresp2, (cay(i),i=1,12), &
-              (elaim(i),i=1,12), (roota(i),i=1,12), qfresp, qfresp2, &
-              qfresp3, cofru, cofru2, smddep, smddep2, smddep3, &
-              (coiam(i),i=1,12), (icc(i),i=1,12)
+            read(unit_var,*) d1, d2, d3, &
+              (tmaxlr(i),i=1,12), (tminlr(i),i=1,12), &
+              depaho, depbho, depaho2, depbho2, wp1, wp2, fc1, fc2, &
+              po1, po2, abresp, bfresp, abresp2, bfresp2, &
+              qfresp, qfresp2, qfresp3, cofru, cofru2, &
+              smddep, smddep2, smddep3, isnotp, ipscor, iscree
             select case (var_index)
                case (1)
-                   read(unit_oldMenu,format_location_line) clarea, elev, alat, ihemi, wssize ! read original menu variables
-                   write(unit_no,format_location) clarea, sauef, elev, &
-                                               alat, ihemi, wssize, l
-                   write(unit_menu,format_location) clarea, sauef, elev, &
-                                                 alat, ihemi, wssize, l
-               case (2)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_lr) (tmaxlr(i),i=1,12),(l)
                    write(unit_menu,format_lr) (tmaxlr(i),i=1,12),(l)
-               case (3)
+               case (2)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_lr) (tminlr(i),i=1,12),(l)
                    write(unit_menu,format_lr) (tminlr(i),i=1,12),(l)
-               case (4)
-                   read(unit_oldMenu,format_albedo_line) icons,iswave ! read original menu variables
-                   write(unit_no,format_albedo) (albedo(i),i=1,12),icons,iswave,l
-                   write(unit_menu,format_albedo) (albedo(i),i=1,12),icons,iswave,l
-               case (5)
+               case (3)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_soils) depaho2, depbho2, wp1, wp2, fc1, &
                                                fc2, po1, po2, abresp2, bfresp2, l
                    write(unit_menu,format_soils) depaho2, depbho2, wp1, wp2, fc1, &
                                                fc2, po1, po2, abresp2, bfresp2, l
-               case (6)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc) (cay(i),i=1,12),(l)
-                   write(unit_menu,format_cerc) (cay(i),i=1,12),(l)
-               case (7)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc) (elaim(i),i=1,12),(l)
-                   write(unit_menu,format_cerc) (elaim(i),i=1,12),(l)
-               case (8)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc) (roota(i),i=1,12),(l)
-                   write(unit_menu,format_cerc) (roota(i),i=1,12),(l)
-               case (9)
+               case (4)
                    read(unit_oldMenu,format_strmflw_line) irun, adjimp, disimp, stoimp
                    write(unit_no,format_strmflw) qfresp3, cofru2, smddep3, irun, &
                                                  adjimp, disimp, stoimp, l
                    write(unit_menu,format_strmflw) qfresp3, cofru2, smddep3, irun, &
                                                    adjimp, disimp, stoimp, l
-               case (10)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_cerc) (coiam(i),i=1,12),(l)
-                   write(unit_menu,format_cerc) (coiam(i),i=1,12),(l)
-               case (11)
-                   read(unit_oldMenu,format_line) dum
-                   write(unit_no,format_icc) (icc(i),i=1,12),(l)
-                   write(unit_menu,format_icc) (icc(i),i=1,12),(l)
+               case (5)
+                   read(unit_oldMenu,format_snow_line) isnow, iexp, ifor, sncapi, snorc, &
+                                                  snirc, mcdmod, sncc
+                   write(unit_no,format_snow) isnow, isnotp, ipscor, iscree, iexp, ifor, &
+                                              sncapi, snorc, snirc, mcdmod, sncc, l
+                   write(unit_menu,format_snow) isnow, isnotp, ipscor, iscree, iexp, ifor, &
+                                              sncapi, snorc, snirc, mcdmod, sncc, l
            end select
            write(unit_no,format_adjustment) debugRes,' SUCCESSFULLY PROCESSED LINE ', line, ' & HRU # ',l
            l = l + 1
