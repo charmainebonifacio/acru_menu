@@ -138,7 +138,7 @@ contains
 !  SUBROUTINE TITLE  :  VALIDATEEOF
 !       DESCRIPTION  :  THIS SUBROUTINE WILL VALIDATE THE ACTUAL EOF VALUE
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 11, 2015
+!      DATE REVISED  :  AUGUST 21, 2015
 !        PARAMETERS  :  INTEGER, INPUT, THE TOTAL NUMBER OF LINES PROCESSED
 !                       INTEGER, INPUT, THE NUMBER OF LINE READ
 !                       INTEGER, OUTPUT, STATUS OF VALIDATION
@@ -146,7 +146,6 @@ contains
 !-------------------------------------------------------------------------------
     subroutine validateEOF(line_eof, tot_lines, validation)
 
-        character(80) :: dum
         integer, intent(in) :: line_eof, tot_lines
         integer, intent(out) :: validation
 
@@ -305,7 +304,6 @@ contains
         integer ::  i, l, d1, d2
         integer :: irun, isnow, isnotp, ipscor, iscree, iexp, ifor, mcdmod
         real :: d3
-        real :: clarea, sauef, elev, alat, wssize
         real :: depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
         real :: qfresp, cofru, smddep, adjimp, disimp, stoimp
         real :: depaho2, depbho2, abresp2, bfresp2
