@@ -1,13 +1,11 @@
 # The ACRU Parameterization Menu Generator
 
-This program will only automatically adjust 22 variables in the MENU Parameter File using an updated parameter text file. This program will work with a distributed mode or point mode MENU Parameter File. This program also utilizes an implemented a logfile system to ensure accuracy when dealing with the automatic adjustment of values.
+This program will only automatically adjust 18 variables in the MENU Parameter File using an updated parameter text file. This program will work with a distributed mode or point mode MENU Parameter File. This program also utilizes an implemented a logfile system to ensure accuracy when dealing with the automatic adjustment of values.
 
 The variables that will be updated after each run are as follows:
 
- - SAUEF
  - TMAXLR
  - TMINLR
- - ALBEDO
  - DEPAHO
  - DEPBHO
  - WP1
@@ -18,27 +16,23 @@ The variables that will be updated after each run are as follows:
  - PO2
  - ABRESP
  - BFRESP
- - CAY
- - ELAIM
- - ROOTA
  - QFRESP
  - COFRU
  - SMDDEP
- - COIAM
- - ICC
+ - ISNOTP
+ - IPSCOR
+ - ISCREE
 
 This script will automatically adjust the parameters for calibrating a catchments within the ACRU model. These variables belong to six different information blocks in the Menu Parameter File:
 
- - Locational and Catchment Unit Information : SAUEF
- - Reference Potential Evaporation Unit Information : TMAXLR, TMINLR, ALBEDO
+ - Reference Potential Evaporation Unit Information : TMAXLR, TMINLR
  - Catchment Soils Information : DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP
- - Catchment Land Cover Information : CAY, ELAIM, ROOTA
  - Streamflow Simulation Control Variables : QFRESP, COFRU, SMDDEP, COIAM
- - Snow Option Variables : ICC
+ - Snow Main Variables : ISNOTP, IPSCOR, ISCREE
 
 ## Context
 
-[Dr. Stefan Kienzle](http://people.uleth.ca/~stefan.kienzle/) created many fortran scripts to automate parameterization for the calibration on the [ACRU - Agricultural Catchments Research Unit](http://unfccc.int/adaptation/nairobi_work_programme/knowledge_resources_and_publications/items/5299.php) model. He utilized the Fortran 77 language and compiled with Compaq Visual Fortran Version 6.6 compiler.
+[Dr. Stefan Kienzle](http://people.uleth.ca/~stefan.kienzle/) created many fortran scripts to automate parameter calibration of the [ACRU - Agricultural Catchments Research Unit](http://unfccc.int/adaptation/nairobi_work_programme/knowledge_resources_and_publications/items/5299.php) model. He utilized the Fortran 77 language and compiled with Compaq Visual Fortran Version 6.6 compiler.
 
 ## Legacy
 
@@ -48,7 +42,7 @@ The purpose is to revise the scripts to Fortran 90 and compiled using the Silver
 
 The modules and scripts are licensed under a GNU General Public License v2.0
 
-Copyright (C) 2013-2015 Charmaine Michelle T. Bonifacio
+Copyright (C) 2015 Charmaine Michelle T. Bonifacio
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 

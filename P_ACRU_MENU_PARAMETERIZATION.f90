@@ -9,9 +9,9 @@
 !                ISNOTP, IPSCOR, ISCREE
 ! REQUIREMENT  : MUST RUN THE .EXE FILE WITHIN THE INPUT DIRECTORY.
 ! MODULES      : MUST INCLUDE M_SYSTEMCHECK, M_SYSTEMLOG AND
-!                M_CALIBRATION MODULES
+!                M_ACRU_MENU MODULES
 ! INPUT        : 1) MENU FILE = MENU
-!                2) VARIABLE FILE = MENU_VARIABLE.TXT
+!                2) VARIABLE FILE = MENU_PARAM.TXT
 ! OUTPUT       : 1) UPDATED MENU FILE
 !                2) LOG FILE
 !###############################################################################
