@@ -1,4 +1,4 @@
-# The ACRU Parameterization Menu Generator
+# The ACRU Parameter Calibration Menu Generator
 
 This program will only automatically adjust 18 variables in the MENU Parameter File using an updated parameter text file. This program will work with a distributed mode or point mode MENU Parameter File. This program also utilizes an implemented a logfile system to ensure accuracy when dealing with the automatic adjustment of values.
 
