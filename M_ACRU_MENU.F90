@@ -22,7 +22,7 @@ module m_acru_menu
     character(len=*), parameter:: format_lr = '( 12(F6.2),4X,I4 )'
     character(len=*), parameter:: format_soils = '( 1X,F5.2,2X,F5.2,6(1X,F4.3),2(2X,F5.2),19X,I4 )'
     character(len=*), parameter:: format_albedo_line = '( 66X,I1,5X,I1 )'
-    character(len=*), parameter:: format_albedo = '( 1X,11(F4.2,1X),F4.2,6X,I1,5X,I1,3X,I4 )'
+    character(len=*), parameter:: format_albedo = '( 1X,12(F4.2,1X),5X,I1,5X,I1,3X,I4 )'
     character(len=*), parameter:: format_cerc = '( 1X,12(F4.2,1X),15X,I4 )'
     character(len=*), parameter:: format_strmflw_line = '( 25X,I1,2(2X,F5.3),3X,F4.2,29X,I4 )'
     character(len=*), parameter:: format_strmflw = '( 1X,F5.2,3X,F5.3,1X,F6.2,4X,I1,2(2X,F5.3),3X,F4.2,29X,I4 )'
@@ -30,6 +30,17 @@ module m_acru_menu
     character(len=*), parameter:: format_snow_line = '( 4X,I1,21X,2(4X,I1),3X,F4.2,2(2X,F4.2),5X,I1,1X,F5.2 )'
     character(len=*), parameter:: format_snow = '( 4X,I1,3(6X,I1),2(4X,I1),3X,F4.2,2(2X,F4.2),5X,I1,1X,F5.2,9X,I4 )'
     character(len=*), parameter:: format_adjustment = '( 1X,A11,A30,I7,A9,I4 )'
+    character(len=*), parameter:: format_icelln_line = '( 19X,I1 )'
+    character(len=*), parameter:: format_icelln = '( 2X,I4,3X,I4,6X,I1,56X,I4 )'
+    character(len=*), parameter:: format_irainf = '( A31,45X,I4 )'
+    character(len=*), parameter:: format_rain_line = '( 16X,I5,5X,I1 )'
+    character(len=*), parameter:: format_rain = '( 2(6X,I1),2X,I5,5X,I1,49X,I4 )'
+    character(len=*), parameter:: format_corppt = '( 12(1X,F4.2),16X,I4 )'
+    character(len=*), parameter:: format_iobstq_line = '( 6X,2(6X,I1),56X,I4 )'
+    character(len=*), parameter:: format_iobstq = '( 5X,I1,2(6X,I1),56X,I4 )'
+    character(len=*), parameter:: format_corfac = '( 12(2X,F4.2),4X,I4 )'
+    character(len=*), parameter:: format_lcover_line = '( 12X,I1,2X,F5.2,1X,F6.1,1X,F8.2 )'
+    character(len=*), parameter:: format_lcover = '( 5X,I1,6X,I1,2X,F5.2,1X,F6.1,1X,F8.2,40X,I4 )'
 
 contains
 
@@ -320,11 +331,11 @@ contains
         write(unit_no,format_var_header) debugStat,' PARAMETER ADJUSTMENT STARTING FROM LINE '//' : ', line
         do 700 while (l <= isubno)
             read(unit_var,*) d1, d2, d3, &
-              (tmaxlr(i),i=1,12), (tminlr(i),i=1,12), &
-              depaho, depbho, depaho2, depbho2, wp1, wp2, fc1, fc2, &
-              po1, po2, abresp, bfresp, abresp2, bfresp2, &
-              qfresp, qfresp2, qfresp3, cofru, cofru2, &
-              smddep, smddep2, smddep3, isnotp, ipscor, iscree
+                         (tmaxlr(i),i=1,12), (tminlr(i),i=1,12), &
+                         depaho, depbho, depaho2, depbho2, wp1, wp2, fc1, fc2, &
+                         po1, po2, abresp, bfresp, abresp2, bfresp2, &
+                         qfresp, qfresp2, qfresp3, cofru, cofru2, &
+                         smddep, smddep2, smddep3, isnotp, ipscor, iscree
             select case (var_index)
                case (1)
                    read(unit_oldMenu,format_line) dum
