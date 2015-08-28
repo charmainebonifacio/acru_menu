@@ -23,12 +23,27 @@ The variables that will be updated after each run are as follows:
  - IPSCOR
  - ISCREE
 
+The original values from the following 12 variables will also be copied:
+
+ - IRUN
+ - ADJIMP
+ - DISIMP
+ - STOIMP
+ - ISNOW
+ - IEXP
+ - IFOR
+ - SNCAPI
+ - SNORC
+ - SNIRC
+ - MCDMOD
+ - SNCC
+
 This script will automatically adjust the parameters for calibrating a catchments within the ACRU model. These variables belong to six different information blocks in the Menu Parameter File:
 
  - Reference Potential Evaporation Unit Information : TMAXLR, TMINLR
  - Catchment Soils Information : DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP
- - Streamflow Simulation Control Variables : QFRESP, COFRU, SMDDEP, COIAM
- - Snow Main Variables : ISNOTP, IPSCOR, ISCREE
+ - Streamflow Simulation Control Variables : QFRESP, COFRU, SMDDEP, COIAM, IRUN, ADJIMP, DISIMP, STOIMP
+ - Snow Main Variables : ISNOW, ISNOTP, IPSCOR, ISCREE, IEXP, IFOR, SNCAPI, SNORC, SNIRC, MCDMOD, SNCC
 
 ## Context
 
