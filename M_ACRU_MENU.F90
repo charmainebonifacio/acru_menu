@@ -2,7 +2,7 @@
 ! MODULE TITLE : M_ACRU_MENU
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 24, 2015
-! DATE REVISED : AUGUST 21, 2015
+! DATE REVISED : AUGUST 27, 2015
 ! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED TO PROCESS THE MENU FILE.
 !###############################################################################
 module m_acru_menu
@@ -17,7 +17,7 @@ module m_acru_menu
     character(len=*), parameter:: format_print_var = '( 1X,A11,A55,I7 )'
     character(len=*), parameter:: format_var_summary = '( 1X,A11,A20,I7 )'
     character(len=*), parameter:: format_isubno = '( 3X,I4 )'
-    character(len=*), parameter:: format_location_line = '( F8.2,8X,F6.1,1X,F5.2,5X,I1,1X,F8.1)'
+    character(len=*), parameter:: format_location_line = '( 23X,F5.2,5X,I1)'
     character(len=*), parameter:: format_location = '( F8.2,1X,F6.3,1X,F6.1,1X,F5.2,5X,I1,1X,F8.1,33X,I4 )'
     character(len=*), parameter:: format_lr = '( 12(F6.2),4X,I4 )'
     character(len=*), parameter:: format_soils = '( 1X,F5.2,2X,F5.2,6(1X,F4.3),2(2X,F5.2),19X,I4 )'
@@ -32,13 +32,14 @@ module m_acru_menu
     character(len=*), parameter:: format_adjustment = '( 1X,A11,A30,I7,A9,I4 )'
     character(len=*), parameter:: format_icelln_line = '( 19X,I1 )'
     character(len=*), parameter:: format_icelln = '( 2X,I4,3X,I4,6X,I1,56X,I4 )'
-    character(len=*), parameter:: format_irainf = '( A31,45X,I4 )'
+    character(len=*), parameter:: format_irainf = '( A41,35X,I4 )'
     character(len=*), parameter:: format_rain_line = '( 16X,I5,5X,I1 )'
-    character(len=*), parameter:: format_rain = '( 2(6X,I1),2X,I5,5X,I1,49X,I4 )'
+    character(len=*), parameter:: format_rain = '( 6X,I1,6X,I1,2X,I5,5X,I1,49X,I4 )'
     character(len=*), parameter:: format_corppt = '( 12(1X,F4.2),16X,I4 )'
-    character(len=*), parameter:: format_iobstq_line = '( 6X,2(6X,I1),56X,I4 )'
+    character(len=*), parameter:: format_iobstq_line = '( 11X,I1,6X,I1)'
     character(len=*), parameter:: format_iobstq = '( 5X,I1,2(6X,I1),56X,I4 )'
-    character(len=*), parameter:: format_corfac = '( 12(2X,F4.2),4X,I4 )'
+    character(len=*), parameter:: format_corfac = '( 12(1X,F5.3),4X,I4 )'
+    character(len=*), parameter:: format_slorad = '( 12(1X,F5.2),4X,I4 )'
     character(len=*), parameter:: format_lcover_line = '( 12X,I1,2X,F5.2,1X,F6.1,1X,F8.2 )'
     character(len=*), parameter:: format_lcover = '( 5X,I1,6X,I1,2X,F5.2,1X,F6.1,1X,F8.2,40X,I4 )'
 
@@ -72,14 +73,14 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ISUBNO VARIABLE WITH
 !                       TOTAL NUMBER OF HRU IN THE MENU FILE
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 7, 2015
+!      DATE REVISED  :  AUGUST 24, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, TOTAL NUMBER OF CATCHMENT IN WATERSHED
 !
 !-------------------------------------------------------------------------------
     subroutine findTotalCatchmentNumber(unit_menu, isub_no)
 
-        character(80) :: menuheaderline
+        character(5) :: menuheaderline
         integer :: p, num_line
         integer, intent(in) :: unit_menu
         integer, intent(out) :: isub_no
@@ -89,7 +90,7 @@ contains
         do 898 while (p < num_line)
             read(unit_menu,format_line) menuheaderline
             p = p + 1
-    898 end do
+        898 end do
         read(unit_menu,format_isubno) isub_no
 
     end subroutine findTotalCatchmentNumber
@@ -121,7 +122,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL CALCULATE THE TOTAL NUMBER OF LINES
 !                       BASED ON READING THE FILE
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 21, 2015
+!      DATE REVISED  :  AUGUST 24, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, THE TOTAL NUMBER OF LINES PROCESSED
 !                       INTEGER, OUTPUT, THE NUMBER OF LINE READ
@@ -129,7 +130,7 @@ contains
 !-------------------------------------------------------------------------------
     subroutine calculateTOTLINES(unit_menu, tot_lines)
 
-        character(80) :: dum
+        character(5) :: dum
         integer :: i
         integer, intent(in) :: unit_menu
         integer, intent(inout) :: tot_lines
@@ -331,11 +332,11 @@ contains
         write(unit_no,format_var_header) debugStat,' PARAMETER ADJUSTMENT STARTING FROM LINE '//' : ', line
         do 700 while (l <= isubno)
             read(unit_var,*) d1, d2, d3, &
-                         (tmaxlr(i),i=1,12), (tminlr(i),i=1,12), &
-                         depaho, depbho, depaho2, depbho2, wp1, wp2, fc1, fc2, &
-                         po1, po2, abresp, bfresp, abresp2, bfresp2, &
-                         qfresp, qfresp2, qfresp3, cofru, cofru2, &
-                         smddep, smddep2, smddep3, isnotp, ipscor, iscree
+                             (tmaxlr(i),i=1,12), (tminlr(i),i=1,12), &
+                             depaho, depbho, depaho2, depbho2, wp1, wp2, fc1, fc2, &
+                             po1, po2, abresp, bfresp, abresp2, bfresp2, &
+                             qfresp, qfresp2, qfresp3, cofru, cofru2, &
+                             smddep, smddep2, smddep3, isnotp, ipscor, iscree
             select case (var_index)
                case (1)
                    read(unit_oldMenu,format_line) dum
@@ -371,5 +372,221 @@ contains
     700 end do
 
     end subroutine calibrateline
+
+!-------------------------------------------------------------------------------
+!
+!          M E N U   I N I T I A L I Z A T I O N   S U B R O U T I N E S
+!
+!-------------------------------------------------------------------------------
+
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  INITIATEVARCALIBRATIONBLOCK
+!       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH DIFFERENT
+!                       TYPES OF VARIABLES
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  AUGUST 22, 2015
+!        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
+!                       INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
+!                       CHARACTER ARRAY, INPUT, BLOCK INFO CONTAINING VARIABLES
+!
+!-------------------------------------------------------------------------------
+    subroutine initiateVarInitializationBlock(num_var, block_var)
+
+        integer, intent(in) :: num_var
+        character(len=50), dimension(num_var), intent(out) :: block_var
+
+        block_var(1) = ' SUBCATCHMENT CONFIG ------------ ICELLN, IDSTRM ' ! SUBCATCHMENT CONFIG: ICELLN, IDSTRM, PRTOUT
+        block_var(2) = ' RAINFALL FILE ORG ---------------------- IRAINF ' ! RAINFALL FILE ORGANIZATION: IRAINF
+        block_var(3) = ' RAINFALL INFO ------------------ FORMAT, PPTCOR ' ! RAINFALL INFO: FORMAT, PPTCOR, MAP, ARF
+        block_var(4) = ' MONTHLY RAINFALL ADJUSTMENT FACTOR ----- CORPPT ' ! MONTHLY RAINFALL ADJUSTMENT FACTOR: CORPPT
+        block_var(5) = ' AVAILABILITY OF STREAMFLOW DATA -------- IOBSTQ ' ! AVAILABILITY OF STREAMFLOW DATA: IOBSTQ, IOBSPK, IOBOVR
+        block_var(6) = ' LOCATIONAL -------- CLAREA, SAUEF, ELEV, WSSIZE ' ! LOCATIONAL AND CATCHMENT INFO: CLAREA, SAUEF, ELEV, ALAT, IHEMI, WSSIZE
+        block_var(7) = ' MONTHLY WIND CORRECTION FACTOR --------- WINCOR ' ! MONTHLY WIND CORRECTION FACTOR: WINCOR
+        block_var(8) = ' MONTHLY REL HUM CORRECTION FACTOR ------ RHUCOR ' ! MONTHLY RELATIVE HUMIDITY CORRECTION FACTOR: RHUCOR
+        block_var(9) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- ALBEDO ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(10) = ' MONTHLY SUNSHINE CORRECTION FACTOR ----- SUNCOR ' ! MONTHLY SUNSHINE CORRECTION FACTOR: SUNCOR
+        block_var(11) = ' LEVEL OF LAND COVER -------------------- LCOVER ' ! LEVEL OF LAND COVER INFO: LCOVER
+        block_var(12) = ' CATCHMENT LAND COVER ---------------------- CAY ' ! CATCHMENT LAND COVER INFO
+        block_var(13) = ' CATCHMENT LAND COVER -------------------- ELAIM ' ! CATCHMENT LAND COVER INFO
+        block_var(14) = ' CATCHMENT LAND COVER -------------------- ROOTA ' ! CATCHMENT LAND COVER INFO
+        block_var(15) = ' STREAMFLOW SIM CONTROL ------------------ COIAM ' ! STREAMFLOW SIMULATION CONTROL VARIABLE: COIAM
+        block_var(16) = ' MONTHLY RADIATION CORRECTION FACTOR ---- SLORAD ' ! MONTHLY RADIATION CORRECTION FACTOR FOR SLOPED SURFACES: SLORAD
+        block_var(17) = ' MONTHLY RADIATION CORRECTION FACTOR ---- RADCOR ' ! MONTHLY RADIATION CORRECTION FACTOR RELATIVE TO BASE STATION: RADCOR
+        block_var(18) = ' SNOW OPTION ------------------------------- ICC ' ! SNOW VARIABLE: ICC
+
+    end subroutine initiateVarInitializationBlock
+
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  INITIATEVARINITIALIZATIONCONTAINER
+!       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH BLOCK
+!                       NUMBER FOR EACH VARIABLE
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  AUGUST 22, 2015
+!        PARAMETERS  :  INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
+!                       INTEGER ARRAY, OUTPUT, BLOCK NUMBER OF CONTAINER
+!
+!-------------------------------------------------------------------------------
+    subroutine initiateVarInitializationContainer(num_var, block_container)
+
+        integer, intent(in) :: num_var
+        integer, dimension(num_var), intent(out) :: block_container
+
+        block_container(1) = 0
+        block_container(2) = 1
+        block_container(3) = 2
+        block_container(4) = 3
+        block_container(5) = 4
+        block_container(6) = 9
+        block_container(7) = 25
+        block_container(8) = 27
+        block_container(9) = 28
+        block_container(10) = 30
+        block_container(11) = 49
+        block_container(12) = 53
+        block_container(13) = 54
+        block_container(14) = 56
+        block_container(15) = 67
+        block_container(16) = 139
+        block_container(17) = 140
+        block_container(18) = 141
+
+    end subroutine initiateVarInitializationContainer
+
+!-------------------------------------------------------------------------------
+!
+!  SUBROUTINE TITLE  :  INITIALIZELINE
+!       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE VARIABLES
+!                       ACCORDING TO THE BLOCK LINE NUMBER.
+!       AUTHORED BY  :  CHARMAINE BONIFACIO
+!      DATE REVISED  :  AUGUST 22, 2015
+!        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
+!                       INTEGER, INPUT, TOTAL NUMBER OF CATCHMENT IN WATERSHED
+!                       INTEGER, OUTPUT THE TOTAL NUMBER OF LINES PROCESSED
+!                       INTEGER, INPUT, THE INDEX ASSOCIATED WITH A VARIABLE
+!
+!-------------------------------------------------------------------------------
+    subroutine initializeline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, &
+                             line, var_block_index, block_var_string)
+
+        character(50), intent(in) :: block_var_string
+        integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_block_index
+        integer, intent(inout) :: line
+        character(80) :: dum, dum2
+        character(41) :: irainf
+        integer ::  i, l, d1, d2
+        integer :: icelln, idstrm
+        integer :: rainMap, arf
+        integer :: iobspk, iobovr, glacie
+        integer :: icons, iswave, ihemi
+        real :: clarea, sauef, elev, alat, wssize
+        real :: glmulti, gdepth, garea
+        integer, dimension(12) :: icc
+        real, dimension(12) :: albedo, cay, elaim, roota, coiam
+        real, dimension(12) :: corppt, wincor, rhucor, suncor, slorad, radcor
+        integer, parameter :: prtout = 0
+        integer, parameter :: rainFormat = 1
+        integer, parameter :: pptcor = 1
+        integer, parameter :: iobstq = 1
+        integer, parameter :: lcover = 1
+
+        l = 1
+        read(unit_var,*) dum2  ! monthly header
+        read(unit_var,*) dum2  ! variable header
+        write(unit_no,*) sectionHeader
+        write(unit_no,format_block_string) block_var_string ! variable to be processed
+        write(unit_no,format_var_header) debugStat,' INITIALIZED MENU STARTING FROM LINE '//' : ', line
+        do 701 while (l <= isubno)
+            read(unit_var,*) d1, d2, &
+				icelln, idstrm, irainf, (corppt(i),i=1,12), clarea, sauef, elev, wssize, &
+            	(wincor(i),i=1,12), (rhucor(i),i=1,12), (albedo(i),i=1,12), &
+            	(suncor(i),i=1,12), (cay(i),i=1,12), (elaim(i),i=1,12), (roota(i),i=1,12), &
+            	(coiam(i),i=1,12), (slorad(i),i=1,12), (radcor(i),i=1,12), (icc(i),i=1,12)
+            select case (var_block_index)
+               case (1)
+                   read(unit_oldMenu,format_line) dum ! read PRTOUT variable
+                   write(unit_no,format_icelln) icelln, idstrm, prtout, l
+                   write(unit_menu,format_icelln) icelln, idstrm, prtout, l
+               case (2)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_irainf) irainf, l
+                   write(unit_menu,format_irainf) irainf, l
+			   case (3)
+                   read(unit_oldMenu,format_rain_line) rainMap, arf  ! read MAP, ARF variables
+                   write(unit_no,format_rain) rainFormat, pptcor, rainMap, arf, l
+                   write(unit_menu,format_rain) rainFormat, pptcor, rainMap, arf, l
+               case (4)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_corppt) (corppt(i),i=1,12),(l)
+                   write(unit_menu,format_corppt) (corppt(i),i=1,12),(l)
+               case (5)
+                   read(unit_oldMenu,format_iobstq_line) iobspk, iobovr  ! read IOBSPK, IOBOVR variables
+                   write(unit_no,format_iobstq) iobstq, iobspk, iobovr, l
+                   write(unit_menu,format_iobstq) iobstq, iobspk, iobovr, l
+               case (6)
+                   read(unit_oldMenu,format_location_line) alat, ihemi ! read ALAT, IHEMI variables
+                   write(unit_no,format_location) clarea, sauef, elev, &
+                                               alat, ihemi, wssize, l
+                   write(unit_menu,format_location) clarea, sauef, elev, &
+                                                alat, ihemi, wssize, l
+               case (7)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_corfac) (wincor(i),i=1,12),(l)
+                   write(unit_menu,format_corfac) (wincor(i),i=1,12),(l)
+               case (8)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_corfac) (rhucor(i),i=1,12),(l)
+                   write(unit_menu,format_corfac) (rhucor(i),i=1,12),(l)
+               case (9)
+                   read(unit_oldMenu,format_albedo_line) icons,iswave ! read ICONS, ISWAVE variables
+                   write(unit_no,format_albedo) (albedo(i),i=1,12), icons, iswave, l
+                   write(unit_menu,format_albedo) (albedo(i),i=1,12), icons, iswave, l
+               case (10)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_corfac) (suncor(i),i=1,12),(l)
+                   write(unit_menu,format_corfac) (suncor(i),i=1,12),(l)
+               case (11)
+                   read(unit_oldMenu,format_lcover_line) glacie, glmulti, gdepth, garea ! read GLACIE, GLMULTI, GDEPTH, GAREA variables
+                   write(unit_no,format_lcover) lcover, glacie, glmulti, gdepth, garea, l
+                   write(unit_menu,format_lcover) lcover, glacie, glmulti, gdepth, garea, l
+               case (12)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_cerc) (cay(i),i=1,12),(l)
+                   write(unit_menu,format_cerc) (cay(i),i=1,12),(l)
+               case (13)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_cerc) (elaim(i),i=1,12),(l)
+                   write(unit_menu,format_cerc) (elaim(i),i=1,12),(l)
+               case (14)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_cerc) (roota(i),i=1,12),(l)
+                   write(unit_menu,format_cerc) (roota(i),i=1,12),(l)
+               case (15)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_cerc) (coiam(i),i=1,12),(l)
+                   write(unit_menu,format_cerc) (coiam(i),i=1,12),(l)
+               case (16)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_slorad) (slorad(i),i=1,12),(l)
+                   write(unit_menu,format_slorad) (slorad(i),i=1,12),(l)
+               case (17)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_corfac) (radcor(i),i=1,12),(l)
+                   write(unit_menu,format_corfac) (rhucor(i),i=1,12),(l)
+               case (18)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_icc) (icc(i),i=1,12),(l)
+                   write(unit_menu,format_icc) (icc(i),i=1,12),(l)
+           end select
+           write(unit_no,format_adjustment) debugRes,' SUCCESSFULLY PROCESSED LINE ', line, ' & HRU # ',l
+           l = l + 1
+           line = line + 1
+    701 end do
+
+    end subroutine initializeline
 
 end module m_acru_menu

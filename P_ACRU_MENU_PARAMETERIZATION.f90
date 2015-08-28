@@ -2,11 +2,11 @@
 ! MAIN TITLE   : P_ACRU_MENU_PARAMETERIZATION
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : MAY 8, 2015
-! DATE REVISED : AUGUST 21, 2015
+! DATE REVISED : AUGUST 27, 2015
 ! DESCRIPTION  : THE PROGRAM WILL COPY VALUES FROM A TAB DELIMITED FILE THAT
-!                CONTAINS 18 VARIABLES: TMAXLR, TMINLR, DEPAHO, DEPBHO, WP1, WP2,
-!                FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU, SMDDEP,
-!                ISNOTP, IPSCOR, ISCREE
+!                CONTAINS 18 VARIABLES: TMAXLR, TMINLR, DEPAHO, DEPBHO, WP1,
+!                WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU,
+!                SMDDEP, ISNOTP, IPSCOR, ISCREE
 ! REQUIREMENT  : MUST RUN THE .EXE FILE WITHIN THE INPUT DIRECTORY.
 ! MODULES      : MUST INCLUDE M_SYSTEMCHECK, M_SYSTEMLOG AND
 !                M_ACRU_MENU MODULES
@@ -27,28 +27,28 @@ program p_acru_menu_parameterization
     character(len=*), parameter :: format_header_line = '( A11,A80 )'
     character(len=*), parameter :: format_error = '( 1X,A11,A40 )'
     character(len=*), parameter :: format_line_summary = '( 1X,A11,A30,I7 )'
-    character(len=*), parameter :: format_processed = '( 1X,A11,I7,A56 )'
+    character(len=*), parameter :: format_processed = '( 1X,A11,I7,A53 )'
     character(len=*), parameter :: format_etime = '(1X, A11,A20,F10.5 )'
     character(len=*), parameter :: format_logfile = '( 1X,A11,A20,A30 )'
     character(len=*), parameter :: format_logstat = '( 1X,A11,A20,A20 )'
     character(len=*), parameter :: format_daytime = '( 1X,A11,A20,A15 )'
     character(len=*), parameter :: format_filestat = '( 1X,A11,A20,I4 )'
-    character(len=*), parameter :: format_endmsg = '( A78, A10,A2,A5,A1 )'
-    integer, parameter :: num_var = 5
+    character(len=*), parameter :: format_endmsg = '( A83,A10,A2,A5,A1 )'
+    character(len=*), parameter :: msg = 'ACRU MENU CALIBRATION SCRIPT CREATED BY CHARMAINE BONIFACIO. VERSION AUGUST 2015. ['
+    character(len=*), parameter :: lines_processed_msg = ' NUMBER OF PROCESSED LINES IN THE MENU PARAMETER FILE.'
+    integer, parameter :: num_var = 18 ! NUMBER OF VARIABLE BLOCKS
     character(len=30) :: outfile, infile, logrun, varfile
-    character(len=80) :: dum, msg
+    character(len=80) :: dum
     character(len=10) :: date, date_now, date_end
     character(len=12) :: time_now, time_end
     integer :: isubno
     integer :: count_0, count_1, count_rate, count_max
     integer :: line, line_num, ok, totalLine
-    integer :: lineTmxlr, lineTmnlr, lineSoils, lineStrmflw, lineSnow
     integer :: lineEof, valid_stat, blockIndex
     logical :: ex
     real :: elapsed_time
-    character(len=50) :: blockString
-    character(len=50), dimension(11) :: blockVariable
-    integer, dimension(5) :: blockVarRow, blockContainer
+    character(len=50), dimension(num_var) :: blockVariable
+    integer, dimension(num_var) :: blockVarRow, blockContainer
 
 !***********************************************************************
 ! START PROGRAM - DAY & TIME SETUP AND LOGFILE SETUP
@@ -161,54 +161,43 @@ program p_acru_menu_parameterization
     write(12,*)
     write(12,*) '[ M E N U   F I L E   P A R A M E T E R I Z A T I O N ] '
     write(12,*)
-! Initiate specific lines of block.
-    lineTmxlr   = blockVarRow(1)
-    lineTmnlr   = blockVarRow(2)
-    lineSoils   = blockVarRow(3)
-    lineStrmflw = blockVarRow(4)
-	  lineSnow    = blockVarRow(5)
     open(unit=20,file=outfile)
     open(unit=30,file=infile)
     line=1
     do 900 while (line < lineeof) ! Go thru MENU FILE once!
-        if(line == lineTmxlr) then ! check where TMAXLR should be overwritten
+        if(line == blockVarRow(1)) then ! check where TMAXLR should be overwritten
             open(unit=11,file=varfile)
             line_num = line
             blockIndex = 1
-            blockString = blockVariable(blockIndex)
-            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockString)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockVariable(blockIndex))
             line = line_num
             close(11)
-        elseif(line == lineTmnlr) then ! check where TMINLR should be overwritten
+        elseif(line == blockVarRow(2)) then ! check where TMINLR should be overwritten
             open(unit=11,file=varfile)
             line_num = line
             blockIndex = 2
-            blockString = blockVariable(blockIndex)
-            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockString)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockVariable(blockIndex))
             line = line_num
             close(11)
-        elseif(line == lineSoils) then ! check where SOILS should be overwritten
+        elseif(line == blockVarRow(3)) then ! check where SOILS should be overwritten
             open(unit=11,file=varfile)
             line_num = line
             blockIndex = 3
-            blockString = blockVariable(blockIndex)
-            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockString)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockVariable(blockIndex))
             line = line_num
             close(11)
-       elseif(line == lineStrmflw) then ! check where STREAMFLOW should be overwritten
+       elseif(line == blockVarRow(4)) then ! check where STREAMFLOW should be overwritten
             open(unit=11,file=varfile)
             line_num = line
             blockIndex = 4
-            blockString = blockVariable(blockIndex)
-            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockString)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockVariable(blockIndex))
             line = line_num
             close(11)
-       elseif(line == lineSnow) then ! check where SNOW should be overwritten
+       elseif(line == blockVarRow(5)) then ! check where SNOW should be overwritten
             open(unit=11,file=varfile)
             line_num = line
             blockIndex = 5
-            blockString = blockVariable(blockIndex)
-            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockString)
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockVariable(blockIndex))
             line = line_num
             close(11)
         else ! simply read and copy lines
@@ -220,13 +209,12 @@ program p_acru_menu_parameterization
     close(20)
     write(12,*) sectionHeader
     write(12,*)
-    write(12,format_processed) debugStat, line, ' = NUMBER OF PROCESSED LINES IN THE MENU PARAMETER FILE.  '
+    write(12,format_processed) debugStat, line, lines_processed_msg
     write(12,*)
-    msg = 'PARAMETERIZATION SCRIPT CREATED BY CHARMAINE BONIFACIO. VERSION AUGUST 2015. [ '
     write(30,format_endmsg) msg, date, '//', time_now,']'
     endfile(30)
     close(30)
-    write(*,format_processed) debugStat, line, ' = NUMBER OF PROCESSED LINES IN THE MENU PARAMETER FILE. '
+    write(*,format_processed) debugStat, line, lines_processed_msg
 !***********************************************************************
 ! END PROGRAM - ELAPSED TIME
     call system_clock(count_1, count_rate, count_max)

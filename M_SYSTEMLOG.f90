@@ -2,7 +2,7 @@
 ! MODULE TITLE : M_SYSTEMLOG
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 27, 2015
-! DATE REVISED : AUGUST 9, 2015
+! DATE REVISED : AUGUST 27, 2015
 ! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED TO FORMAT THE LOG FILE.
 !###############################################################################
 module m_systemlog
@@ -31,7 +31,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL PRINT OUT THE HEADER CONTAINING
 !                       SPECIFIC INFORMATION.
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 1, 2015
+!      DATE REVISED  :  AUGUST 27, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !
 !-------------------------------------------------------------------------------
@@ -43,9 +43,6 @@ contains
         write(unit_no,*) logHeader
         write(unit_no,*)
         write(unit_no,*) '                          ACRU MENU LOG FILE'
-        write(unit_no,*)
-        write(unit_no,*) ' CREATED BY   : Charmaine Bonifacio'
-        write(unit_no,*) ' DATE REVISED : August 6, 2015'
         write(unit_no,*)
         write(unit_no,*) logHeader
 
@@ -99,6 +96,7 @@ contains
         write(unit_no,*) programHeader
         write(unit_no,*)
         write(unit_no,*) 'END OF PROGRAM. '
+
      end subroutine endprogramlog
 
 !-------------------------------------------------------------------------------
