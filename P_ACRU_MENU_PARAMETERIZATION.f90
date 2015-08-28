@@ -36,7 +36,7 @@ program p_acru_menu_parameterization
     character(len=*), parameter :: format_endmsg = '( A83,A10,A2,A5,A1 )'
     character(len=*), parameter :: msg = 'ACRU MENU CALIBRATION SCRIPT CREATED BY CHARMAINE BONIFACIO. VERSION AUGUST 2015. ['
     character(len=*), parameter :: lines_processed_msg = ' NUMBER OF PROCESSED LINES IN THE MENU PARAMETER FILE.'
-    integer, parameter :: num_var = 18 ! NUMBER OF VARIABLE BLOCKS
+    integer, parameter :: num_var = 5 ! NUMBER OF VARIABLE BLOCKS
     character(len=30) :: outfile, infile, logrun, varfile
     character(len=80) :: dum
     character(len=10) :: date, date_now, date_end
