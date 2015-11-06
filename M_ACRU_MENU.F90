@@ -1,3 +1,4 @@
+
 !###############################################################################
 ! MODULE TITLE : M_ACRU_MENU
 ! CREATED BY   : CHARMAINE BONIFACIO
@@ -13,7 +14,7 @@ module m_acru_menu
     character(len=*), parameter:: format_line = '( A80 )'
     character(len=*), parameter:: format_read_line = '( A1 )'
     character(len=*), parameter:: format_var_header = '( 1X,A11,A50,I7 )'
-    character(len=*), parameter:: format_block_string = '( 16X,A50 )'
+    character(len=*), parameter:: format_block_string = '( 16X,A60 )'
     character(len=*), parameter:: format_print_var = '( 1X,A11,A65,I7 )'
     character(len=*), parameter:: format_var_summary = '( 1X,A11,A20,I7 )'
     character(len=*), parameter:: format_isubno = '( 3X,I4 )'
@@ -280,7 +281,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH BLOCK
 !                       NUMBER FOR EACH VARIABLE
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 21, 2015
+!      DATE REVISED  :  NOVEMBER 5, 2015
 !        PARAMETERS  :  INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       INTEGER ARRAY, OUTPUT, BLOCK NUMBER OF CONTAINER
 !
@@ -318,7 +319,7 @@ contains
     subroutine calibrateline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, &
                              line, var_index, block_var_string)
 
-        character(len=50), intent(in) :: block_var_string
+        character(len=60), intent(in) :: block_var_string
         integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_index
         integer, intent(inout) :: line
         character(80) :: dum, dum2
@@ -511,7 +512,7 @@ contains
     subroutine initializeline(unit_no, unit_oldMenu, unit_menu, unit_var, isubno, &
                              line, var_block_index, block_var_string)
 
-        character(50), intent(in) :: block_var_string
+        character(60), intent(in) :: block_var_string
         integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_block_index
         integer, intent(inout) :: line
         character(80) :: dum, dum2
@@ -524,7 +525,7 @@ contains
         integer :: iystrt, iyrend, forest, ifor
         real :: clarea, sauef, elev, alat, wssize
         real :: glmulti, gdepth, garea, telev
-        real :: sncapi, snorc, snirc, sncc
+        real :: sncapi
         integer, dimension(12) :: icc
         real, dimension(12) :: albedo, cay, elaim, roota, coiam
         real, dimension(12) :: corppt, wincor, rhucor, suncor, slorad, radcor
@@ -535,11 +536,14 @@ contains
         integer, parameter :: iobstq = 1
         integer, parameter :: lcover = 1
         integer, parameter :: isnow = 1
-        integer, parameter :: isnotp = 1
-        integer, parameter :: ipscor = 1
+        integer, parameter :: isnotp = 4
+        integer, parameter :: ipscor = 3
         integer, parameter :: iscree = 1
         integer, parameter :: iexp = 1
         integer, parameter :: mcdmod = 1
+        real, parameter :: snorc = 0.25
+        real, parameter :: snirc = 0.05
+        real, parameter :: sncc = 75.0
         real, dimension(12), parameter :: adj = 1.0
         real, dimension(12), parameter :: corps = 1.0
         real, dimension(12), parameter :: tmcrit = 0.0
@@ -635,7 +639,7 @@ contains
                    write(unit_no,format_cerc) (coiam(i),i=1,12),(l)
                    write(unit_menu,format_cerc) (coiam(i),i=1,12),(l)
                case (19)
-                   read(unit_oldMenu,format_snowvar_line) snorc, snirc, sncc
+                   read(unit_oldMenu,format_line) dum
                    write(unit_no,format_snow) isnow, isnotp, ipscor, iscree, iexp, ifor, &
                                               sncapi, snorc, snirc, mcdmod, sncc, l
                    write(unit_menu,format_snow) isnow, isnotp, ipscor, iscree, iexp, ifor, &

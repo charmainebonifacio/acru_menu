@@ -4,9 +4,10 @@
 ! DATE CREATED : MAY 8, 2015
 ! DATE REVISED : NOVEMBER 5, 2015
 ! DESCRIPTION  : THE PROGRAM WILL COPY VALUES FROM A TAB DELIMITED FILE THAT
-!                CONTAINS 18 VARIABLES: TMAXLR, TMINLR, DEPAHO, DEPBHO, WP1,
-!                WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU,
-!                SMDDEP, ISNOTP, IPSCOR, ISCREE
+!                CONTAINS 18 VARIABLES: IYSTRT, IYREND, TMAXLR, TMINLR,
+!                DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP,
+!                QFRESP, COFRU, SMDDEP, ISNOTP, IPSCOR, ISCREE, SNORC, SNIRC,
+!                SNCC
 ! REQUIREMENT  : MUST RUN THE .EXE FILE WITHIN THE INPUT DIRECTORY.
 ! MODULES      : MUST INCLUDE M_SYSTEMCHECK, M_SYSTEMLOG AND
 !                M_ACRU_MENU MODULES
@@ -48,7 +49,7 @@ program p_acru_menu_parameterization
     integer :: lineEof, valid_stat, blockIndex
     logical :: ex
     real :: elapsed_time
-    character(len=50), dimension(num_var) :: blockVariable
+    character(len=60), dimension(num_var) :: blockVariable
     integer, dimension(num_var) :: blockVarRow, blockContainer
 
 !***********************************************************************
