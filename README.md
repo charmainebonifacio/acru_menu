@@ -1,9 +1,11 @@
 # The ACRU Parameter Calibration Menu Generator
 
-This program will only automatically adjust 18 variables in the MENU Parameter File using an updated parameter text file. This program will work with a distributed mode or point mode MENU Parameter File. This program also utilizes an implemented a logfile system to ensure accuracy when dealing with the automatic adjustment of values.
+This program will only automatically adjust 23 variables in the MENU Parameter File using an updated parameter text file. This program will work with a distributed mode or point mode MENU Parameter File. This program also utilizes an implemented a logfile system to ensure accuracy when dealing with the automatic adjustment of values.
 
 The variables that will be updated after each run are as follows:
 
+ - IYSTRT
+ - IYREND
  - TMAXLR
  - TMINLR
  - DEPAHO
@@ -22,8 +24,11 @@ The variables that will be updated after each run are as follows:
  - ISNOTP
  - IPSCOR
  - ISCREE
+ - SNORC
+ - SNIRC
+ - SNCC
 
-The original values from the following 12 variables will also be copied:
+The original values from the following 9 variables will also be copied:
 
  - IRUN
  - ADJIMP
@@ -33,10 +38,7 @@ The original values from the following 12 variables will also be copied:
  - IEXP
  - IFOR
  - SNCAPI
- - SNORC
- - SNIRC
  - MCDMOD
- - SNCC
 
 This script will automatically adjust the parameters for calibrating a catchments within the ACRU model. These variables belong to six different information blocks in the Menu Parameter File:
 
@@ -51,7 +53,7 @@ This script will automatically adjust the parameters for calibrating a catchment
 
 ## Legacy
 
-The purpose is to revise the scripts to Fortran 90 and compiled using the SilverFrost Plato Fortran 95 compiler.
+The purpose is to EFFICIENTLY and EFFECTIVELY parameterize key model variables in the Menu Parameter File with non-default values. This meant revising the scripts to Fortran 90 and compiled using the SilverFrost Plato Fortran 95 compiler. 
 
 ## License
 

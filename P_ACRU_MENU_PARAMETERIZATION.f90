@@ -1,8 +1,8 @@
 !###############################################################################
-! MAIN TITLE   : P_ACRU_MENU_INITIALIZATION
+! MAIN TITLE   : P_ACRU_MENU_PARAMETERIZATION
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : MAY 8, 2015
-! DATE REVISED : AUGUST 27, 2015
+! DATE REVISED : NOVEMBER 5, 2015
 ! DESCRIPTION  : THE PROGRAM WILL COPY VALUES FROM A TAB DELIMITED FILE THAT
 !                CONTAINS 18 VARIABLES: TMAXLR, TMINLR, DEPAHO, DEPBHO, WP1,
 !                WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU,
@@ -36,7 +36,7 @@ program p_acru_menu_parameterization
     character(len=*), parameter :: format_endmsg = '( A83,A10,A2,A5,A1 )'
     character(len=*), parameter :: msg = 'ACRU MENU CALIBRATION SCRIPT CREATED BY CHARMAINE BONIFACIO. VERSION AUGUST 2015. ['
     character(len=*), parameter :: lines_processed_msg = ' NUMBER OF PROCESSED LINES IN THE MENU PARAMETER FILE.'
-    integer, parameter :: num_var = 5 ! NUMBER OF VARIABLE BLOCKS
+    integer, parameter :: num_var = 6 ! NUMBER OF VARIABLE BLOCKS
     character(len=30) :: outfile, infile, varfile
     character(len=32) :: logrun
     character(len=80) :: dum
@@ -198,6 +198,13 @@ program p_acru_menu_parameterization
             open(unit=11,file=varfile)
             line_num = line
             blockIndex = 5
+            call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockVariable(blockIndex))
+            line = line_num
+            close(11)
+       elseif(line == blockVarRow(6)) then ! check where SNOW should be overwritten
+            open(unit=11,file=varfile)
+            line_num = line
+            blockIndex = 6
             call calibrateline(12, 20, 30, 11, isubno, line_num, blockIndex, blockVariable(blockIndex))
             line = line_num
             close(11)

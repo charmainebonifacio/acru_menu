@@ -2,7 +2,7 @@
 ! MODULE TITLE : M_ACRU_MENU
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 24, 2015
-! DATE REVISED : SEPTEMBER 7, 2015
+! DATE REVISED : NOVEMBER 5, 2015
 ! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED TO PROCESS THE MENU FILE.
 !###############################################################################
 module m_acru_menu
@@ -14,7 +14,7 @@ module m_acru_menu
     character(len=*), parameter:: format_read_line = '( A1 )'
     character(len=*), parameter:: format_var_header = '( 1X,A11,A50,I7 )'
     character(len=*), parameter:: format_block_string = '( 16X,A50 )'
-    character(len=*), parameter:: format_print_var = '( 1X,A11,A55,I7 )'
+    character(len=*), parameter:: format_print_var = '( 1X,A11,A65,I7 )'
     character(len=*), parameter:: format_var_summary = '( 1X,A11,A20,I7 )'
     character(len=*), parameter:: format_isubno = '( 3X,I4 )'
     character(len=*), parameter:: format_location_line = '( 23X,F5.2,5X,I1)'
@@ -27,7 +27,7 @@ module m_acru_menu
     character(len=*), parameter:: format_strmflw_line = '( 25X,I1,2(2X,F5.3),3X,F4.2,29X,I4 )'
     character(len=*), parameter:: format_strmflw = '( 1X,F5.2,3X,F5.3,1X,F6.2,4X,I1,2(2X,F5.3),3X,F4.2,29X,I4 )'
     character(len=*), parameter:: format_icc = '( 2X,12(I3.2,2X),14X,I4 )'
-    character(len=*), parameter:: format_snow_line = '( 4X,I1,21X,2(4X,I1),3X,F4.2,2(2X,F4.2),5X,I1,1X,F5.2 )'
+    character(len=*), parameter:: format_snow_line = '( 4X,I1,21X,2(4X,I1),3X,F4.2,17X,I1,1X,6X )'
     character(len=*), parameter:: format_snow = '( 4X,I1,3(6X,I1),2(4X,I1),3X,F4.2,2(2X,F4.2),5X,I1,1X,F5.2,9X,I4 )'
     character(len=*), parameter:: format_adjustment = '( 1X,A11,A30,I7,A9,I4 )'
     character(len=*), parameter:: format_icelln_line = '( 19X,I1 )'
@@ -44,6 +44,11 @@ module m_acru_menu
     character(len=*), parameter:: format_lcover = '( 5X,I1,6X,I1,2X,F5.2,1X,F6.1,1X,F8.2,40X,I4 )'
     character(len=*), parameter:: format_telev = '( F6.1,4X,I2,64X,I4 )'
     character(len=*), parameter:: format_telev_line = '( 10X,I2,64X,I4 )'
+    character(len=*), parameter:: format_year = '( 2X,I4,3X,I4,63X,I4 )'
+    character(len=*), parameter:: format_forest = '( 5X,I1,70X,I4 )'
+    character(len=*), parameter:: format_snowvar_line = '( 45X,2(2X,F4.2),7X,F5.2 )'
+    character(len=*), parameter:: format_snowtmp = '( 12(1X,F4.1),16X,I4 )'
+    character(len=*), parameter:: format_snowopt = '( 12(1X,F4.2),16X,I4 )'
 
 contains
 
@@ -208,7 +213,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL PRINT THE RESULTS OF ARRAY
 !                       INITIALIZATION
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 5, 2015
+!      DATE REVISED  :  NOVEMBER 4, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       CHARACTER ARRAY, INPUT, ALL TYPES OF VARIABLES
@@ -220,7 +225,7 @@ contains
 
         integer :: i
         integer, intent(in) :: unit_no, num_var
-        character(len=50), dimension(num_var), intent(in) :: block_var
+        character(len=60), dimension(num_var), intent(in) :: block_var
         integer, dimension(num_var), intent(in) :: block_container, block_line
 
         write(unit_no,*) ' >> INITIALIZING THE FOLLOWING BLOCK FOR EACH VARIABLES... '
@@ -249,7 +254,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH DIFFERENT
 !                       TYPES OF VARIABLES
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 21, 2015
+!      DATE REVISED  :  NOVEMBER 5, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       CHARACTER ARRAY, INPUT, BLOCK INFO CONTAINING VARIABLES
@@ -258,13 +263,14 @@ contains
     subroutine initiateVarCalibrationBlock(num_var, block_var)
 
         integer, intent(in) :: num_var
-        character(len=50), dimension(num_var), intent(out) :: block_var
+        character(len=60), dimension(num_var), intent(out) :: block_var
 
-        block_var(1) = ' REFERENCE POTENTIAL EVAPORATION UNIT ---- TMXLR ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
-        block_var(2) = ' REFERENCE POTENTIAL EVAPORATION UNIT ---- TMNLR ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
-        block_var(3) = ' SOILS ------- DEPAB,WP1/2,FC1/2,PO1/2,AB/BFRESP ' ! CATCHMENT SOILS INFO: DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP
-        block_var(4) = ' STREAMFLOW SIM CONTROL ---- QFRESP,COFRU,SMDDEP ' ! STREAMFLOW SIMULATION CONTROL VARIABLES: QFRESP, COFRU, SMDDEP, IRUN, ADJIMP, DISIMP, STOIMP
-        block_var(5) = ' SNOW VARIABLES: -------- ISNOTP, IPSCOR, ISCREE ' ! SNOW MAIN VARIABLE: ISNOTP, IPSCOR, ISCREE
+        block_var(1) = ' PERIOD OF RECORD SIMULATION -------------- IYSTRT, IYREND ' ! PERIOD OF RECORD SIMULATION: IYSTRT, IYREND
+        block_var(2) = ' REFERENCE POTENTIAL EVAPORATION UNIT -------------- TMXLR ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(3) = ' REFERENCE POTENTIAL EVAPORATION UNIT -------------- TMNLR ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(4) = ' SOILS ----------------- DEPAB,WP1/2,FC1/2,PO1/2,AB/BFRESP ' ! CATCHMENT SOILS INFO: DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP
+        block_var(5) = ' STREAMFLOW SIM CONTROL -------------- QFRESP,COFRU,SMDDEP ' ! STREAMFLOW SIMULATION CONTROL VARIABLES: QFRESP, COFRU, SMDDEP, IRUN, ADJIMP, DISIMP, STOIMP
+        block_var(6) = ' SNOW VARIABLES ---- ISNOTP,IPSCOR,ISCREE,SNORC,SNIRC,SNCC ' ! SNOW MAIN VARIABLE: ISNOTP, IPSCOR, ISCREE
 
     end subroutine initiateVarCalibrationBlock
 
@@ -284,11 +290,12 @@ contains
         integer, intent(in) :: num_var
         integer, dimension(num_var), intent(out) :: block_container
 
-        block_container(1) = 20
-        block_container(2) = 21
-        block_container(3) = 43
-        block_container(4) = 66
-        block_container(5) = 134
+        block_container(1) = 10
+        block_container(2) = 20
+        block_container(3) = 21
+        block_container(4) = 43
+        block_container(5) = 66
+        block_container(6) = 134
 
     end subroutine initiateVarCalibrationContainer
 
@@ -298,7 +305,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL CALIBRATE THE VARIABLES
 !                       ACCORDING TO THE LINE NUMBER.
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 21, 2015
+!      DATE REVISED  :  NOVEMBER 5, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
@@ -315,7 +322,8 @@ contains
         integer, intent(in) :: isubno, unit_no, unit_oldMenu, unit_menu, unit_var, var_index
         integer, intent(inout) :: line
         character(80) :: dum, dum2
-        integer ::  i, l, d1, d2
+        integer :: i, l, d1, d2
+        integer :: iystrt, iyrend
         integer :: irun, isnow, isnotp, ipscor, iscree, iexp, ifor, mcdmod
         real :: d3
         real :: depaho, depbho, wp1, wp2, fc1, fc2, po1, po2, abresp, bfresp
@@ -334,35 +342,39 @@ contains
         write(unit_no,format_var_header) debugStat,' PARAMETER ADJUSTMENT STARTING FROM LINE '//' : ', line
         do 700 while (l <= isubno)
             read(unit_var,*) d1, d2, d3, &
-                             (tmaxlr(i),i=1,12), (tminlr(i),i=1,12), &
+                             iystrt, iyrend, (tmaxlr(i),i=1,12), (tminlr(i),i=1,12), &
                              depaho, depbho, depaho2, depbho2, wp1, wp2, fc1, fc2, &
                              po1, po2, abresp, bfresp, abresp2, bfresp2, &
                              qfresp, qfresp2, qfresp3, cofru, cofru2, &
-                             smddep, smddep2, smddep3, isnotp, ipscor, iscree
+                             smddep, smddep2, smddep3, isnotp, ipscor, iscree, &
+                             snorc, snirc, sncc
             select case (var_index)
                case (1)
                    read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_year) iystrt, iyrend, l
+                   write(unit_menu,format_year) iystrt, iyrend, l
+               case (2)
+                   read(unit_oldMenu,format_line) dum
                    write(unit_no,format_lr) (tmaxlr(i),i=1,12),(l)
                    write(unit_menu,format_lr) (tmaxlr(i),i=1,12),(l)
-               case (2)
+               case (3)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_lr) (tminlr(i),i=1,12),(l)
                    write(unit_menu,format_lr) (tminlr(i),i=1,12),(l)
-               case (3)
+               case (4)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_soils) depaho2, depbho2, wp1, wp2, fc1, &
                                                fc2, po1, po2, abresp2, bfresp2, l
                    write(unit_menu,format_soils) depaho2, depbho2, wp1, wp2, fc1, &
                                                fc2, po1, po2, abresp2, bfresp2, l
-               case (4)
+               case (5)
                    read(unit_oldMenu,format_strmflw_line) irun, adjimp, disimp, stoimp
                    write(unit_no,format_strmflw) qfresp3, cofru2, smddep3, irun, &
                                                  adjimp, disimp, stoimp, l
                    write(unit_menu,format_strmflw) qfresp3, cofru2, smddep3, irun, &
                                                    adjimp, disimp, stoimp, l
-               case (5)
-                   read(unit_oldMenu,format_snow_line) isnow, iexp, ifor, sncapi, snorc, &
-                                                  snirc, mcdmod, sncc
+               case (6)
+                   read(unit_oldMenu,format_snow_line) isnow, iexp, ifor, sncapi, mcdmod
                    write(unit_no,format_snow) isnow, isnotp, ipscor, iscree, iexp, ifor, &
                                               sncapi, snorc, snirc, mcdmod, sncc, l
                    write(unit_menu,format_snow) isnow, isnotp, ipscor, iscree, iexp, ifor, &
@@ -387,7 +399,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH DIFFERENT
 !                       TYPES OF VARIABLES
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  SEPTEMBER 7, 2015
+!      DATE REVISED  :  NOVEMBER 4, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       CHARACTER ARRAY, INPUT, BLOCK INFO CONTAINING VARIABLES
@@ -396,27 +408,38 @@ contains
     subroutine initiateVarInitializationBlock(num_var, block_var)
 
         integer, intent(in) :: num_var
-        character(len=50), dimension(num_var), intent(out) :: block_var
+        character(len=60), dimension(num_var), intent(out) :: block_var
 
-        block_var(1) = ' SUBCATCHMENT CONFIG ------------ ICELLN, IDSTRM ' ! SUBCATCHMENT CONFIG: ICELLN, IDSTRM, PRTOUT
-        block_var(2) = ' RAINFALL FILE ORG ---------------------- IRAINF ' ! RAINFALL FILE ORGANIZATION: IRAINF
-        block_var(3) = ' RAINFALL INFO ------------------ FORMAT, PPTCOR ' ! RAINFALL INFO: FORMAT, PPTCOR, MAP, ARF
-        block_var(4) = ' MONTHLY RAINFALL ADJUSTMENT FACTOR ----- CORPPT ' ! MONTHLY RAINFALL ADJUSTMENT FACTOR: CORPPT
-        block_var(5) = ' AVAILABILITY OF STREAMFLOW DATA -------- IOBSTQ ' ! AVAILABILITY OF STREAMFLOW DATA: IOBSTQ, IOBSPK, IOBOVR
-        block_var(6) = ' LOCATIONAL -------- CLAREA, SAUEF, ELEV, WSSIZE ' ! LOCATIONAL AND CATCHMENT INFO: CLAREA, SAUEF, ELEV, ALAT, IHEMI, WSSIZE
-        block_var(7) = ' TEMPERATURE ADJUSTMENT ALTITUDE---------- TELEV ' ! TEMPERATURE ADJUSTMENT ALTITUDE: TELEV
-        block_var(8) = ' MONTHLY WIND CORRECTION FACTOR --------- WINCOR ' ! MONTHLY WIND CORRECTION FACTOR: WINCOR
-        block_var(9) = ' MONTHLY REL HUM CORRECTION FACTOR ------ RHUCOR ' ! MONTHLY RELATIVE HUMIDITY CORRECTION FACTOR: RHUCOR
-        block_var(10) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- ALBEDO ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
-        block_var(11) = ' MONTHLY SUNSHINE CORRECTION FACTOR ----- SUNCOR ' ! MONTHLY SUNSHINE CORRECTION FACTOR: SUNCOR
-        block_var(12) = ' LEVEL OF LAND COVER -------------------- LCOVER ' ! LEVEL OF LAND COVER INFO: LCOVER
-        block_var(13) = ' CATCHMENT LAND COVER ---------------------- CAY ' ! CATCHMENT LAND COVER INFO
-        block_var(14) = ' CATCHMENT LAND COVER -------------------- ELAIM ' ! CATCHMENT LAND COVER INFO
-        block_var(15) = ' CATCHMENT LAND COVER -------------------- ROOTA ' ! CATCHMENT LAND COVER INFO
-        block_var(16) = ' STREAMFLOW SIM CONTROL ------------------ COIAM ' ! STREAMFLOW SIMULATION CONTROL VARIABLE: COIAM
-        block_var(17) = ' MONTHLY RADIATION CORRECTION FACTOR ---- SLORAD ' ! MONTHLY RADIATION CORRECTION FACTOR FOR SLOPED SURFACES: SLORAD
-        block_var(18) = ' MONTHLY RADIATION CORRECTION FACTOR ---- RADCOR ' ! MONTHLY RADIATION CORRECTION FACTOR RELATIVE TO BASE STATION: RADCOR
-        block_var(19) = ' SNOW OPTION ------------------------------- ICC ' ! SNOW VARIABLE: ICC
+        block_var(1) = ' SUBCATCHMENT CONFIG ---------------------- ICELLN, IDSTRM ' ! SUBCATCHMENT CONFIG: ICELLN, IDSTRM, PRTOUT
+        block_var(2) = ' RAINFALL FILE ORG -------------------------------- IRAINF ' ! RAINFALL FILE ORGANIZATION: IRAINF
+        block_var(3) = ' RAINFALL INFO ---------------------------- FORMAT, PPTCOR ' ! RAINFALL INFO: FORMAT, PPTCOR, MAP, ARF
+        block_var(4) = ' MONTHLY RAINFALL ADJUSTMENT FACTOR --------------- CORPPT ' ! MONTHLY RAINFALL ADJUSTMENT FACTOR: CORPPT
+        block_var(5) = ' AVAILABILITY OF STREAMFLOW DATA ------------------ IOBSTQ ' ! AVAILABILITY OF STREAMFLOW DATA: IOBSTQ, IOBSPK, IOBOVR
+        block_var(6) = ' LOCATIONAL ------------------ CLAREA, SAUEF, ELEV, WSSIZE ' ! LOCATIONAL AND CATCHMENT INFO: CLAREA, SAUEF, ELEV, ALAT, IHEMI, WSSIZE
+        block_var(7) = ' PERIOD OF RECORD SIMULATION -------------- IYSTRT, IYREND ' ! PERIOD OF RECORD SIMULATION: IYSTRT, IYREND
+        block_var(8) = ' TEMPERATURE ADJUSTMENT ALTITUDE ------------------- TELEV ' ! TEMPERATURE ADJUSTMENT ALTITUDE: TELEV
+        block_var(9) = ' MONTHLY WIND CORRECTION FACTOR ------------------- WINCOR ' ! MONTHLY WIND CORRECTION FACTOR: WINCOR
+        block_var(10) = ' MONTHLY REL HUM CORRECTION FACTOR ---------------- RHUCOR ' ! MONTHLY RELATIVE HUMIDITY CORRECTION FACTOR: RHUCOR
+        block_var(11) = ' REFERENCE POTENTIAL EVAPORATION UNIT ------------- ALBEDO ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(12) = ' MONTHLY SUNSHINE CORRECTION FACTOR --------------- SUNCOR ' ! MONTHLY SUNSHINE CORRECTION FACTOR: SUNCOR
+        block_var(13) = ' LEVEL OF LAND COVER ------------------------------ LCOVER ' ! LEVEL OF LAND COVER INFO: LCOVER
+        block_var(14) = ' CATCHMENT LAND COVER -------------------------------- CAY ' ! CATCHMENT LAND COVER INFO: CAY
+        block_var(15) = ' CATCHMENT LAND COVER ------------------------------ ELAIM ' ! CATCHMENT LAND COVER INFO: ELAIM
+        block_var(16) = ' CATCHMENT LAND COVER ------------------------------ ROOTA ' ! CATCHMENT LAND COVER INFO: ROOTA
+        block_var(17) = ' OPTION ENHANCED WET CANOPY EVAP ------------------ FOREST ' ! OPTION ENHANCED WET CANOPY EVAPORATION: FOREST
+        block_var(18) = ' STREAMFLOW SIM CONTROL ---------------------------- COIAM ' ! STREAMFLOW SIMULATION CONTROL VARIABLE: COIAM
+        block_var(19) = ' SNOW ------ ISNOW,ISNOTP,IPSCOR,ISCREE,IFOR,SNCAPI,MCDMOD ' ! SNOW MAIN VARIABLE: ISNOW, ISNOTP, IPSCOR, ISCREE, IFOR, SNCAPI
+        block_var(20) = ' SNOW OPTION -------------------------------------- TPCRIT ' ! SNOW VARIABLE: TPCRIT
+        block_var(21) = ' SNOW OPTION -------------------------------------- TRANGE ' ! SNOW VARIABLE: TRANGE
+        block_var(22) = ' SNOW OPTION ----------------------------------------- ADJ ' ! SNOW VARIABLE: ADJ
+        block_var(23) = ' SNOW OPTION -------------------------------------- TMAXSN ' ! SNOW VARIABLE: TMAXSN
+        block_var(24) = ' MONTHLY RADIATION CORFAC SLOPED SUR -------------- SLORAD ' ! MONTHLY RADIATION CORRECTION FACTOR FOR SLOPED SURFACES: SLORAD
+        block_var(25) = ' MONTHLY RADIATION CORFAC REL BASE STN ------------ RADCOR ' ! MONTHLY RADIATION CORRECTION FACTOR RELATIVE TO BASE STATION: RADCOR
+        block_var(26) = ' SNOW OPTION ----------------------------------------- ICC ' ! SNOW VARIABLE: ICC
+        block_var(27) = ' SNOW OPTION --------------------------------------- CORPS ' ! SNOW VARIABLE: CORPS
+        block_var(28) = ' SNOW OPTION -------------------------------------- TMCRIT ' ! SNOW VARIABLE: TMCRIT
+        block_var(29) = ' SNOW OPTION --------------------------------------- SNOMC ' ! SNOW VARIABLE: SNOMC
+        block_var(30) = ' SNOW OPTION -------------------------------------- SNEREL ' ! SNOW VARIABLE: SNEREL
 
     end subroutine initiateVarInitializationBlock
 
@@ -426,7 +449,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH BLOCK
 !                       NUMBER FOR EACH VARIABLE
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  SEPTEMBER 7, 2015
+!      DATE REVISED  :  NOVEMBER 4, 2015
 !        PARAMETERS  :  INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       INTEGER ARRAY, OUTPUT, BLOCK NUMBER OF CONTAINER
 !
@@ -442,19 +465,30 @@ contains
         block_container(4) = 3
         block_container(5) = 4
         block_container(6) = 9
-        block_container(7) = 19
-        block_container(8) = 25
-        block_container(9) = 27
-        block_container(10) = 28
-        block_container(11) = 30
-        block_container(12) = 49
-        block_container(13) = 53
-        block_container(14) = 54
-        block_container(15) = 56
-        block_container(16) = 67
-        block_container(17) = 139
-        block_container(18) = 140
-        block_container(19) = 141
+        block_container(7) = 10
+        block_container(8) = 19
+        block_container(9) = 25
+        block_container(10) = 27
+        block_container(11) = 28
+        block_container(12) = 30
+        block_container(13) = 49
+        block_container(14) = 53
+        block_container(15) = 54
+        block_container(16) = 56
+        block_container(17) = 61
+        block_container(18) = 67
+        block_container(19) = 134
+        block_container(20) = 135
+        block_container(21) = 136
+        block_container(22) = 137
+        block_container(23) = 138
+        block_container(24) = 139
+        block_container(25) = 140
+        block_container(26) = 141
+        block_container(27) = 142
+        block_container(28) = 143
+        block_container(29) = 144
+        block_container(30) = 145
 
     end subroutine initiateVarInitializationContainer
 
@@ -464,7 +498,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE VARIABLES
 !                       ACCORDING TO THE BLOCK LINE NUMBER.
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  SEPTEMBER 7, 2015
+!      DATE REVISED  :  NOVEMBER 4, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
@@ -487,16 +521,29 @@ contains
         integer :: rainMap, arf, lrreg
         integer :: iobspk, iobovr, glacie
         integer :: icons, iswave, ihemi
+        integer :: iystrt, iyrend, forest, ifor
         real :: clarea, sauef, elev, alat, wssize
         real :: glmulti, gdepth, garea, telev
+        real :: sncapi, snorc, snirc, sncc
         integer, dimension(12) :: icc
         real, dimension(12) :: albedo, cay, elaim, roota, coiam
         real, dimension(12) :: corppt, wincor, rhucor, suncor, slorad, radcor
+        real, dimension(12) :: tpcrit, trange, tmaxsn, snomc! , adj, corps, tmcrit, snerel
         integer, parameter :: prtout = 0
         integer, parameter :: rainFormat = 1
         integer, parameter :: pptcor = 1
         integer, parameter :: iobstq = 1
         integer, parameter :: lcover = 1
+        integer, parameter :: isnow = 1
+        integer, parameter :: isnotp = 1
+        integer, parameter :: ipscor = 1
+        integer, parameter :: iscree = 1
+        integer, parameter :: iexp = 1
+        integer, parameter :: mcdmod = 1
+        real, dimension(12), parameter :: adj = 1.0
+        real, dimension(12), parameter :: corps = 1.0
+        real, dimension(12), parameter :: tmcrit = 0.0
+        real, dimension(12), parameter :: snerel = 1.0
 
         l = 1
         read(unit_var,*) dum2  ! monthly header
@@ -507,9 +554,11 @@ contains
         do 701 while (l <= isubno)
             read(unit_var,*) d1, d2, &
 				icelln, idstrm, irainf, (corppt(i),i=1,12), clarea, sauef, elev, wssize, &
-            	telev, (wincor(i),i=1,12), (rhucor(i),i=1,12), (albedo(i),i=1,12), &
+            	iystrt, iyrend, telev, (wincor(i),i=1,12), (rhucor(i),i=1,12), (albedo(i),i=1,12), &
             	(suncor(i),i=1,12), (cay(i),i=1,12), (elaim(i),i=1,12), (roota(i),i=1,12), &
-            	(coiam(i),i=1,12), (slorad(i),i=1,12), (radcor(i),i=1,12), (icc(i),i=1,12)
+            	forest, (coiam(i),i=1,12), ifor, sncapi, (tpcrit(i),i=1,12), (trange(i),i=1,12), &
+                (tmaxsn(i),i=1,12), (slorad(i),i=1,12), (radcor(i),i=1,12), &
+                (icc(i),i=1,12), (snomc(i),i=1,12)
             select case (var_block_index)
                case (1)
                    read(unit_oldMenu,format_line) dum ! read PRTOUT variable
@@ -538,57 +587,103 @@ contains
                    write(unit_menu,format_location) clarea, sauef, elev, &
                                                 alat, ihemi, wssize, l
                case (7)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_year) iystrt, iyrend, l
+                   write(unit_menu,format_year) iystrt, iyrend, l
+               case (8)
                    read(unit_oldMenu,format_telev_line) lrreg
                    write(unit_no,format_telev) telev, lrreg, l
                    write(unit_menu,format_telev) telev, lrreg, l
-               case (8)
+               case (9)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_corfac) (wincor(i),i=1,12),(l)
                    write(unit_menu,format_corfac) (wincor(i),i=1,12),(l)
-               case (9)
+               case (10)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_corfac) (rhucor(i),i=1,12),(l)
                    write(unit_menu,format_corfac) (rhucor(i),i=1,12),(l)
-               case (10)
+               case (11)
                    read(unit_oldMenu,format_albedo_line) icons,iswave ! read ICONS, ISWAVE variables
                    write(unit_no,format_albedo) (albedo(i),i=1,12), icons, iswave, l
                    write(unit_menu,format_albedo) (albedo(i),i=1,12), icons, iswave, l
-               case (11)
+               case (12)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_corfac) (suncor(i),i=1,12),(l)
                    write(unit_menu,format_corfac) (suncor(i),i=1,12),(l)
-               case (12)
+               case (13)
                    read(unit_oldMenu,format_lcover_line) glacie, glmulti, gdepth, garea ! read GLACIE, GLMULTI, GDEPTH, GAREA variables
                    write(unit_no,format_lcover) lcover, glacie, glmulti, gdepth, garea, l
                    write(unit_menu,format_lcover) lcover, glacie, glmulti, gdepth, garea, l
-               case (13)
+               case (14)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc) (cay(i),i=1,12),(l)
                    write(unit_menu,format_cerc) (cay(i),i=1,12),(l)
-               case (14)
+               case (15)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc) (elaim(i),i=1,12),(l)
                    write(unit_menu,format_cerc) (elaim(i),i=1,12),(l)
-               case (15)
+               case (16)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc) (roota(i),i=1,12),(l)
                    write(unit_menu,format_cerc) (roota(i),i=1,12),(l)
-               case (16)
+               case (17)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_forest) forest,(l)
+                   write(unit_menu,format_forest) forest,(l)
+               case (18)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc) (coiam(i),i=1,12),(l)
                    write(unit_menu,format_cerc) (coiam(i),i=1,12),(l)
-               case (17)
+               case (19)
+                   read(unit_oldMenu,format_snowvar_line) snorc, snirc, sncc
+                   write(unit_no,format_snow) isnow, isnotp, ipscor, iscree, iexp, ifor, &
+                                              sncapi, snorc, snirc, mcdmod, sncc, l
+                   write(unit_menu,format_snow) isnow, isnotp, ipscor, iscree, iexp, ifor, &
+                                              sncapi, snorc, snirc, mcdmod, sncc, l
+               case (20)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_snowtmp) (tpcrit(i),i=1,12),(l)
+                   write(unit_menu,format_snowtmp) (tpcrit(i),i=1,12),(l)
+               case (21)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_snowtmp) (trange(i),i=1,12),(l)
+                   write(unit_menu,format_snowtmp) (trange(i),i=1,12),(l)
+               case (22)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_snowopt) (adj(i),i=1,12),(l)
+                   write(unit_menu,format_snowopt) (adj(i),i=1,12),(l)
+               case (23)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_snowtmp) (tmaxsn(i),i=1,12),(l)
+                   write(unit_menu,format_snowtmp) (tmaxsn(i),i=1,12),(l)
+               case (24)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_slorad) (slorad(i),i=1,12),(l)
                    write(unit_menu,format_slorad) (slorad(i),i=1,12),(l)
-               case (18)
+               case (25)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_corfac) (radcor(i),i=1,12),(l)
                    write(unit_menu,format_corfac) (rhucor(i),i=1,12),(l)
-               case (19)
+               case (26)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_icc) (icc(i),i=1,12),(l)
                    write(unit_menu,format_icc) (icc(i),i=1,12),(l)
+               case (27)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_snowopt) (corps(i),i=1,12),(l)
+                   write(unit_menu,format_snowopt) (corps(i),i=1,12),(l)
+               case (28)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_snowtmp) (tmcrit(i),i=1,12),(l)
+                   write(unit_menu,format_snowtmp) (tmcrit(i),i=1,12),(l)
+               case (29)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_snowopt) (snomc(i),i=1,12),(l)
+                   write(unit_menu,format_snowopt) (snomc(i),i=1,12),(l)
+               case (30)
+                   read(unit_oldMenu,format_line) dum
+                   write(unit_no,format_corfac) (snerel(i),i=1,12),(l)
+                   write(unit_menu,format_corfac) (snerel(i),i=1,12),(l)
            end select
            write(unit_no,format_adjustment) debugRes,' SUCCESSFULLY PROCESSED LINE ', line, ' & HRU # ',l
            l = l + 1
