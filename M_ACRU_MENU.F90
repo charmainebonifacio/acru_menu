@@ -1,4 +1,3 @@
-
 !###############################################################################
 ! MODULE TITLE : M_ACRU_MENU
 ! CREATED BY   : CHARMAINE BONIFACIO
@@ -28,7 +27,7 @@ module m_acru_menu
     character(len=*), parameter:: format_strmflw_line = '( 25X,I1,2(2X,F5.3),3X,F4.2,29X,I4 )'
     character(len=*), parameter:: format_strmflw = '( 1X,F5.2,3X,F5.3,1X,F6.2,4X,I1,2(2X,F5.3),3X,F4.2,29X,I4 )'
     character(len=*), parameter:: format_icc = '( 2X,12(I3.2,2X),14X,I4 )'
-    character(len=*), parameter:: format_snow_line = '( 4X,I1,21X,2(4X,I1),3X,F4.2,17X,I1,1X,6X )'
+    character(len=*), parameter:: format_snow_line = '( 4X,I1,25X,I1,4X,I1,3X,F4.2,17X,I1,6X )'
     character(len=*), parameter:: format_snow = '( 4X,I1,3(6X,I1),2(4X,I1),3X,F4.2,2(2X,F4.2),5X,I1,1X,F5.2,9X,I4 )'
     character(len=*), parameter:: format_adjustment = '( 1X,A11,A30,I7,A9,I4 )'
     character(len=*), parameter:: format_icelln_line = '( 19X,I1 )'
