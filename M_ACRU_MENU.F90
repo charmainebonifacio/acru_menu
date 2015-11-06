@@ -2,7 +2,7 @@
 ! MODULE TITLE : M_ACRU_MENU
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : JULY 24, 2015
-! DATE REVISED : AUGUST 27, 2015
+! DATE REVISED : SEPTEMBER 7, 2015
 ! DESCRIPTION  : THE MODULE CONTAINS SUBROUTINES NEEDED TO PROCESS THE MENU FILE.
 !###############################################################################
 module m_acru_menu
@@ -42,6 +42,8 @@ module m_acru_menu
     character(len=*), parameter:: format_slorad = '( 12(1X,F5.2),4X,I4 )'
     character(len=*), parameter:: format_lcover_line = '( 12X,I1,2X,F5.2,1X,F6.1,1X,F8.2 )'
     character(len=*), parameter:: format_lcover = '( 5X,I1,6X,I1,2X,F5.2,1X,F6.1,1X,F8.2,40X,I4 )'
+    character(len=*), parameter:: format_telev = '( F6.1,4X,I2,64X,I4 )'
+    character(len=*), parameter:: format_telev_line = '( 10X,I2,64X,I4 )'
 
 contains
 
@@ -385,7 +387,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH DIFFERENT
 !                       TYPES OF VARIABLES
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 22, 2015
+!      DATE REVISED  :  SEPTEMBER 7, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH OPENED FILE
 !                       INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       CHARACTER ARRAY, INPUT, BLOCK INFO CONTAINING VARIABLES
@@ -402,18 +404,19 @@ contains
         block_var(4) = ' MONTHLY RAINFALL ADJUSTMENT FACTOR ----- CORPPT ' ! MONTHLY RAINFALL ADJUSTMENT FACTOR: CORPPT
         block_var(5) = ' AVAILABILITY OF STREAMFLOW DATA -------- IOBSTQ ' ! AVAILABILITY OF STREAMFLOW DATA: IOBSTQ, IOBSPK, IOBOVR
         block_var(6) = ' LOCATIONAL -------- CLAREA, SAUEF, ELEV, WSSIZE ' ! LOCATIONAL AND CATCHMENT INFO: CLAREA, SAUEF, ELEV, ALAT, IHEMI, WSSIZE
-        block_var(7) = ' MONTHLY WIND CORRECTION FACTOR --------- WINCOR ' ! MONTHLY WIND CORRECTION FACTOR: WINCOR
-        block_var(8) = ' MONTHLY REL HUM CORRECTION FACTOR ------ RHUCOR ' ! MONTHLY RELATIVE HUMIDITY CORRECTION FACTOR: RHUCOR
-        block_var(9) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- ALBEDO ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
-        block_var(10) = ' MONTHLY SUNSHINE CORRECTION FACTOR ----- SUNCOR ' ! MONTHLY SUNSHINE CORRECTION FACTOR: SUNCOR
-        block_var(11) = ' LEVEL OF LAND COVER -------------------- LCOVER ' ! LEVEL OF LAND COVER INFO: LCOVER
-        block_var(12) = ' CATCHMENT LAND COVER ---------------------- CAY ' ! CATCHMENT LAND COVER INFO
-        block_var(13) = ' CATCHMENT LAND COVER -------------------- ELAIM ' ! CATCHMENT LAND COVER INFO
-        block_var(14) = ' CATCHMENT LAND COVER -------------------- ROOTA ' ! CATCHMENT LAND COVER INFO
-        block_var(15) = ' STREAMFLOW SIM CONTROL ------------------ COIAM ' ! STREAMFLOW SIMULATION CONTROL VARIABLE: COIAM
-        block_var(16) = ' MONTHLY RADIATION CORRECTION FACTOR ---- SLORAD ' ! MONTHLY RADIATION CORRECTION FACTOR FOR SLOPED SURFACES: SLORAD
-        block_var(17) = ' MONTHLY RADIATION CORRECTION FACTOR ---- RADCOR ' ! MONTHLY RADIATION CORRECTION FACTOR RELATIVE TO BASE STATION: RADCOR
-        block_var(18) = ' SNOW OPTION ------------------------------- ICC ' ! SNOW VARIABLE: ICC
+        block_var(7) = ' TEMPERATURE ADJUSTMENT ALTITUDE---------- TELEV ' ! TEMPERATURE ADJUSTMENT ALTITUDE: TELEV
+        block_var(8) = ' MONTHLY WIND CORRECTION FACTOR --------- WINCOR ' ! MONTHLY WIND CORRECTION FACTOR: WINCOR
+        block_var(9) = ' MONTHLY REL HUM CORRECTION FACTOR ------ RHUCOR ' ! MONTHLY RELATIVE HUMIDITY CORRECTION FACTOR: RHUCOR
+        block_var(10) = ' REFERENCE POTENTIAL EVAPORATION UNIT --- ALBEDO ' ! REFERENCE POTENTIAL EVAPORATION UNIT INFO
+        block_var(11) = ' MONTHLY SUNSHINE CORRECTION FACTOR ----- SUNCOR ' ! MONTHLY SUNSHINE CORRECTION FACTOR: SUNCOR
+        block_var(12) = ' LEVEL OF LAND COVER -------------------- LCOVER ' ! LEVEL OF LAND COVER INFO: LCOVER
+        block_var(13) = ' CATCHMENT LAND COVER ---------------------- CAY ' ! CATCHMENT LAND COVER INFO
+        block_var(14) = ' CATCHMENT LAND COVER -------------------- ELAIM ' ! CATCHMENT LAND COVER INFO
+        block_var(15) = ' CATCHMENT LAND COVER -------------------- ROOTA ' ! CATCHMENT LAND COVER INFO
+        block_var(16) = ' STREAMFLOW SIM CONTROL ------------------ COIAM ' ! STREAMFLOW SIMULATION CONTROL VARIABLE: COIAM
+        block_var(17) = ' MONTHLY RADIATION CORRECTION FACTOR ---- SLORAD ' ! MONTHLY RADIATION CORRECTION FACTOR FOR SLOPED SURFACES: SLORAD
+        block_var(18) = ' MONTHLY RADIATION CORRECTION FACTOR ---- RADCOR ' ! MONTHLY RADIATION CORRECTION FACTOR RELATIVE TO BASE STATION: RADCOR
+        block_var(19) = ' SNOW OPTION ------------------------------- ICC ' ! SNOW VARIABLE: ICC
 
     end subroutine initiateVarInitializationBlock
 
@@ -423,7 +426,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE ARRAY WITH BLOCK
 !                       NUMBER FOR EACH VARIABLE
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 22, 2015
+!      DATE REVISED  :  SEPTEMBER 7, 2015
 !        PARAMETERS  :  INTEGER, INPUT, TOTAL NUMBER OF VARIABLES
 !                       INTEGER ARRAY, OUTPUT, BLOCK NUMBER OF CONTAINER
 !
@@ -439,18 +442,19 @@ contains
         block_container(4) = 3
         block_container(5) = 4
         block_container(6) = 9
-        block_container(7) = 25
-        block_container(8) = 27
-        block_container(9) = 28
-        block_container(10) = 30
-        block_container(11) = 49
-        block_container(12) = 53
-        block_container(13) = 54
-        block_container(14) = 56
-        block_container(15) = 67
-        block_container(16) = 139
-        block_container(17) = 140
-        block_container(18) = 141
+        block_container(7) = 19
+        block_container(8) = 25
+        block_container(9) = 27
+        block_container(10) = 28
+        block_container(11) = 30
+        block_container(12) = 49
+        block_container(13) = 53
+        block_container(14) = 54
+        block_container(15) = 56
+        block_container(16) = 67
+        block_container(17) = 139
+        block_container(18) = 140
+        block_container(19) = 141
 
     end subroutine initiateVarInitializationContainer
 
@@ -460,7 +464,7 @@ contains
 !       DESCRIPTION  :  THIS SUBROUTINE WILL INITIATE THE VARIABLES
 !                       ACCORDING TO THE BLOCK LINE NUMBER.
 !       AUTHORED BY  :  CHARMAINE BONIFACIO
-!      DATE REVISED  :  AUGUST 22, 2015
+!      DATE REVISED  :  SEPTEMBER 7, 2015
 !        PARAMETERS  :  INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
 !                       INTEGER, INPUT, UNIT NUMBER ASSOCIATED WITH FILE OPENED
@@ -480,11 +484,11 @@ contains
         character(41) :: irainf
         integer ::  i, l, d1, d2
         integer :: icelln, idstrm
-        integer :: rainMap, arf
+        integer :: rainMap, arf, lrreg
         integer :: iobspk, iobovr, glacie
         integer :: icons, iswave, ihemi
         real :: clarea, sauef, elev, alat, wssize
-        real :: glmulti, gdepth, garea
+        real :: glmulti, gdepth, garea, telev
         integer, dimension(12) :: icc
         real, dimension(12) :: albedo, cay, elaim, roota, coiam
         real, dimension(12) :: corppt, wincor, rhucor, suncor, slorad, radcor
@@ -503,7 +507,7 @@ contains
         do 701 while (l <= isubno)
             read(unit_var,*) d1, d2, &
 				icelln, idstrm, irainf, (corppt(i),i=1,12), clarea, sauef, elev, wssize, &
-            	(wincor(i),i=1,12), (rhucor(i),i=1,12), (albedo(i),i=1,12), &
+            	telev, (wincor(i),i=1,12), (rhucor(i),i=1,12), (albedo(i),i=1,12), &
             	(suncor(i),i=1,12), (cay(i),i=1,12), (elaim(i),i=1,12), (roota(i),i=1,12), &
             	(coiam(i),i=1,12), (slorad(i),i=1,12), (radcor(i),i=1,12), (icc(i),i=1,12)
             select case (var_block_index)
@@ -534,50 +538,54 @@ contains
                    write(unit_menu,format_location) clarea, sauef, elev, &
                                                 alat, ihemi, wssize, l
                case (7)
+                   read(unit_oldMenu,format_telev_line) lrreg
+                   write(unit_no,format_telev) telev, lrreg, l
+                   write(unit_menu,format_telev) telev, lrreg, l
+               case (8)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_corfac) (wincor(i),i=1,12),(l)
                    write(unit_menu,format_corfac) (wincor(i),i=1,12),(l)
-               case (8)
+               case (9)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_corfac) (rhucor(i),i=1,12),(l)
                    write(unit_menu,format_corfac) (rhucor(i),i=1,12),(l)
-               case (9)
+               case (10)
                    read(unit_oldMenu,format_albedo_line) icons,iswave ! read ICONS, ISWAVE variables
                    write(unit_no,format_albedo) (albedo(i),i=1,12), icons, iswave, l
                    write(unit_menu,format_albedo) (albedo(i),i=1,12), icons, iswave, l
-               case (10)
+               case (11)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_corfac) (suncor(i),i=1,12),(l)
                    write(unit_menu,format_corfac) (suncor(i),i=1,12),(l)
-               case (11)
+               case (12)
                    read(unit_oldMenu,format_lcover_line) glacie, glmulti, gdepth, garea ! read GLACIE, GLMULTI, GDEPTH, GAREA variables
                    write(unit_no,format_lcover) lcover, glacie, glmulti, gdepth, garea, l
                    write(unit_menu,format_lcover) lcover, glacie, glmulti, gdepth, garea, l
-               case (12)
+               case (13)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc) (cay(i),i=1,12),(l)
                    write(unit_menu,format_cerc) (cay(i),i=1,12),(l)
-               case (13)
+               case (14)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc) (elaim(i),i=1,12),(l)
                    write(unit_menu,format_cerc) (elaim(i),i=1,12),(l)
-               case (14)
+               case (15)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc) (roota(i),i=1,12),(l)
                    write(unit_menu,format_cerc) (roota(i),i=1,12),(l)
-               case (15)
+               case (16)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_cerc) (coiam(i),i=1,12),(l)
                    write(unit_menu,format_cerc) (coiam(i),i=1,12),(l)
-               case (16)
+               case (17)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_slorad) (slorad(i),i=1,12),(l)
                    write(unit_menu,format_slorad) (slorad(i),i=1,12),(l)
-               case (17)
+               case (18)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_corfac) (radcor(i),i=1,12),(l)
                    write(unit_menu,format_corfac) (rhucor(i),i=1,12),(l)
-               case (18)
+               case (19)
                    read(unit_oldMenu,format_line) dum
                    write(unit_no,format_icc) (icc(i),i=1,12),(l)
                    write(unit_menu,format_icc) (icc(i),i=1,12),(l)
