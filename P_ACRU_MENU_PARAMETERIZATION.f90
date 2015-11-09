@@ -2,12 +2,11 @@
 ! MAIN TITLE   : P_ACRU_MENU_PARAMETERIZATION
 ! CREATED BY   : CHARMAINE BONIFACIO
 ! DATE CREATED : MAY 8, 2015
-! DATE REVISED : NOVEMBER 5, 2015
+! DATE REVISED : NOVEMBER 8, 2015
 ! DESCRIPTION  : THE PROGRAM WILL COPY VALUES FROM A TAB DELIMITED FILE THAT
-!                CONTAINS 18 VARIABLES: IYSTRT, IYREND, TMAXLR, TMINLR,
-!                DEPAHO, DEPBHO, WP1, WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP,
-!                QFRESP, COFRU, SMDDEP, ISNOTP, IPSCOR, ISCREE, SNORC, SNIRC,
-!                SNCC
+!                CONTAINS 18 VARIABLES: TMAXLR, TMINLR, DEPAHO, DEPBHO, WP1,
+!                WP2, FC1, FC2, PO1, PO2, ABRESP, BFRESP, QFRESP, COFRU,
+!                SMDDEP, ISNOTP, IPSCOR, ISCREE
 ! REQUIREMENT  : MUST RUN THE .EXE FILE WITHIN THE INPUT DIRECTORY.
 ! MODULES      : MUST INCLUDE M_SYSTEMCHECK, M_SYSTEMLOG AND
 !                M_ACRU_MENU MODULES
@@ -34,8 +33,8 @@ program p_acru_menu_parameterization
     character(len=*), parameter :: format_logstat = '( 1X,A11,A20,A20 )'
     character(len=*), parameter :: format_daytime = '( 1X,A11,A20,A15 )'
     character(len=*), parameter :: format_filestat = '( 1X,A11,A20,I4 )'
-    character(len=*), parameter :: format_endmsg = '( A83,A10,A2,A5,A1 )'
-    character(len=*), parameter :: msg = 'ACRU MENU CALIBRATION SCRIPT CREATED BY CHARMAINE BONIFACIO. VERSION AUGUST 2015. ['
+    character(len=*), parameter :: format_endmsg = '( A85,A10,A2,A5,A1 )'
+    character(len=*), parameter :: msg = 'ACRU MENU CALIBRATION SCRIPT CREATED BY CHARMAINE BONIFACIO. VERSION NOVEMBER 2015. ['
     character(len=*), parameter :: lines_processed_msg = ' NUMBER OF PROCESSED LINES IN THE MENU PARAMETER FILE.'
     integer, parameter :: num_var = 6 ! NUMBER OF VARIABLE BLOCKS
     character(len=30) :: outfile, infile, varfile
